@@ -2,6 +2,9 @@
   "name": "bingo-game",
   "version": "0.1.0",
   "private": true,
+  "display": "standalone",
+  "orientation": "landscape",
+  "homepage": "https://eggborne.com/bingo",
   "dependencies": {
     "react": "^16.8.6",
     "react-dom": "^16.8.6",

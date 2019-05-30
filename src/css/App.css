@@ -1,0 +1,198 @@
+:root {
+  /* set on load and at resize */
+  --view-height: 0;
+  --view-width: 100vw;
+  /*  */
+  --header-height: calc(var(--view-height) * 0.065);
+  --caller-height: calc(var(--header-height) * 1.45);
+  --status-height: calc(var(--header-height) * 1.25);
+  --card-width: calc((var(--view-height) - var(--header-height) - var(--caller-height) - var(--status-height)) * 0.47);
+  --card-height: var(--card-width);
+  --font-size: calc(10px + 3vmin);
+
+  --mark-color: purple;
+
+  --b-color: #ff401d44;
+  --i-color: #ffb81444;
+  --n-color: #ade13444;
+  --g-color: #37c4f444;
+  --o-color: #ff96ee44;
+}
+* {
+  box-sizing: border-box;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+::-webkit-scrollbar {
+  display: none;
+}
+
+@media screen and (orientation: landscape) {
+  :root {
+    --header-height: 6.5vw;
+    --card-width: calc(((100vw - var(--header-height) - var(--status-height)) * 0.5) - 3vw);
+  }
+}
+body {
+  /* overflow: hidden; */
+  /* overscroll-behavior: contain; */
+  /* image-rendering: pixelated; */
+  font-family: 'Open Sans';
+  overflow: hidden;
+  /* max-height: 100vh; */
+}
+button {
+  outline: none;
+  border-radius: 15%;
+  border: 0.25vmin solid gray;
+}
+#app {
+  width: 100vw;
+  height: var(--view-height);
+  max-height: var(--view-height);
+  background-color: #333;
+  background-image: url('../assets/nature.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center 20%;
+  display: grid;
+  grid-template-rows: var(--header-height) 1fr var(--status-height);
+  grid-template-columns: 1fr;
+  font-family: 'Open Sans', sans-serif;
+  font-size: var(--font-size);
+
+}
+header#main-header {
+  display: flex;
+  flex-flow: row-reverse;
+  align-items: center;
+  justify-content: space-between;
+  background: #000000aa;
+  color: white;
+  font-size: calc(var(--header-height) * 0.4);
+}
+.header-button, .modal-button {
+  color: white;
+  width: var(--header-height);
+  height: 100%;
+  align-self: center;
+  background-size: 50%;
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  background-color: black;
+  transform-origin: center center;
+  /* border-radius: 15%; */
+  border: 0.25vmin solid gray;
+}
+#fullscreen-toggle {
+  background-image: url('../assets/screenrotationicon.png');
+}
+#exit-fullscreen-toggle {
+  display: flex;
+  align-items: start;
+  padding-right: calc(var(--header-height) / 16);
+  justify-content: center;
+  background-image: url('../assets/screenrotationicon.png');
+  background-color: rgb(65, 104, 52);
+  background-position: 30% 50%;
+  font-size: calc(var(--header-height) / 6);
+}
+#account-button {
+  background-image: url('../assets/accounticon.png');
+}
+#danger-meter {
+  flex-grow: 1;
+  height: var(--header-height);
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+}
+.danger-bar {
+  margin: 1%;
+  width: 1.95%;
+  max-width: 2%;
+  transition: all 3000ms ease;
+}
+.danger-bar.dark-red {
+  background: rgb(161, 27, 27);
+}
+.danger-bar.red {
+  background: red;
+}
+.danger-bar.orange {
+  background: orange;
+}
+.danger-bar.yellow {
+  background: yellow;
+}
+.danger-bar.green {
+  background: green;
+}
+
+#game-board {
+  display: grid;
+  /* height: 100%; */
+  grid-template-rows: var(--caller-height) 1fr;
+  grid-template-columns: 1fr;
+  align-items: center;
+  overflow: auto;
+}
+#card-area {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  transition: transform 310ms ease;
+}
+#card-area.dimmed {
+  transform: scale(0.8);
+}
+.card-space {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+}
+@media screen and (orientation: landscape) {
+  #app {
+    grid-template-columns: var(--header-height) 1fr var(--status-height);
+    grid-template-rows: 1fr;
+  }
+  header#main-header {
+    flex-direction: column;
+
+  }
+  header#main-header > div {
+    writing-mode: vertical-rl;
+    /* transform: rotate(180deg); */
+  }
+  #title {
+    transform: rotate(180deg);
+  }
+  #exit-fullscreen-toggle {
+    transform: rotate(-90deg);
+  }
+  .header-button {
+    writing-mode: vertical-rl;
+    /* transform: rotate(0deg); */
+  }
+  #danger-meter {
+    width: var(--header-height);
+    height: calc(100vh - (var(--header-height) * 2));
+    background: blue;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .danger-bar {
+
+  }
+  #card-area {
+    flex-direction: row;
+  }
+  .card-space {
+    width: auto;
+  }
+}

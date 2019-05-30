@@ -1,0 +1,42 @@
+.number-square {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(var(--card-height) / 10);
+  font-weight: bolder;
+  border: 0.02vmin solid gray;
+}
+.number-square > div {
+  pointer-events: none;
+}
+.number-square > .chip {
+  position: absolute;
+  width: calc(var(--card-width) / 5);
+  height: calc(var(--card-height) / 5);
+  border-radius: 50%;
+  /* border: calc(var(--card-width) / 84) solid rgb(140, 132, 132); */
+  opacity: 0;
+  transform: scale(1.35);
+  pointer-events: none;
+  content: ' ';
+  /* background: #bd070799; */
+  background-image: url('../assets/bingochip.png');
+  background-image: url('../assets/bingochip.webp');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  transition: opacity 120ms ease, transform 210ms ease;
+}
+.chip.dark {
+  background: #bd070795;
+}
+.chip.light {
+  background: #bd070785;
+}
+.number-square.marked > .chip {
+  opacity: 1;
+  transform: none;
+}
+.number-square.free {
+  font-size: calc(var(--card-height) / 20);
+}

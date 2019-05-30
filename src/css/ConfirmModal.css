@@ -1,0 +1,57 @@
+#confirm-modal {
+  position: absolute;
+  background-color: #000000bb;
+  width: 90vmin;
+  height: 110vmin;
+  margin-left: calc((100vw - 90vmin) / 2);
+  margin-top: calc((100vh - 110vmin) / 2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  /* padding: 5vmin; */
+  font-size: calc(var(--header-height) / 2);
+  border: 1vmin solid gray;
+  transition: transform 310ms ease, opacity 205ms ease;
+  z-index: 12;
+}
+#confirm-modal.hidden {
+  transform: scale(0.9);
+  opacity: 0;
+  pointer-events: none;
+}
+#confirm-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* padding: 5vmin; */
+  background: black;
+  color: white;
+  flex-grow: 1;
+  width: 100%;
+  background: #111;
+}
+#confirm-modal > .modal-button {
+  flex-grow: 0.3;
+  font-size: calc(var(--header-height) / 2);
+  font-weight: bolder;
+  width: 60%;
+  height: 15%;
+  margin: 3vh;
+  border-radius: 1vmax;
+}
+#agree-button.modal-button {
+  margin-bottom: 0;
+  background: rgb(85, 13, 13);
+}
+#cancel-button.modal-button {
+  background: rgb(43, 85, 13);
+}
+@media screen and (orientation: landscape) {
+  #confirm-modal {
+    width: 60vw;
+    height: 90vmin;
+    margin-left: 20vw;
+    margin-top: calc((100vh - 90vmin) / 2);
+  }
+}

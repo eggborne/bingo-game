@@ -1,0 +1,55 @@
+.card {
+  background: #ffffffbb;
+  width: var(--card-width);
+  height: var(--card-height);
+  max-height: calc(var(--view-height) * 0.75);
+  box-shadow: 0 0 1vmin 0.25vmin #00000066;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: auto repeat(5, 1fr);
+  /* border: 1vmin solid #444; */
+  /* border-top: none; */
+  border-radius: 1.5vmin;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  margin: 0.75vmax;
+  transition: transform 600ms ease, opacity 400ms ease;
+}
+.card.hidden {
+  opacity: 0;
+  transform: translateY(20%);
+}
+.card > .card-head-letter {
+  font-family: 'Open Sans';
+  font-size: calc(var(--card-height) / 12);
+  text-shadow: -1px -1px 0 #000,
+  1px -1px 0 #000,
+  -1px 1px 0 #000,
+   1px 1px 0 #000;
+  display: flex;
+  font-weight: bolder;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+.card > .card-head-letter:first-of-type {
+  border-top-left-radius: inherit;
+}
+.card > .card-head-letter:nth-of-type(5) {
+  border-top-right-radius: inherit;
+}
+.card-head-letter.b {
+  background-color: var(--b-color);
+}
+.card-head-letter.i {
+  background-color: var(--i-color);
+}
+.card-head-letter.n {
+  background-color: var(--n-color);
+}
+.card-head-letter.g {
+  background-color: var(--g-color);
+}
+.card-head-letter.o {
+  background-color: var(--o-color);
+}
