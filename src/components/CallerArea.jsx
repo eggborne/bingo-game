@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import Ball from './Ball';
-import { limits, randomInt } from '../App';
 import '../css/CallerArea.css';
 
 const getBingoLetter = num => {

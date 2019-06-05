@@ -1,0 +1,177 @@
+#menu {
+  position: absolute;
+  background-color: #000000df;
+  width: 100vw;
+  max-height: 100vh;
+  transform: none;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(auto, 1fr);
+  grid-row-gap: 1.5vmin;
+  color: #aaa;
+  align-items: center;
+  font-size: calc(var(--header-height) / 3.5);
+  font-weight: bolder;
+  padding: calc(var(--header-height) * 0.25);
+  padding-top: calc(var(--header-height) * 1.25);
+  transition: transform 440ms ease, opacity 440ms ease, background-color 320ms ease;
+  pointer-events: none;
+  z-index: 0;
+  will-change: transition, opacity, background-color;
+}
+#menu small {
+  font-size: 60%;
+}
+.menu-item {
+  display: relative;
+  background: #050505;
+  display: grid;
+  align-items: center;
+  grid-template-columns: 0.45fr 0.2fr 0.35fr;
+  grid-template-rows: 1fr;
+  justify-content: space-between;
+  width: 100%;
+  /* height: 11vh; */
+  padding: 3vmin;
+  pointer-events: all;
+  border: 0.5vmin solid #333;
+  transition: opacity 320ms ease;
+}
+.menu-item.full-panel {
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(auto, 1fr);
+}
+.menu-item > .account-row {
+  display: flex;
+  /* align-items: center; */
+  justify-content: space-between;
+  /* padding-top: 2vh; */
+  padding-bottom: 2vh;
+}
+.menu-item > .button-row {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+.menu-button {
+  color: white;
+  font-size: calc(var(--font-size) / 1.25);
+  background: rgb(3, 85, 0);
+  border-radius: var(--button-bar-border-width);
+  padding: 3vh 2vh;
+}
+.menu-item.unavailable {
+  background-color: #222;
+  opacity: 0.7;
+}
+.menu-item.unavailable input {
+  pointer-events: none;
+}
+#menu.hidden {
+  transform: translateY(-100%);
+  /* opacity: 0; */
+}
+.menu-item.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+.number-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.item-label {
+  text-align: center;
+  color: #666;
+}
+.item-label, .number-toggle > div {
+  text-align: center;
+  font-size: calc(var(--header-height) / 3);
+  line-height: 80%;
+}
+#margin-control {
+  /* grid-template-columns: 0.4fr 0.0fr 0.6fr; */
+}
+.number-toggle > img {
+  width: calc(var(--header-height) / 1.5);
+}
+#menu.obscured {
+  background-color: transparent
+}
+#menu.obscured > .menu-item {
+  opacity: 0;
+}
+#menu.obscured > #margin-control {
+  opacity: 1 !important;
+  background: #050505ee;
+}
+
+input[type=range] {
+  -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
+  width: 90%;
+  height: 1.5vh;
+  background: #444;
+  /* margin: 2vw; */
+}
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  /* transform: translateY(50%); */
+}
+
+input[type=range]:focus {
+  outline: none; /* Removes the blue border. You should probably do some kind of focus styling for accessibility reasons though. */
+}
+
+input[type=range]::-ms-track {
+  width: 100%;
+  cursor: pointer;
+  background: transparent;
+  border-color: transparent;
+  color: transparent;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 7vmin;
+  width: 4vmin;
+  border-radius: 0.3vmax;
+  background: #ffffff;
+  cursor: pointer;
+  margin: 0;
+}
+
+/* All the same stuff for Firefox */
+input[type=range]::-moz-range-thumb {
+  height: 7vmin;
+  width: 4vmin;
+  border-radius: 0.3vh;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+/* All the same stuff for IE */
+input[type=range]::-ms-thumb {
+  height: 7vmin;
+  width: 4vmin;
+  border-radius: 0.3vh;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+@media screen and (orientation: landscape) {
+  #menu {
+    width: 65vw;
+    height: 100%;
+    padding: calc(var(--header-height) * 0.25);
+    padding-left: calc(var(--header-height) * 1.2);
+    font-size: calc(var(--header-height) / 4.5);
+  }
+  .menu-item {
+    height: 100%;
+  }
+  #menu.hidden {
+    transform: translateX(-100%);
+  }
+}

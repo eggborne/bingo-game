@@ -17,7 +17,10 @@
   background-size: cover;
   background-repeat: no-repeat;
   transition: transform 100ms ease;
-  border: 0.1vmin solid rgb(128, 118, 118);
+  color: black;
+  will-change: transform;
+  z-index: 5;
+  /* border: 0.1vmin solid rgb(128, 118, 118); */
 }
 .ball > div:nth-child(1) {
   position: absolute;
@@ -52,6 +55,7 @@
   /* border-color: var(--b-color); */
   border-radius: 50%;
   transform: scale(0.95);
+  will-change: transform;
   /* opacity: 0.2; */
 }
 .ball.b:before {
@@ -89,4 +93,9 @@
   100% {
     transform: initial;
   }
+}
+
+@media screen and (orientation: landscape) {
+
+
 }

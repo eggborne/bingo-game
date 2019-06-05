@@ -1,0 +1,101 @@
+#button-bar {
+  display: grid;
+  grid-template-columns: min-content min-content 1fr  min-content min-content min-content;
+  grid-template-rows: 1fr;
+  grid-gap: calc(var(--button-bar-border-width) * 1.5);
+  border: var(--button-bar-border-width) outset #00000044;
+  background: #000000aa;
+  padding: calc(var(--header-border-width) / 2);
+}
+#button-bar .status-button {
+  background-repeat: no-repeat;
+  background-size: calc((var(--header-height) / 1.4));
+  background-position: center;
+  padding: 0;
+  border-radius: calc(var(--button-bar-border-width) / 1.5);
+  font-size: calc(var(--button-bar-height) * 0.18);
+  width: calc((var(--header-height)) - (var(--header-border-width) * 3));
+  height: calc(var(--header-height) - (var(--header-border-width) * 3));
+  color: white;
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  transition: background-color 320ms ease;
+}
+#button-bar > div:nth-last-child(1) {
+  flex-grow: 1;
+}
+#button-bar > div > .status-button {
+  border-style: inset;
+  border-width: calc(var(--header-border-width) / 2);
+  transition: transform 210ms ease, background-color 320ms ease;
+}
+#button-bar > div > .status-button.inactive {
+  border-style: outset;
+}
+#button-bar > div > #start-button {
+  background-color: rgb(18, 90, 18);
+  background-image: url('../assets/playicon.png');
+  border-style: outset;
+  transform: scale(1);
+  /* padding: 1vmin; */
+}
+#button-bar > div > #start-button.inactive {
+  background-color: rgb(34, 44, 31);
+  border-style: outset;
+  transform: scale(1.05);
+}
+#button-bar > div > #start-button.game-started {
+  background-color: rgb(22, 124, 22);
+  background-image: url('../assets/pauseicon.png');
+  border-style: inset;
+  transform: scale(1);
+  /* border-color: green;
+  border-width: calc(var(--button-bar-border-width) / 2); */
+}
+#view-button {
+  background-color: rgb(80, 130, 143);
+  background-image: url('../assets/viewicon.png');
+}
+#view-button.inactive {
+  background-color: rgb(32, 43, 46);
+  background-image: url('../assets/viewofficon.png');
+}
+#voice-button {
+  background-color: rgb(156, 126, 70);
+  background-image: url('../assets/voiceicon.png');
+}
+#voice-button.inactive {
+  background-color: rgb(71, 58, 33);
+  background-image: url('../assets/voiceofficon.png');
+}
+#button-bar > div > #reset-button {
+  border-style: outset;
+  /* transform-origin: bottom left; */
+  background-color: rgb(95, 64, 63);
+  background-image: url('../assets/refreshicon.png');
+  transition: transform 320ms ease, background-color 320ms ease;
+}
+#button-bar > div > #reset-button.closing {
+  background-color: red;
+  background-image: url('../assets/cancelicon.png');
+  transform: scale(0.7);
+}
+
+#button-bar > div > #error-button {
+  transform: scale(0.75);
+  background-color: transparent;
+  border: 0;
+  background-image: url('../assets/pooicon.png');
+  background-size: calc(var(--button-bar-height) / 1.5);
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+}
+@media screen and (orientation: landscape) {
+  #button-bar {
+    grid-template-columns: 1fr;
+    grid-template-rows: min-content min-content 1fr  min-content min-content min-content;
+  }
+  #reset-button {
+    /* transform-origin: bottom right; */
+  }
+}

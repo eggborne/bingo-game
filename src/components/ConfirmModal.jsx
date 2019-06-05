@@ -3,16 +3,34 @@ import '../css/ConfirmModal.css';
 
 function ConfirmModal(props) {
   let modalClass = 'status-button';
+  let agreeLabel = 'OKAY';
+  let cancelLabel = 'NEVER MIND';
+  if (props.urgent) {
+    modalClass += ' urgent';
+    agreeLabel = 'YES, QUIT';
+    cancelLabel = 'SHIT, NO';
+  }
+  if (props.reload) {
+    modalClass += ' reload';
+    agreeLabel = 'YES';
+  }
   if (!props.showing) {
-    modalClass += ' hidden';
+    modalClass += 'status-button hidden';
   }
   return (
     <div id='confirm-modal' className={modalClass}>
+      {props.reload &&
+        <div id='reload-pic'></div>
+      }
       <div id='confirm-message'>{props.message}</div>
-      <button id='agree-button' onTouchStart={props.onClickAgreeButton} className='modal-button'>DO IT</button>
-      <button id='cancel-button' onTouchStart={props.onClickCancelButton} className='modal-button'>SHIT, NO</button>
+      <button id='agree-button' onPointerDown={props.onClickAgreeButton} className='modal-button'>{agreeLabel}</button>
+      <button id='cancel-button' onPointerDown={props.onClickCancelButton} className='modal-button'>{cancelLabel}</button>
     </div>
   );
 }
+function areEqual(prevProps, nextProps) {
+  return prevProps.message === nextProps.message && prevProps.showing === nextProps.showing;
+}
 
-export default ConfirmModal;
+export default React.memo(ConfirmModal, areEqual);
+// export default ConfirmModal;

@@ -1,4 +1,4 @@
-#confirm-modal {
+#game-end-modal {
   position: absolute;
   background-color: #000000bb;
   width: 90vmin;
@@ -14,75 +14,55 @@
   transition: transform 310ms ease, opacity 205ms ease;
   z-index: 12;
 }
-#confirm-modal > small {
+#game-end-modal > small {
   font-size: calc(var(--header-height) / 5.5);
   margin-bottom: 4vh;
   color: #aaa;
 }
-#confirm-modal.hidden {
+#game-end-modal.hidden {
   transform: scale(0.9);
   opacity: 0;
   pointer-events: none;
 }
-#confirm-modal.urgent {
-  background-color: #240707dc;
-}
-#confirm-modal.urgent > div:first-child {
-  background-color: #220c0c;
-  color: #ee0606;
+#game-end-title {
+  font-size: calc(var(--header-height));
   font-weight: bolder;
+  background: rgb(5, 80, 15);
+  width: 100%;
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-#confirm-modal.reload > div:first-child {
-  background-color: transparent;
+#game-end-title:after {
+  content: 'BINGO!';
 }
-#confirm-modal.reload {
-  background-color: rgb(56, 32, 13);
-}
-#confirm-modal.reload > #confirm-message {
-  background-color: transparent;
-  color: rgb(240, 202, 152);
-  font-weight: bolder;
-}
-#confirm-message {
+#game-end-message {
   display: flex;
   padding: 2vmin;
   text-align: center;
   align-items: center;
   justify-content: center;
-  background: black;
   color: white;
   flex-grow: 1;
   width: 100%;
   background: #111;
+  font-size: calc(var(--header-height) / 3);
 }
-#reload-pic {
-  height: 20vmin;
-  width: 20vmin;
-  background-image: url('../assets/pooicon.png');
-  background-size: 90%;
-  background-position: center center;
-  background-repeat: no-repeat;
-  margin: 2vmax;
-}
-#confirm-modal > .modal-button {
+#game-end-modal > .modal-button {
   flex-grow: 0.3;
   font-size: calc(var(--header-height) / 2.5);
   font-weight: bolder;
   width: 60%;
-  height: 15%;
-  margin: 5vh;
+  height: 10%;
+  margin: 3vh;
   border-radius: 1vmax;
 }
 #agree-button.modal-button {
-  background: rgb(85, 13, 13);
-  margin-bottom: 0;
-}
-#cancel-button.modal-button {
-  background: rgb(43, 85, 13);
-  margin-bottom: 5vh;
+  background: rgb(33, 131, 4);
 }
 @media screen and (orientation: landscape) {
-  #confirm-modal {
+  #game-end-modal {
     width: 60vw;
     height: 90vmin;
     margin-left: 20vw;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../css/Ball.css';
 
 function Ball(props) {
@@ -18,4 +18,9 @@ function Ball(props) {
   );
 }
 
-export default Ball;
+function areEqual(prevProps, nextProps) {
+  return prevProps.letter === nextProps.letter;
+}
+
+export default React.memo(Ball, areEqual);
+// export default Ball;
