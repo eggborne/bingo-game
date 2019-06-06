@@ -17,6 +17,10 @@ function ConfirmModal(props) {
   if (!props.showing) {
     modalClass += 'status-button hidden';
   }
+  if (props.loggingOut) {
+    agreeLabel = 'LOG OUT';
+    cancelLabel = 'NEVER MIND';
+  }
   return (
     <div id='confirm-modal' className={modalClass}>
       {props.reload &&

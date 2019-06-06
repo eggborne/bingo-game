@@ -15,9 +15,9 @@
   }
 
 	if($result){
-    echo 'UPDATED THAT SUCKA';
+    echo 'UPDATED';
   } else {
-    echo "UPDATING FAILED :(";
+    echo NULL;
   }
 	mysqli_close($link);
 ?>

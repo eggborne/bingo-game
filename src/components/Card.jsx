@@ -254,6 +254,9 @@ function Card(props) {
   if (!active) {
     cardClass += ' inactive';
   }
+  if (props.type === 'custom') {
+    cardClass += ' custom';
+  }
   let isOpponent = props.opponent;
   return (
     <div className={cardClass}>

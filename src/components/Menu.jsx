@@ -32,7 +32,6 @@ function Menu(props) {
     setTouchedSlider(undefined);
     document.getElementById('game-board').classList.add('blurred');
   }
-
   let displaySpeed = props.drawSpeed / 1000;
   let itemClass = 'menu-item';
   if (props.gameStarted || props.ballQueue.length) {
@@ -72,7 +71,7 @@ function Menu(props) {
             </div>
           </div>
           <div className='menu-item'>
-            <div>Caller</div>
+            <div>Caller Voice</div>
             <div className='item-label'></div>
             <div className='number-toggle'>
               <img alt='' onPointerDown={() => props.onClickMenuArrow('toggleVoice')} src={require('../assets/leftarrow.png')} />
@@ -80,7 +79,7 @@ function Menu(props) {
               <img alt='' onPointerDown={() => props.onClickMenuArrow('toggleVoice')} src={require('../assets/rightarrow.png')} />
             </div>
           </div>
-          <div className={props.voiceOn ? 'menu-item' : 'menu-item unavailable'}>
+          <div className='menu-item'>
             <div>Caller<br />Speed</div>
             <div className='item-label'>{displaySpeed}<span style={{ fontSize: `calc(var(--header-height) / 5)` }}><br />sec.</span></div>
             <div style={{ textAlign: 'center' }}>
@@ -138,7 +137,7 @@ function Menu(props) {
             </div>
             <div className='account-row'>
               <div>Money</div>
-              <div>${props.user.currency.money}</div>
+              <div>${props.user.currency.cash}</div>
             </div>
             <div className='account-row'>
               <div>Games Played</div>

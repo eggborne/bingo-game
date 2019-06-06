@@ -14,6 +14,9 @@
   padding: var(--card-padding);
   transition: transform 320ms ease, opacity 400ms ease, filter 320ms ease;
 }
+.card.custom {
+  background-color: rgba(29, 29, 117, 0.513);
+}
 .card.inactive {
   filter: grayscale(80%);
   /* pointer-events: none; */

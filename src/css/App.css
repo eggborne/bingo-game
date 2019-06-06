@@ -60,7 +60,6 @@ button {
   border: 0.25vmin solid gray;
 }
 #app {
-
   width: 100vw;
   height: var(--view-height);
   /* max-height: var(--view-height); */
@@ -75,7 +74,34 @@ button {
   background-repeat: no-repeat;
   background-size: cover;
   background-position: 50% 35%;
-
+}
+#save-icon {
+  pointer-events: none;
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: var(--header-height);
+  height: var(--header-height);
+  background: black;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 12;
+  opacity: 0;
+  color: green;
+  transition: opacity 320ms ease;
+}
+#save-icon.showing {
+  opacity: 0.9;
+}
+#save-icon > small {
+  font-size: 60%;
+  color: white;
+}
+#save-icon > i {
+  font-size: calc(var(--header-height) / 1.5);
 }
 header#main-header {
   display: flex;
@@ -163,8 +189,8 @@ header .status-button.on {
   justify-content: center;
 }
 #players-left-display > div:first-child {
- font-size: calc(var(--header-height) / 1.5);
- font-weight: bolder;
+  font-size: calc(var(--header-height) / 1.5);
+  font-weight: bolder;
 }
 #account-button {
   background-color: black;
@@ -245,7 +271,7 @@ header .status-button.on {
   height: 100%;
   margin-left: 1%;
 }
- #danger-bar-list {
+#danger-bar-list {
   height: 100%;
   display: grid;
   grid-template-columns: repeat(var(--opponent-cards), 1fr);
@@ -265,7 +291,7 @@ header .status-button.on {
   font-size: calc(var(--header-height) / 3.5);
 }
 #danger-meter ~ #account-button:before {
-  font-size: calc(var(--header-height ) / 3);
+  font-size: calc(var(--header-height) / 3);
   font-weight: bolder;
   position: absolute;
   transform: translateX(-50%);
@@ -282,7 +308,8 @@ header .status-button.on {
   animation-play-state: running;
 }
 @keyframes cycle {
-  0%, 100% {
+  0%,
+  100% {
     color: var(--b-color);
   }
   20% {
@@ -314,23 +341,28 @@ header .status-button.on {
   height: 100%;
   transition: all 320ms ease;
 }
-.danger-bar.dark-red, #prize-label.dark-red {
+.danger-bar.dark-red,
+#prize-label.dark-red {
   color: rgb(170, 22, 22);
   background: rgb(170, 22, 22);
 }
-.danger-bar.red, #prize-label.red {
+.danger-bar.red,
+#prize-label.red {
   color: red;
   background: red;
 }
-.danger-bar.orange, #prize-label.orange {
+.danger-bar.orange,
+#prize-label.orange {
   color: orange;
   background: orange;
 }
-.danger-bar.yellow, #prize-label.yellow {
+.danger-bar.yellow,
+#prize-label.yellow {
   color: yellow;
   background: yellow;
 }
-.danger-bar.green, #prize-label.green {
+.danger-bar.green,
+#prize-label.green {
   color: green;
   background: green;
 }
@@ -414,8 +446,8 @@ header .status-button.on {
     justify-content: center;
   }
   #players-left-display > div:first-child {
-   font-size: calc(var(--header-height) / 1.5);
-   font-weight: bolder;
+    font-size: calc(var(--header-height) / 1.5);
+    font-weight: bolder;
   }
   #players-left-display > div {
     text-align: center;
@@ -469,7 +501,6 @@ header .status-button.on {
   }
   #game-board {
     /* padding-top: var(--caller-height); */
-
   }
   #danger-meter {
     width: calc(var(--header-height) - (var(--header-border-width) * 3));

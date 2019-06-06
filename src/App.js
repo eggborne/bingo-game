@@ -167,6 +167,8 @@ const synth = window.speechSynthesis;
 const bgColors = ['#ffeeeeca', '#eeddffca', '#e2ffdeca'];
 
 function App() {
+  const saveRef = useRef();
+
   // STATE //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   const [gotData, setGotData] = useState(false);
@@ -202,6 +204,7 @@ function App() {
   const [gameStarted, setGameStart] = useState(false);
   const [menuOn, setMenuOn] = useState(false);
   const [loggingIn, setLoggingIn] = useState(false); // 'logIn' or 'register'
+  const [loggingOut, setLoggingOut] = useState(false);
   const [locked, setLocked] = useState(false);
   const [modalOn, setModalOn] = useState(false);
   const [modalMessage, setModalMessage] = useState('Really reset the game?');
@@ -217,9 +220,6 @@ function App() {
   // EFFECTS //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   useEffect(() => {
-    document.documentElement.style.setProperty('--card-size-landscape', `${1 - options.cardMarginLandscape}`);
-    document.documentElement.style.setProperty('--card-size', `${1 - options.cardMargin}`);
-
     let cookie = getCookie('eggborne-bingo');
     if (cookie) {
       logUserIn(cookie.username, null, cookie.token).then(response => {
@@ -229,53 +229,15 @@ function App() {
           console.error('bad password.');
         } else {
           let data = { ...response.data };
-          for (let row in data) {
-            if (typeof parseInt(data[row]) === 'number' && !isNaN(parseInt(data[row]))) {
-              data[row] = parseInt(data[row]);
-            }
-          }
-          data.options = JSON.parse(data.options);
-          let newUser = { ...user };
-          newUser.id = data.id;
-          newUser.username = data.username;
-          newUser.token = data.token;
-          newUser.cards = JSON.parse(data.cards);
-          newUser.stats = JSON.parse(data.stats);
-          newUser.currency = JSON.parse(data.currency);
-          newUser.loggedIn = true;
-          let newCards = [[], [], [], [], []];
-          newUser.cards.map((row, r, arr) => {
-            if (row.numbers) {
-              row.numbers.map((column, c) => {
-                column.map((num, n) => {
-                  newCards[n][c] = num;
-                });
-              });
-              arr[r].numbers = newCards;
-            }
-          });
-          let newOptions = { ...options };
-          newOptions.playerCards = data.options.playerCards;
-          newOptions.showOpponentCards = data.options.showOpponentCards;
-          newOptions.voiceOn = data.options.voiceOn;
-          newOptions.showOpponentCards = data.options.showOpponentCards;
-          newOptions.fitWide = data.options.fitWide
-          newOptions.fitWideLandscape = data.options.fitWideLandscape
-          newOptions.cardMargin = data.options.cardMargin
-          newOptions.cardMarginLandscape = data.options.cardMarginLandscape;
-          document.documentElement.style.setProperty('--user-cards-wide', newOptions.fitWide);
-          document.documentElement.style.setProperty('--user-cards-wide-landscape', newOptions.fitWideLandscape);
-          document.documentElement.style.setProperty('--card-size', `${1 - newOptions.cardMargin}`);
-          document.documentElement.style.setProperty('--card-size-landscape', `${1 - newOptions.cardMarginLandscape}`);
-          setOptions(newOptions);
-          setUser(newUser);
-          setCookie('eggborne-bingo', JSON.stringify({ username: newUser.username, token: newUser.token }), 365);
-          setGotData(true);
+          integrateLoggedInUser(data);
         }
       });
     } else {
       setGotData(true);
+      user.cards = options.playerCards;
     }
+    document.documentElement.style.setProperty('--card-size-landscape', `${1 - options.cardMarginLandscape}`);
+    document.documentElement.style.setProperty('--card-size', `${1 - options.cardMargin}`);
     window.addEventListener('fullscreenchange', event => {
       setLocked(isFullScreen());
     });
@@ -298,14 +260,90 @@ function App() {
   useEffect(() => {
     ref.current.scrollLeft = ref.current.scrollLeft;
   }, [ref, ballQueue]);
-  useEffect(() => {
-    console.warn('user changed!');
-  }, [user]);
-  useEffect(() => {
-    console.warn('options changed!');
-  }, [options]);
+  // useEffect(() => {
+  //   console.warn('user changed!');
+  // }, [user]);
+  // useEffect(() => {
+  //   console.warn('options changed!');
+  // }, [options]);
 
   // FUNCTIONS //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  function logOut() {
+    setCookie('eggborne-bingo', null, 0);
+    setUser({
+      loggedIn: false,
+      username: 'Guest',
+      currency: {
+        cash: 0
+      },
+      stats: {
+        totalGames: 0,
+        totalBingos: 0
+      },
+      cards: [],
+      id: undefined,
+      token: undefined
+    });
+    setOptions({
+      playerCards: [{ type: 'random' }, { type: 'random' }],
+      opponentCards: [{ type: 'random' }, { type: 'random' }, { type: 'random' }, { type: 'random' }, { type: 'random' }, { type: 'random' }, { type: 'random' }, { type: 'random' }, { type: 'random' }, { type: 'random' }, { type: 'random' }, { type: 'random' }, { type: 'random' }, { type: 'random' }, { type: 'random' }, { type: 'random' }, { type: 'random' }, { type: 'random' }],
+      showOpponentCards: false,
+      voiceOn: true,
+      soundOn: false,
+      musicOn: false,
+      fitWide: 2,
+      fitWideLandscape: 2,
+      cardMargin: 0.05,
+      cardMarginLandscape: 0.125
+    });
+    document.documentElement.style.setProperty('--card-size-landscape', `${1 - 0.05}`);
+    document.documentElement.style.setProperty('--card-size', `${1 - 0.125}`);
+    document.documentElement.style.setProperty('--user-cards-wide', 2);
+    document.documentElement.style.setProperty('--user-cards-wide-landscape', 2);
+    if (menuOn) {
+      setMenuOn(false);
+    }
+  }
+  function integrateLoggedInUser(data, remember) {
+    for (let row in data) {
+      if (typeof parseInt(data[row]) === 'number' && !isNaN(parseInt(data[row]))) {
+        data[row] = parseInt(data[row]);
+      }
+    }
+    data.options = JSON.parse(data.options);
+    let newUser = { ...user };
+    newUser.id = data.id;
+    newUser.username = data.username;
+    newUser.token = data.token;
+    newUser.cards = JSON.parse(data.cards);
+    newUser.stats = JSON.parse(data.stats);
+    newUser.currency = JSON.parse(data.currency);
+    newUser.loggedIn = true;
+    let newOptions = { ...options };
+    newOptions.playerCards = newUser.cards;
+    newOptions.showOpponentCards = data.options.showOpponentCards;
+    newOptions.voiceOn = data.options.voiceOn;
+    newOptions.showOpponentCards = data.options.showOpponentCards;
+    newOptions.fitWide = data.options.fitWide;
+    newOptions.fitWideLandscape = data.options.fitWideLandscape;
+    newOptions.cardMargin = data.options.cardMargin;
+    newOptions.cardMarginLandscape = data.options.cardMarginLandscape;
+    document.documentElement.style.setProperty('--user-cards-wide', newOptions.fitWide);
+    document.documentElement.style.setProperty('--user-cards-wide-landscape', newOptions.fitWideLandscape);
+    document.documentElement.style.setProperty('--card-size', `${1 - newOptions.cardMargin}`);
+    document.documentElement.style.setProperty('--card-size-landscape', `${1 - newOptions.cardMarginLandscape}`);
+    setOptions(newOptions);
+    setUser(newUser);
+    console.warn('newOptions', newOptions);
+    console.warn('newUser', newUser);
+    if (remember) {
+      console.log('clicked remember, so saving token', newUser.token);
+      setCookie('eggborne-bingo', JSON.stringify({ username: newUser.username, token: newUser.token }), 365);
+      console.log('cookie is:', document.cookie);
+    }
+    // setCookie('eggborne-bingo', JSON.stringify({ username: newUser.username, token: newUser.token }), 365);
+    setGotData(true);
+  }
 
   async function goFullLandscape() {
     if (!isFullScreen()) {
@@ -374,6 +412,16 @@ function App() {
       synth.cancel();
     }
     setOptions(newOptions);
+    if (user.loggedIn) {
+      updateUserData(user.username, user.token, 'options', newOptions).then(response => {
+        if (response.data === 'UPDATED') {
+          saveRef.current.classList.add('showing');
+          setTimeout(() => {
+            saveRef.current.classList.remove('showing');
+          }, 1200);
+        }
+      });
+    }
   };
   const handleClickResetButton = () => {
     setModalOn(true);
@@ -383,6 +431,16 @@ function App() {
     let newOptions = { ...options };
     newOptions.showOpponentCards = !newOptions.showOpponentCards;
     setOptions(newOptions);
+    if (user.loggedIn) {
+      updateUserData(user.username, user.token, 'options', newOptions).then(response => {
+        if (response.data === 'UPDATED') {
+          saveRef.current.classList.add('showing');
+          setTimeout(() => {
+            saveRef.current.classList.remove('showing');
+          }, 1200);
+        }
+      });
+    }
   };
   const handleClickCloseButton = () => {
     setModalOn(true);
@@ -400,6 +458,10 @@ function App() {
       }, 155);
     } else if (errored) {
       window.location.reload();
+    } else if (loggingOut) {
+      logOut();
+      setLoggingOut(false);;
+      setModalOn(false);
     } else {
       window.open(window.location, '_self').close();
     }
@@ -440,28 +502,40 @@ function App() {
   const handleClickMenu = () => {
     if (menuOn) {
       let optionsCopy = { ...options };
-      console.log('optionsCopy', optionsCopy);
-      console.log('playerCards', optionsCopy.playerCards)
-      // optionsCopy.cards = optionsCopy.playerCards;
-      console.log('sending', optionsCopy)
-      updateUserData(user.username, user.token, 'options', optionsCopy).then(response => {
-        console.warn('update?', response.data)
-      })
+      if (user.loggedIn) {
+        updateUserData(user.username, user.token, 'cards', user.cards).then(response => {
+          console.log('cards update', response.data);
+        });
+        updateUserData(user.username, user.token, 'options', optionsCopy).then(response => {
+          console.warn('update?', response.data);
+          if (response.data === 'UPDATED') {
+            saveRef.current.classList.add('showing');
+            setTimeout(() => {
+              saveRef.current.classList.remove('showing');
+            }, 1200);
+          }
+        });
+      }
     }
     setMenuOn(!menuOn);
-
   };
   const handleClickMenuArrow = type => {
+    console.log('clicked type', type);
     let newOptions = { ...options };
+    let newUser = { ...user };
     if (!gameStarted && !ballQueue.length) {
       if (type === 'player-cards-minus') {
         if (newOptions.playerCards.length > 1) {
           newOptions.playerCards.pop();
+          newUser.cards = newOptions.playerCards;
+          setUser(newUser);
           setOptions(newOptions);
         }
       } else if (type === 'player-cards-plus') {
         if (newOptions.playerCards.length < 30) {
           newOptions.playerCards.push({ type: 'random' });
+          newUser.cards = newOptions.playerCards;
+          setUser(newUser);
           setOptions(newOptions);
         }
       } else if (type === 'opponent-cards-minus') {
@@ -478,20 +552,22 @@ function App() {
           setPlayersLeft(newOptions.opponentCards.length);
           document.documentElement.style.setProperty('--opponent-cards', newOptions.opponentCards.length);
         }
-      } else if (type === 'toggleFullScreen') {
-        if (isFullScreen()) {
-          exitFullLandscape();
-        } else {
-          goFullLandscape();
-        }
-      } else if (type === 'toggleVoice') {
-        newOptions.voiceOn = !newOptions.voiceOn;
-        setOptions(newOptions);
-      } else if (type === 'toggleShowOpponentCards') {
-        newOptions.showOpponentCards = !newOptions.showOpponentCards;
-        setOptions(newOptions);
       }
     }
+    if (type === 'toggleFullScreen') {
+      if (isFullScreen()) {
+        exitFullLandscape();
+      } else {
+        goFullLandscape();
+      }
+    } else if (type === 'toggleVoice') {
+      newOptions.voiceOn = !newOptions.voiceOn;
+      setOptions(newOptions);
+    } else if (type === 'toggleShowOpponentCards') {
+      newOptions.showOpponentCards = !newOptions.showOpponentCards;
+      setOptions(newOptions);
+    }
+
     let wideOption = window.innerWidth > window.innerHeight ? 'fitWideLandscape' : 'fitWide';
     let cssVar = window.innerWidth > window.innerHeight ? '--user-cards-wide-landscape' : '--user-cards-wide';
     if (type === 'fit-plus') {
@@ -532,9 +608,23 @@ function App() {
       newUser.stats.totalBingos++;
       newUser.stats.totalGames++;
       setUser(newUser);
+      if (user.loggedIn) {
+        updateUserData(user.username, user.token, 'stats', newUser.stats).then(response => {
+          if (response.data === 'UPDATED') {
+            console.log('updated stats');
+          }
+        });
+        updateUserData(user.username, user.token, 'currency', newUser.currency).then(response => {
+          if (response.data === 'UPDATED') {
+            console.log('updated currency');
+          }
+        });
+      }
       setGameStart(false);
       setGameEndMessage(`You won $${prizeMoney}! Rank: ${options.opponentCards.length - playersLeft + 1} / ${options.opponentCards.length}`);
-      setGameEnded(true);
+      setTimeout(() => {
+        setGameEnded(true);
+      }, 1000);
       // resetGame();
     }
   };
@@ -544,6 +634,11 @@ function App() {
   };
   const handleClickLogOut = () => {
     console.log('clicked log out');
+    setLoggingOut(true);
+    setModalOn(true);
+    setModalMessage('Really log out?');
+
+    // logOut();
   };
   const handleClickLogInButton = (enteredName, enteredPass, remember) => {
     logUserIn(enteredName, enteredPass).then(response => {
@@ -552,26 +647,14 @@ function App() {
       } else if (response.data === 'badPassword') {
         console.error('bad password.');
       } else {
-        console.log('got', response.data);
-        let newUser = { ...user };
-        newUser.id = response.data.id;
-        newUser.username = response.data.username;
-        newUser.token = response.data.token;
-        newUser.cards = response.data.cards;
-        newUser.stats = response.data.stats;
-        newUser.loggedIn = true;
-        setUser(newUser);
-        console.log('now', newUser);
+        console.log('click log in got', response.data);
+        let data = { ...response.data };
+        integrateLoggedInUser(data, remember);
         setLoggingIn(false);
-        if (remember) {
-          console.log('clicked remember, so saving token', newUser.token);
-          setCookie('eggborne-bingo', JSON.stringify({ username: newUser.username, token: newUser.token }), 365);
-          console.log('cookie is:', document.cookie);
-        }
       }
     });
   };
-  const handleClickRegisterButton = (enteredName, enteredPass) => {
+  const handleClickRegisterButton = (enteredName, enteredPass, remember) => {
     console.log('clicked register', enteredName);
     attemptUserCreation({ username: enteredName, pass: enteredPass, options: JSON.stringify(options), stats: JSON.stringify(user.stats), getToken: true }).then(response => {
       console.info('attemptUserCreation resp data', response.data);
@@ -580,14 +663,18 @@ function App() {
       } else if (response.data === 'badPassword') {
         console.error('bad password.');
       } else {
-        let newUser = { ...user };
-        newUser.id = response.data[0];
-        newUser.token = response.data[1];
-        newUser.loggedIn = true;
-        newUser.username = enteredName;
-        setUser(newUser);
-        console.log('now', newUser);
-        setLoggingIn(false);
+        logUserIn(enteredName, enteredPass).then(response => {
+          if (response.data === 'badUsername') {
+            console.error('bad username.');
+          } else if (response.data === 'badPassword') {
+            console.error('bad password.');
+          } else {
+            console.log('click log in got', response.data);
+            let data = { ...response.data };
+            integrateLoggedInUser(data, remember);
+            setLoggingIn(false);
+          }
+        });
       }
     });
   };
@@ -644,7 +731,6 @@ function App() {
     usernameClass = ' smaller';
   }
   let currentCardMargin = window.innerWidth > window.innerHeight ? options.cardMarginLandscape : options.cardMargin;
-  console.log('user cards!', user.cards)
   return (
     <div id='app'>
       <header id='main-header'>
@@ -711,7 +797,7 @@ function App() {
       <div id='game-board' className={gameBoardClass} onPointerDown={() => (menuOn ? setMenuOn(false) : null)}>
         <CallerArea ref={ref} ballQueue={ballQueue} gameStarted={gameStarted} />
         <div id='card-area-1' className={cardArea1Class}>
-          {options.playerCards.map((card, c) => (
+          {user.cards.map((card, c) => (
             <div key={c} className='card-space'>
               <Card ready={gotData} index={c} type={card.type} cardData={user.cards[c] ? user.cards[c] : ''} gameStarted={gameStarted} ballQueue={ballQueue} playersLeft={playersLeft} onAchieveBingo={handleAchieveBingo} />
             </div>
@@ -727,9 +813,13 @@ function App() {
       </div>
       <ButtonBar gameStarted={gameStarted} closing={!gameStarted && !ballQueue.length} voiceOn={options.voiceOn} showOpponentCards={options.showOpponentCards} onClickReloadButton={handleClickReloadButton} onClickStartButton={handleClickStartButton} onClickViewButton={handleClickViewButton} onClickVoiceButton={handleClickVoiceButton} onClickResetButton={!gameStarted && !ballQueue.length ? handleClickCloseButton : handleClickResetButton} />
       <Menu menuMode={menuMode} user={user} stats={user.stats} showOpponentCards={options.showOpponentCards} voiceOn={options.voiceOn} showing={menuOn} gameStarted={gameStarted} ballQueue={ballQueue} onClickMenu={handleClickMenu} playerCardCount={playerCardCount} opponentCardCount={opponentCardCount} fitWide={window.innerWidth > window.innerHeight ? options.fitWideLandscape : options.fitWide} onClickMenuArrow={handleClickMenuArrow} onChangeCallSpeed={handleChangeCallSpeed} onChangeCardMargin={handleChangeCardMargin} onClickLogIn={handleClickLogIn} onClickLogOut={handleClickLogOut} drawSpeed={drawSpeed} cardMargin={currentCardMargin} />
-      <ConfirmModal showing={modalOn} message={modalMessage} urgent={!gameStarted && !ballQueue.length} reload={errored} onClickAgreeButton={handleClickAgreeButton} onClickCancelButton={handleClickCancelButton} />
+      <ConfirmModal showing={modalOn} message={modalMessage} loggingOut={loggingOut} urgent={!gameStarted && !ballQueue.length} reload={errored} onClickAgreeButton={handleClickAgreeButton} onClickCancelButton={handleClickCancelButton} />
       <GameEndModal showing={gameEnded} message={gameEndMessage} onClickOkayButton={handleClickOkayButton} />
       <LogInScreen showing={loggingIn} onClickLogInButton={handleClickLogInButton} onClickRegisterButton={handleClickRegisterButton} onClickCancelButton={handleClickCancelButton} />
+      <div id='save-icon' ref={saveRef}>
+        <i className='material-icons'>save</i>
+        <small>Saved</small>
+      </div>
     </div>
   );
 }

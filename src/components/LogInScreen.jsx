@@ -28,14 +28,20 @@ function LogInScreen(props) {
     console.log('changing to rememeber?', !remember)
     setEnteredValues({ username: enteredValues.username, pass: enteredValues.pass, repeatPass: enteredValues.repeatPass, remember: !remember });
   }
-  function handleLogIn() {
+  function handleLogIn(event) {
+    event.preventDefault();
     props.onClickLogInButton(enteredValues.username, enteredValues.pass, enteredValues.remember)
   }
-  function handleRegister() {
-    props.onClickRegisterButton(enteredValues.username, enteredValues.pass, enteredValues.remember)
+  function handleRegister(event) {
+    event.preventDefault();
+    if (enteredValues.pass === enteredValues.repeatPass) {
+      props.onClickRegisterButton(enteredValues.username, enteredValues.pass, enteredValues.remember)
+    } else {
+      console.error('pasword no match');
+    }
   }
   return (
-    <div id='log-in-screen' className={logInClass}>
+    <form onSubmit={mode === 'logIn' ? handleLogIn : handleRegister} id='log-in-screen' className={logInClass}>
       {mode === 'logIn' ?
         <>
           <div id='log-in-title'>Log In</div>
@@ -52,15 +58,15 @@ function LogInScreen(props) {
       }
       <div id='remember-check'>Remember me: <input onChange={handleRememberChange} type='checkbox' checked={enteredValues.remember} /></div>
       <div className='button-area'>
-        <button id='agree-button' onPointerDown={mode === 'logIn' ? handleLogIn : handleRegister} className='modal-button'>{mode === 'logIn' ? 'Log In' : 'Register'}</button>
+        <button type='submit' id='agree-button' className='modal-button'>{mode === 'logIn' ? 'Log In' : 'Register'}</button>
         <button id='cancel-button' onPointerDown={props.onClickCancelButton} className='modal-button'>Cancel</button>
-      </div>
+        </div>
       {mode === 'logIn' ?
         <div id='mode-swap'>Need to <a onClick={() => setMode('register')}>Register?</a></div>
         :
         <div id='mode-swap'>Already registered? <a onClick={() => setMode('logIn')}>Log In</a></div>
       }
-    </div>
+    </form>
   );
 }
 
