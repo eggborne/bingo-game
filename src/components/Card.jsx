@@ -224,23 +224,32 @@ function Card(props) {
       if (props.ballQueue.includes(touchedNumber) || touchedNumber === 99) {
         setMarked([...markedNumbers, touchedNumber]);
       } else {
-        event.target.style.backgroundColor = '#99000022';
-        let num = event.target;
-        setTimeout(() => {
-          num.style.backgroundColor = 'initial';
-        }, 45);
-        setTimeout(() => {
-          num.style.backgroundColor = '#99000022';
-        }, 90);
-        setTimeout(() => {
-          num.style.backgroundColor = 'initial';
-        }, 135);
-        setTimeout(() => {
-          num.style.backgroundColor = '#99000022';
-        }, 180);
-        setTimeout(() => {
-          num.style.backgroundColor = 'initial';
-        }, 225);
+        if (!props.gameStarted && !props.ballQueue.length) {
+          console.log("nt staretd")
+          document.getElementById('start-button').classList.add('throbbing');
+          setTimeout(() => {
+            document.getElementById('start-button').classList.remove('throbbing');
+          }, 700)
+        } else {
+          props.onBadClick();
+          event.target.style.backgroundColor = '#99000022';
+          let num = event.target;
+          setTimeout(() => {
+            num.style.backgroundColor = 'initial';
+          }, 45);
+          setTimeout(() => {
+            num.style.backgroundColor = '#99000022';
+          }, 90);
+          setTimeout(() => {
+            num.style.backgroundColor = 'initial';
+          }, 135);
+          setTimeout(() => {
+            num.style.backgroundColor = '#99000022';
+          }, 180);
+          setTimeout(() => {
+            num.style.backgroundColor = 'initial';
+          }, 225);
+        }
       }
     }
   };

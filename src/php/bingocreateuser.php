@@ -9,8 +9,9 @@
   if (strlen($username) > 2 && strlen($username) < 17 && strlen($pass) > 5) {
     $nameSql = "SELECT username FROM `players` WHERE username='$username'";
     $nameTaken = mysqli_fetch_array(mysqli_query($link,$nameSql), MYSQLI_ASSOC);
-    $nameAvailable = strlen(json_encode($nameTaken['username']));
-    if ($nameAvailable) {
+    $nameAvailable = $nameTaken['username'];
+    $nameLength = intval(strlen($nameAvailable));
+    if ($nameLength < 1) {
       if ($getToken) {
         // $p = new OAuthProvider();
         // $token = $p->generateToken(16);
@@ -22,17 +23,23 @@
       $userSql="INSERT INTO `players` (`username`, `options`, `stats`, `pass`, `token`) VALUES ('$username', '$options', '$stats', '$hashedPass', '$token');";
       $userResult=mysqli_query($link,$userSql);
       $newUserID=mysqli_insert_id($link);
-    } else {
-      echo 'nameTaken';
     }
   } else {
-    echo 'badLengths';
+    if (strlen($username) <= 2) {
+      echo 'USERNAME TOO SHORT.';
+    } else if (strlen($username) >= 17) {
+      echo 'USERNAME TOO LONG.';
+    } else if (strlen($pass) <= 5) {
+      echo 'PASSWORD TOO SHORT.';
+    }
   }
 
-	if($nameAvailable && $userResult && $newUserID){
-    echo json_encode([$newUserID, $token]);
+  if ($nameLength < 1) {
+    if ($userResult && $newUserID){
+      echo json_encode([$newUserID, $token]);
+    }
   } else {
-    echo "CREATING NEW USER FAILED :(";
+    echo 'USERNAME TAKEN.';
   }
 	mysqli_close($link);
 ?>

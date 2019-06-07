@@ -1,85 +1,98 @@
 #log-in-screen {
   position: fixed;
-  background-color: #000000ee;
+  background-color: #080808;
   width: 90vmin;
   margin-left: calc((100vw - 90vmin) / 2);
   /* margin-top: calc((100vh - 110vmin) / 2); */
-  transform: translateY(-50%);
   margin-top: 50vh;
+  transform: translateY(-50%);
   height: 80vh;
-  display: flex;
   color: white;
+  /* display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-around; */
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: calc(var(--header-height) / 2) 0fr 6vmin 1fr 0fr;
+  grid-row-gap: 2vh;
+  align-content: flex-start;
   border: 1vmin solid #333;
-  transition: transform 210ms ease, opacity 210ms ease, background-color 320ms ease;
   z-index: 2;
   padding: 3vh;
   border-radius: calc(var(--header-height) / 10);
-  font-size: var(--font-size);
+  font-size: calc(var(--font-size) / 1.5);
+  transition: transform 210ms ease, opacity 210ms ease, background-color 320ms ease;
 }
 #log-in-screen > #log-in-title {
-  font-size: 8vmin;
-  height: 9vmax;
-}
-#log-in-screen > #mode-swap {
-  margin-top: 2vh;
-  font-size: 5vmin;
+  font-size: 6vmin;
+  font-weight: bolder;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 #log-in-screen a {
   color: rgb(5, 92, 255);
   text-decoration: underline;
 }
-#log-in-screen > input {
-  width: 100%;
+#log-in-screen > .button-area, #log-in-screen > #login-inputs {
   border-radius: inherit;
-  text-align: center;
-  height: 9vmin;
-  min-height: 8vmin;
-  font-size: 8vmin;
-  flex-grow: 2;
+  border: 2px solid #222;
+  background: black !important;
 }
-#log-in-screen > input:nth-of-type(1) {
-  margin-bottom: 2vh;
+#log-in-screen > #login-inputs {
+  height: 100%;
+  display: grid;
+  grid-template-columns: 1fr;
+  border-radius: inherit;
+  grid-row-gap: 2vh;
+  padding: 2vh;
 }
-#log-in-screen.register > input:nth-of-type(2) {
-  margin-bottom: 0.5vh;
+#log-in-error {
+  height: calc(var(--font-size) / 2);
+  color: red;
+  text-align: right;
+  /* font-size: var(--font-size); */
+  font-weight: bolder;
+  opacity: 0;
+  transition: opacity 210ms ease;
+}
+#log-in-error.showing {
+  opacity: 1;
+}
+#log-in-screen > #login-inputs > input {
+  width: 100%;
+  border-radius: 0.5vmax;
+  /* text-align: center; */
+  font-size: 4.5vmin;
+  height: 11vmin;
+  min-height: 11vmin;
+  padding-left: 1.5vw;
 }
 #log-in-screen.register {
-  background-color: #0d0f01fa;
-}
-#log-in-screen.register > input {
-  /* height: 8vh; */
-  font-size: 5vw;
-}
-#log-in-screen > .button-area {
-  border-radius: inherit;
-  width: 100%;
-  min-height: 30vh;
-  max-height: 30vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  background: black !important;
-  border: 2px solid #222;
-  /* margin-top: 3vh; */
-  padding: 2vh;
-  flex-grow: 1;
+  background-color: #0d0f01;
 }
 #remember-check {
   display: flex;
   align-items: center;
   justify-content: flex-end;
   width: 100%;
-  font-size: 5vmin;
-  height: 8vh;
 }
 #remember-check > input {
   margin-left: 5%;
   height: 100%;
   width: calc(var(--header-height) / 2);
+}
+#log-in-screen > .button-area {
+  width: 100%;
+  height: 24vh;
+  max-height: 24vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2vh;
+  align-self: end;
 }
 #log-in-screen.hidden {
   transform:  translateY(-50%) scale(0.9);
@@ -89,25 +102,61 @@
 #log-in-screen > .button-area > .modal-button {
   font-size: calc(var(--header-height) / 2.5);
   font-weight: bolder;
-  border-radius: inherit;
+  border-radius: 0.5vmax;
   width: 100%;
-  height: 50%;
+  height: 100%;
+  margin: 0;
 }
 #log-in-screen > .button-area >  #agree-button {
   background-color: rgb(3, 85, 0);
-  margin: 0;
   margin-bottom: 2vh;
 }
 #log-in-screen > .button-area >  #cancel-button {
   background-color: rgb(78, 85, 13);
-  margin: 0;
+}
+#log-in-screen > #mode-swap {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#log-in-screen > #mode-swap > a {
+  margin-left: 1.5vmin;
 }
 @media screen and (orientation: landscape) {
   #log-in-screen {
     width: 60vw;
-    height: 90vmin;
+    height: 100%;
     margin-left: 20vw;
-    margin-top: calc((100vh - 90vmin) / 2);
+    margin-top: 0;
     transform: none;
+  }
+  #log-in-screen.hidden {
+    transform: scale(0.9);
+  }
+  #log-in-screen > .button-area {
+    width: 100%;
+    height: 20vh;
+    max-height: 20vh;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2vh;
+    align-self: end;
+  }
+  #log-in-screen > .button-area >  #agree-button {
+    background-color: rgb(3, 85, 0);
+    margin: 0;
+    margin-right: 2vh;
+  }
+  #log-in-screen > #login-inputs > input {
+    width: 100%;
+    border-radius: 0.5vmax;
+    /* text-align: center; */
+    font-size: 4vmin;
+    height: 10vmin;
+    min-height: 10vmin;
+    padding-left: 1.5vw;
   }
 }

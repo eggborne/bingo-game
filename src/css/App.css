@@ -58,6 +58,13 @@ button {
   outline: none;
   border-radius: 15%;
   border: 0.25vmin solid gray;
+  cursor: pointer;
+}
+a {
+  cursor: pointer;
+}
+input[type='checkbox'] {
+  cursor: pointer;
 }
 #app {
   width: 100vw;
@@ -91,10 +98,12 @@ button {
   z-index: 12;
   opacity: 0;
   color: green;
-  transition: opacity 320ms ease;
+  transform: scale(0.9);
+  transition: opacity 210ms ease, transform 320ms ease;
 }
 #save-icon.showing {
   opacity: 0.9;
+  transform: scale(1);
 }
 #save-icon > small {
   font-size: 60%;
@@ -487,6 +496,15 @@ header .status-button.on {
   #account-button > div:nth-child(1) {
     margin-bottom: 1vh;
   }
+  #account-button.logged-in > #header-username {
+    padding: 0;
+  }
+  /* #account-button.logged-in > #header-username.smaller {
+    font-size: 60%;
+  }
+  #account-button.logged-in > #header-username.smallest {
+    font-size: 55%;
+  } */
   #user-info {
     /* flex-grow: 1; */
     font-size: calc(var(--header-height) / 5);
@@ -495,9 +513,8 @@ header .status-button.on {
     justify-content: flex-start;
   }
   .card-space {
-    margin: 0;
-    height: calc(((100vw - var(--header-height) - var(--button-bar-height)) / var(--user-cards-wide)) * 1.05);
-    width: calc((100vw - var(--header-height) - var(--button-bar-height)) / var(--user-cards-wide) - (var(--board-padding)));
+    height: calc(((100vw - var(--header-height) - var(--button-bar-height)) / var(--user-cards-wide)) + var(--board-padding));
+    width: calc(((100vw - var(--header-height) - var(--button-bar-height)) / var(--user-cards-wide)) - var(--board-padding));
   }
   #game-board {
     /* padding-top: var(--caller-height); */

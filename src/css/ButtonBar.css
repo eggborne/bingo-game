@@ -37,10 +37,28 @@
   background-image: url('../assets/playicon.png');
   border-style: outset;
   transform: scale(1);
+  animation: throb 350ms ease;
+  animation-play-state: paused;
+  animation-iteration-count: infinite;
+  /* animation-direction: normal; */
+  /* animation-fill-mode: backwards; */
   /* padding: 1vmin; */
 }
+#button-bar > div > #start-button.throbbing {
+  animation-play-state: running;
+}
+@keyframes throb {
+  0%, 100% {
+    transform: scale(1);
+    /* background-color: rgb(18, 90, 18); */
+  }
+  50% {
+    transform: scale(0.925);
+    background-color: rgb(40, 179, 40);
+  }
+}
 #button-bar > div > #start-button.inactive {
-  background-color: rgb(34, 44, 31);
+  background-color: rgb(34, 44, 31) !important;
   border-style: outset;
   transform: scale(1.05);
 }

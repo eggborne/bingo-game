@@ -55,7 +55,7 @@ const getCookie = cookieName => {
 export const logUserIn = (username, pass, token) => {
   return axios({
     method: 'post',
-    url: 'http://eggborne.com/bingo/php/bingologuserin.php',
+    url: 'https://eggborne.com/bingo/php/bingologuserin.php',
     headers: {
       'Content-type': 'application/x-www-form-urlencoded'
     },
@@ -69,7 +69,7 @@ export const logUserIn = (username, pass, token) => {
 export const checkUsername = username => {
   return axios({
     method: 'post',
-    url: 'http://eggborne.com/bingo/php/bingocheckusername.php',
+    url: 'https://eggborne.com/bingo/php/bingocheckusername.php',
     headers: {
       'Content-type': 'application/x-www-form-urlencoded'
     },
@@ -82,7 +82,7 @@ export const checkUsername = username => {
 export const attemptUserCreation = loginObj => {
   return axios({
     method: 'post',
-    url: 'http://eggborne.com/bingo/php/bingocreateuser.php',
+    url: 'https://eggborne.com/bingo/php/bingocreateuser.php',
     headers: {
       'Content-type': 'application/x-www-form-urlencoded'
     },
@@ -92,7 +92,7 @@ export const attemptUserCreation = loginObj => {
 export const updateUserData = (username, token, attribute, newValue) => {
   return axios({
     method: 'post',
-    url: 'http://eggborne.com/bingo/php/bingoupdateuser.php',
+    url: 'https://eggborne.com/bingo/php/bingoupdateuser.php',
     headers: {
       'Content-type': 'application/x-www-form-urlencoded'
     },
@@ -196,7 +196,7 @@ function App() {
     fitWide: 2,
     fitWideLandscape: 2,
     cardMargin: 0.05,
-    cardMarginLandscape: 0.125
+    cardMarginLandscape: 0.075
   });
   const [playersLeft, setPlayersLeft] = useState(options.opponentCards.length);
   const [ballsLeft, setBallsLeft] = useState([...Array(76).keys()].slice(1, 76));
@@ -214,8 +214,9 @@ function App() {
   const ref = useRef();
   const [drawSpeed, setDrawSpeed] = useState(4500);
   const [prizePerCard, setPrizePerCard] = useState(25);
-
+  const [changedUserData, setChangedUserData] = useState([]);
   const [menuMode, setMenuMode] = useState('settings');
+  const [loginError, setLoginError] = useState('');
 
   // EFFECTS //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -502,20 +503,30 @@ function App() {
   const handleClickMenu = () => {
     if (menuOn) {
       let optionsCopy = { ...options };
-      if (user.loggedIn) {
-        updateUserData(user.username, user.token, 'cards', user.cards).then(response => {
-          console.log('cards update', response.data);
-        });
-        updateUserData(user.username, user.token, 'options', optionsCopy).then(response => {
-          console.warn('update?', response.data);
-          if (response.data === 'UPDATED') {
-            saveRef.current.classList.add('showing');
-            setTimeout(() => {
-              saveRef.current.classList.remove('showing');
-            }, 1200);
-          }
-        });
+      if (user.loggedIn && changedUserData) {
+        if (changedUserData.includes('cards')) {
+          updateUserData(user.username, user.token, 'cards', user.cards).then(response => {
+            if (response.data === 'UPDATED') {
+              saveRef.current.classList.add('showing');
+              setTimeout(() => {
+                saveRef.current.classList.remove('showing');
+              }, 1200);
+            }
+          });
+        }
+        if (changedUserData.includes('options')) {
+          updateUserData(user.username, user.token, 'options', optionsCopy).then(response => {
+            if (response.data === 'UPDATED') {
+              saveRef.current.classList.add('showing');
+              setTimeout(() => {
+                saveRef.current.classList.remove('showing');
+              }, 1200);
+            }
+          });
+        }
       }
+    } else {
+      setChangedUserData([]);
     }
     setMenuOn(!menuOn);
   };
@@ -530,6 +541,9 @@ function App() {
           newUser.cards = newOptions.playerCards;
           setUser(newUser);
           setOptions(newOptions);
+          if (!changedUserData.includes('cards')) {
+            setChangedUserData([...changedUserData, 'cards']);
+          }
         }
       } else if (type === 'player-cards-plus') {
         if (newOptions.playerCards.length < 30) {
@@ -537,6 +551,9 @@ function App() {
           newUser.cards = newOptions.playerCards;
           setUser(newUser);
           setOptions(newOptions);
+          if (!changedUserData.includes('cards')) {
+            setChangedUserData([...changedUserData, 'cards']);
+          }
         }
       } else if (type === 'opponent-cards-minus') {
         if (newOptions.opponentCards.length > 1) {
@@ -544,6 +561,9 @@ function App() {
           setOptions(newOptions);
           setPlayersLeft(newOptions.opponentCards.length);
           document.documentElement.style.setProperty('--opponent-cards', newOptions.opponentCards.length);
+          if (!changedUserData.includes('options')) {
+            setChangedUserData([...changedUserData, 'options']);
+          }
         }
       } else if (type === 'opponent-cards-plus') {
         if (newOptions.opponentCards.length < 30) {
@@ -551,6 +571,9 @@ function App() {
           setOptions(newOptions);
           setPlayersLeft(newOptions.opponentCards.length);
           document.documentElement.style.setProperty('--opponent-cards', newOptions.opponentCards.length);
+          if (!changedUserData.includes('options')) {
+            setChangedUserData([...changedUserData, 'options']);
+          }
         }
       }
     }
@@ -563,9 +586,15 @@ function App() {
     } else if (type === 'toggleVoice') {
       newOptions.voiceOn = !newOptions.voiceOn;
       setOptions(newOptions);
+      if (!changedUserData.includes('options')) {
+        setChangedUserData([...changedUserData, 'options']);
+      }
     } else if (type === 'toggleShowOpponentCards') {
       newOptions.showOpponentCards = !newOptions.showOpponentCards;
       setOptions(newOptions);
+      if (!changedUserData.includes('options')) {
+        setChangedUserData([...changedUserData, 'options']);
+      }
     }
 
     let wideOption = window.innerWidth > window.innerHeight ? 'fitWideLandscape' : 'fitWide';
@@ -575,12 +604,18 @@ function App() {
         newOptions[wideOption]++;
         document.documentElement.style.setProperty(cssVar, newOptions[wideOption]);
         setOptions(newOptions);
+        if (!changedUserData.includes('options')) {
+          setChangedUserData([...changedUserData, 'options']);
+        }
       }
     } else if (type === 'fit-minus') {
       if (newOptions[wideOption] > 1) {
         newOptions[wideOption]--;
         document.documentElement.style.setProperty(cssVar, newOptions[wideOption]);
         setOptions(newOptions);
+        if (!changedUserData.includes('options')) {
+          setChangedUserData([...changedUserData, 'options']);
+        }
       }
     }
   };
@@ -644,8 +679,17 @@ function App() {
     logUserIn(enteredName, enteredPass).then(response => {
       if (response.data === 'badUsername') {
         console.error('bad username.');
+        setLoginError('NO SUCH USER.');
+        setTimeout(() => {
+          setLoginError('');
+        }, 2000);
       } else if (response.data === 'badPassword') {
         console.error('bad password.');
+        setLoginError('WRONG PASSWORD.');
+        setTimeout(() => {
+          setLoginError('');
+        }, 2000);
+        document.querySelector('#login-inputs > div').style.content = 'WRONG PASSWORD.'
       } else {
         console.log('click log in got', response.data);
         let data = { ...response.data };
@@ -654,30 +698,70 @@ function App() {
       }
     });
   };
-  const handleClickRegisterButton = (enteredName, enteredPass, remember) => {
+  const handleClickRegisterButton = (enteredName, enteredPass, remember, errorMessage) => {
     console.log('clicked register', enteredName);
-    attemptUserCreation({ username: enteredName, pass: enteredPass, options: JSON.stringify(options), stats: JSON.stringify(user.stats), getToken: true }).then(response => {
-      console.info('attemptUserCreation resp data', response.data);
-      if (response.data === 'badUsername') {
-        console.error('bad username.');
-      } else if (response.data === 'badPassword') {
-        console.error('bad password.');
-      } else {
-        logUserIn(enteredName, enteredPass).then(response => {
-          if (response.data === 'badUsername') {
-            console.error('bad username.');
-          } else if (response.data === 'badPassword') {
-            console.error('bad password.');
-          } else {
-            console.log('click log in got', response.data);
-            let data = { ...response.data };
-            integrateLoggedInUser(data, remember);
-            setLoggingIn(false);
-          }
-        });
-      }
-    });
+    if (errorMessage) {
+      setLoginError(errorMessage);
+        setTimeout(() => {
+          setLoginError('');
+        }, 2000);
+    } else {
+      attemptUserCreation({ username: enteredName, pass: enteredPass, options: JSON.stringify(options), stats: JSON.stringify(user.stats), getToken: true }).then(response => {
+        console.info('attemptUserCreation resp data', response.data);
+        if (response.data === 'badUsername') {
+          console.error('bad username.');
+          setLoginError('NO SUCH USER.');
+          setTimeout(() => {
+            setLoginError('');
+          }, 2000);
+        } else if (response.data === 'badPassword') {
+          console.error('bad password.');
+          setLoginError('WRONG PASSWORD.');
+          setTimeout(() => {
+            setLoginError('');
+          }, 2000);
+
+        } else if (response.data === 'nameTaken') {
+          console.error('name taken.');
+          setLoginError('USERNAME TAKEN.');
+          setTimeout(() => {
+            setLoginError('');
+          }, 2000);
+
+        } else if (response.data === 'USERNAME TOO LONG.' || response.data === 'USERNAME TOO SHORT.' || response.data === 'PASSWORD TOO SHORT.') {
+          setLoginError(response.data);
+          setTimeout(() => {
+            setLoginError('');
+          }, 2000);
+
+        } else {
+          logUserIn(enteredName, enteredPass).then(response => {
+            if (response.data === 'badUsername') {
+              console.error('bad username AFTER REGISTER?.');
+            } else if (response.data === 'badPassword') {
+              console.error('bad password AFTER REGISTER?.');
+            } else {
+              console.log('AFTER REGISTER log in got', response.data);
+              let data = { ...response.data };
+              integrateLoggedInUser(data, remember);
+              setLoggingIn(false);
+            }
+          });
+        }
+      });
+    }
   };
+
+  const handleBadClick = () => {
+    let newUser = { ...user };
+    if (newUser.currency.cash) {
+      newUser.currency.cash--;
+      setUser(newUser);
+      requestAnimationFrame(() => {
+        updateUserData(user.username, user.token, 'currency', newUser.currency);
+      });
+    }
+  }
   const resetGame = () => {
     setGameStart(false);
     setPlayersLeft(options.opponentCards.length);
@@ -774,8 +858,17 @@ function App() {
             if (menuOn) {
               setMenuMode('account');
             } else {
-              setMenuMode('account');
-              setMenuOn(true);
+              if (gameStarted) {
+                setMenuMode('account');
+                setMenuOn(true);
+              } else {
+                if (!user.loggedIn) {
+                  setLoggingIn('logIn')
+                } else {
+                  setMenuMode('account');
+                  setMenuOn(true);
+                }
+              }
             }
           }}
           id='account-button'
@@ -799,7 +892,7 @@ function App() {
         <div id='card-area-1' className={cardArea1Class}>
           {user.cards.map((card, c) => (
             <div key={c} className='card-space'>
-              <Card ready={gotData} index={c} type={card.type} cardData={user.cards[c] ? user.cards[c] : ''} gameStarted={gameStarted} ballQueue={ballQueue} playersLeft={playersLeft} onAchieveBingo={handleAchieveBingo} />
+              <Card ready={gotData} index={c} type={card.type} cardData={user.cards[c] ? user.cards[c] : ''} gameStarted={gameStarted} ballQueue={ballQueue} playersLeft={playersLeft} onAchieveBingo={handleAchieveBingo} onBadClick={handleBadClick}/>
             </div>
           ))}
         </div>
@@ -815,7 +908,7 @@ function App() {
       <Menu menuMode={menuMode} user={user} stats={user.stats} showOpponentCards={options.showOpponentCards} voiceOn={options.voiceOn} showing={menuOn} gameStarted={gameStarted} ballQueue={ballQueue} onClickMenu={handleClickMenu} playerCardCount={playerCardCount} opponentCardCount={opponentCardCount} fitWide={window.innerWidth > window.innerHeight ? options.fitWideLandscape : options.fitWide} onClickMenuArrow={handleClickMenuArrow} onChangeCallSpeed={handleChangeCallSpeed} onChangeCardMargin={handleChangeCardMargin} onClickLogIn={handleClickLogIn} onClickLogOut={handleClickLogOut} drawSpeed={drawSpeed} cardMargin={currentCardMargin} />
       <ConfirmModal showing={modalOn} message={modalMessage} loggingOut={loggingOut} urgent={!gameStarted && !ballQueue.length} reload={errored} onClickAgreeButton={handleClickAgreeButton} onClickCancelButton={handleClickCancelButton} />
       <GameEndModal showing={gameEnded} message={gameEndMessage} onClickOkayButton={handleClickOkayButton} />
-      <LogInScreen showing={loggingIn} onClickLogInButton={handleClickLogInButton} onClickRegisterButton={handleClickRegisterButton} onClickCancelButton={handleClickCancelButton} />
+      <LogInScreen showing={loggingIn} loginError={loginError} onClickLogInButton={handleClickLogInButton} onClickRegisterButton={handleClickRegisterButton} onClickCancelButton={handleClickCancelButton} />
       <div id='save-icon' ref={saveRef}>
         <i className='material-icons'>save</i>
         <small>Saved</small>
