@@ -1,0 +1,4 @@
+
+SetEnv DB_HOST "localhost"
+SetEnv DB_USER "eggbxhyo_mike"
+SetEnv DB_PASS "cockmaster88!"

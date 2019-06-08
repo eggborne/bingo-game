@@ -2,21 +2,13 @@ import React, { useState, useEffect } from 'react';
 import '../css/NumberSquare.css';
 
 function NumberSquare(props) {
-  const [marked, setMarked] = useState(props.marked);
-  const [highlighted, setHighlighted] = useState(props.highlighted);
-  useEffect(() => {
-    setMarked(props.marked);
-  }, [props.marked]);
-  useEffect(() => {
-    setHighlighted(props.highlighted);
-  }, [props.highlighted]);
   let displayNumber = props.number;
   let squareClass = 'number-square';
   let chipClass = props.isOpponent ? 'mark' : 'chip';
-  if (marked) {
+  if (props.marked) {
     squareClass += ' marked';
   }
-  if (highlighted) {
+  if (props.highlighted) {
     squareClass += ' highlighted';
   }
   if (props.number === 99) {
@@ -25,7 +17,7 @@ function NumberSquare(props) {
   }
   return (
     <div id={`card-square-${props.number}`}
-      className={squareClass}
+      className={squareClass + ' ' + props.chipImage}
       onPointerDown={event => (!props.isOpponent ? props.onTouchSquare(event) : null)}
       onTouchEnd={props.onTouchEndSquare}
     >
@@ -35,9 +27,9 @@ function NumberSquare(props) {
   );
 }
 
-function areEqual(prevProps, nextProps) {
-  // return prevProps.marked === nextProps.marked && prevProps.highlighted === nextProps.highlighted;
-}
+// function areEqual(prevProps, nextProps) {
+//   return prevProps.marked === nextProps.marked && prevProps.highlighted === nextProps.highlighted && prevProps.queueLength === nextProps.queueLength;
+// }
 
-// export default React.memo(NumberSquare, areEqual);
+// export default React.memo(NumberSquare);
 export default NumberSquare;

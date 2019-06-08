@@ -18,6 +18,7 @@
   pointer-events: none;
 }
 .number-square > .chip {
+  background-image: url('../assets/bingochip.png');
   position: absolute;
   content: ' ';
   width: 100%;
@@ -25,12 +26,20 @@
   opacity: 0;
   transform: scale(1.25);
   pointer-events: none;
-  background-image: url('../assets/bingochip.png');
-  background-image: url('../assets/bingochip.webp');
+  /* background-image: url('../assets/bingochip.webp'); */
   background-size: 100% 100%;
   background-repeat: no-repeat;
   transition: opacity 180ms ease, transform 280ms ease;
   will-change: transform, opacity;
+}
+.number-square.blue > .chip {
+  background-image: url('../assets/bingochipblue.png');
+}
+.number-square.green > .chip {
+  background-image: url('../assets/bingochipgreen.png');
+}
+.number-square.orange > .chip {
+  background-image: url('../assets/bingochiporange.png');
 }
 .number-square > .mark {
   position: absolute;

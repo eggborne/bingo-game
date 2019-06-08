@@ -15,7 +15,7 @@ function ConfirmModal(props) {
     agreeLabel = 'YES';
   }
   if (!props.showing) {
-    modalClass += 'status-button hidden';
+    modalClass += ' hidden';
   }
   if (props.loggingOut) {
     agreeLabel = 'LOG OUT';

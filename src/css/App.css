@@ -15,7 +15,7 @@
   --card-size-landscape: 0.95;
 
   --card-padding: calc(3vmin / var(--user-cards-wide));
-  --card-backing-color: rgb(143, 180, 211);
+  --card-backing-color: rgb(107, 134, 185);
   --card-face-color: #ffdedeca;
   --card-number-color: black;
   --card-grid-border-color: rgb(108, 120, 146);
@@ -23,11 +23,11 @@
 
   --font-size: calc(10px + 3vmin);
   --mark-color: purple;
-  --b-color: #ff401d44;
-  --i-color: #ffb81444;
-  --n-color: #ade13444;
-  --g-color: #37c4f444;
-  --o-color: #ff96ee44;
+  --b-color: #ff401d33;
+  --i-color: #ffb81433;
+  --n-color: #ade13433;
+  --g-color: #37c4f433;
+  --o-color: #ff96ee33;
 
   --opponent-cards: 18;
 }
@@ -69,7 +69,6 @@ input[type='checkbox'] {
 #app {
   width: 100vw;
   height: var(--view-height);
-  /* max-height: var(--view-height); */
   background-color: #333;
   background-color: black;
   display: grid;
@@ -97,7 +96,7 @@ input[type='checkbox'] {
   justify-content: center;
   z-index: 12;
   opacity: 0;
-  color: green;
+  color: rgb(129, 255, 145);
   transform: scale(0.9);
   transition: opacity 210ms ease, transform 320ms ease;
 }
@@ -124,6 +123,7 @@ header#main-header {
   z-index: 1;
   padding: calc(var(--header-border-width) / 2);
   padding: calc(var(--header-border-width) * 1.5);
+  z-index: 2;
 }
 #main-header small {
   font-size: calc(var(--header-height) / 6);
@@ -161,12 +161,15 @@ header .status-button {
   height: calc(var(--header-height) - (var(--header-border-width) * 3));
   min-height: calc(var(--header-height) - (var(--header-border-width) * 3));
   color: white;
+  border: 0.25vmin outset gray !important;
   background-position: 50% 50%;
   background-repeat: no-repeat;
   transition: background-color 210ms ease;
 }
-header .status-button.on {
-  background-color: rgb(21, 49, 9) !important;
+header .status-button.on:not(#menu-button) {
+  background-color: rgb(50, 110, 24) !important;
+  border-color: rgb(155, 255, 112);
+  border-style: inset;
 }
 #cards-button {
   background-image: url('../assets/cardicon.png');
@@ -178,11 +181,9 @@ header .status-button.on {
   display: flex;
   justify-content: flex-end;
 }
-
 #display-button {
   background-color: black;
 }
-
 #balls-toggle {
   opacity: 0;
 }
@@ -202,57 +203,64 @@ header .status-button.on {
   font-weight: bolder;
 }
 #account-button {
+  position: relative;
   background-color: black;
-  background-image: url('../assets/accounticon.png');
-  background-position: 2px center;
-  background-size: auto 90%;
-  width: calc((var(--header-height) - (var(--header-border-width) * 3)) * 2);
+  width: auto;
+  width: calc((var(--header-height) - (var(--header-border-width) * 4)) * 2);
   height: calc(var(--header-height) - (var(--header-border-width) * 2) - (var(--button-bar-border-width) * 2));
   font-size: calc(var(--header-height) / 5);
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
-  text-align: right;
-  justify-content: start;
   padding-right: 2%;
+  display: grid;
+  grid-template-columns: min-content 1fr;
+  grid-template-rows: 50% 50%;
+  align-items: center;
+  border: 0.25vmin outset gray;
+  border-radius: calc(var(--button-bar-border-width));
   transition: background-color 210ms ease;
 }
+#account-button > i {
+  /* position: absolute; */
+  align-self: flex-start;
+  top: 0;
+  left: 0;
+  font-size: calc(var(--header-height) - (var(--header-border-width) * 2) - (var(--button-bar-border-width) * 2));
+  color: white;
+  grid-row-start: 0;
+  grid-row-end: 2;
+}
+#account-button.logged-in > i {
+  color: rgb(129, 255, 145);
+}
 #account-button > div {
-  transition: opacity 320ms ease;
+  grid-column-start: 2;
+  z-index: 3;
 }
 #account-button.logged-in {
-  border-color: green;
   border-width: calc(var(--button-bar-border-width) / 2);
 }
 #account-button.logged-in > #header-username {
-  color: green;
-  padding-left: 20%;
+  color: rgb(129, 255, 145);
   width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  justify-content: flex-end;
+  text-shadow: 1px 1px 1px black;
   flex-wrap: wrap;
+  -webkit-hyphens: manual;
+  -ms-hyphens: manual;
+  hyphens: manual;
+}
+#account-button.logged-in > div:last-child {
+  font-weight: bolder;
 }
 #account-button.logged-in > #header-username.smaller {
   font-size: 80%;
 }
-#account-button.logged-in > #header-username.smallest {
-  font-size: 55%;
-}
 #account-button.truncated {
-  /* background-size: 90%; */
   width: calc(var(--header-height) - (var(--header-border-width) * 2) - (var(--button-bar-border-width) * 2));
-  padding: 0;
-  /* background-position: center center; */
 }
 #account-button.truncated > div {
-  /* opacity: 0; */
   transform: scaleX(0);
-}
-#account-button > div:nth-child(1) {
-  justify-self: flex-end;
-  margin-bottom: 1vw;
+  display: none;
 }
 #menu-button {
   background-color: black;
@@ -299,7 +307,7 @@ header .status-button.on {
   font-weight: bolder;
   font-size: calc(var(--header-height) / 3.5);
 }
-#danger-meter ~ #account-button:before {
+/* #danger-meter ~ #account-button:before {
   font-size: calc(var(--header-height) / 3);
   font-weight: bolder;
   position: absolute;
@@ -315,7 +323,7 @@ header .status-button.on {
 #danger-meter.blurred ~ #account-button:before {
   content: 'GAME PAUSED';
   animation-play-state: running;
-}
+} */
 @keyframes cycle {
   0%,
   100% {
@@ -334,6 +342,9 @@ header .status-button.on {
     color: var(--o-color);
   }
 }
+#menu-button.status-button.on {
+  background-color: rgb(51, 27, 26) !important;
+}
 .menu-bar {
   background-image: url('../assets/menubar.png');
   background-size: 100% 100%;
@@ -341,9 +352,17 @@ header .status-button.on {
   background-repeat: no-repeat;
   width: calc(var(--header-height) * 0.5);
   height: calc(var(--header-height) / 12);
+  transition: transform 320ms ease;
+  transform-origin: center;
 }
-#menu-button.on {
-  background-color: rgb(35, 90, 3);
+#menu-button.status-button.on .menu-bar:first-child {
+  transform: translateY(200%) rotate(45deg);
+}
+#menu-button.status-button.on .menu-bar:last-child {
+  transform: translateY(-200%) rotate(-45deg);
+}
+#menu-button.status-button.on .menu-bar:nth-child(2) {
+  transform: scaleX(0);
 }
 .danger-bar {
   /* width: 1vw; */
@@ -398,18 +417,18 @@ header .status-button.on {
   transition: transform 320ms ease;
 }
 .card-area.dimmed {
-  transform: scale(0.9);
+  pointer-events: none;
 }
 #opponent-card-area {
-  padding-top: calc(var(--header-height) / 2);
-  padding-bottom: calc(var(--header-height) / 2);
-  transform-origin: center top;
-  transition: all 320ms ease;
+  padding-top: var(--card-padding);
+  padding-bottom: calc(var(--card-padding) * 2);
+  /* transform-origin: center top;
+  transition: all 320ms ease; */
 }
 #opponent-card-area.hidden {
-  opacity: 0;
-  transform: scaleY(0);
-  /* display: none; */
+  /* opacity: 0;
+  transform: scaleY(0); */
+  display: none;
 }
 .card-space {
   display: flex;
@@ -440,7 +459,7 @@ header .status-button.on {
     width: var(--header-height);
   }
   header#main-header > div {
-    writing-mode: vertical-rl;
+    /* writing-mode: vertical-rl; */
     transform: rotate(180deg);
   }
   #title {
@@ -468,21 +487,23 @@ header .status-button.on {
     transform: rotate(-90deg);
   }
   #account-button.status-button {
-    background-image: url('../assets/accounticon.png');
-    background-size: 100%;
-    background-position: top center;
     width: calc(var(--header-height) - (var(--header-border-width) * 3));
-    height: calc(var(--header-height) * 1.5);
+    height: auto;
     font-size: calc(var(--header-height) / 5);
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
+    /* justify-content: center; */
     align-items: center;
     padding: 0;
     margin: 0;
     padding-bottom: 10%;
     margin-top: 10%;
+    transform: rotate(0deg);
     transition: background-color 210ms ease;
+  }
+  #account-button > i {
+    margin: 0 !important;
+    padding: 0;
   }
   #account-button > div {
     transition: opacity 320ms ease;
@@ -490,23 +511,18 @@ header .status-button.on {
   #account-button.truncated {
     height: calc(var(--header-height) - (var(--header-border-width) * 3));
   }
-  #account-button.truncated > div {
-    opacity: 0;
-  }
-  #account-button > div:nth-child(1) {
+  #account-button.logged-in > #header-username {
+    font-size: calc(var(--font-size) / 2);
+    text-align: center;
     margin-bottom: 1vh;
   }
-  #account-button.logged-in > #header-username {
-    padding: 0;
-  }
-  /* #account-button.logged-in > #header-username.smaller {
-    font-size: 60%;
+  #account-button.logged-in > #header-username.smaller {
+    font-size: 80%;
   }
   #account-button.logged-in > #header-username.smallest {
-    font-size: 55%;
-  } */
+    font-size: 45%;
+  }
   #user-info {
-    /* flex-grow: 1; */
     font-size: calc(var(--header-height) / 5);
   }
   #header-end {

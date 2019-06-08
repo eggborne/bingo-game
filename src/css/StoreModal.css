@@ -1,0 +1,58 @@
+#store-modal {
+  position: fixed;
+  background-color: #160d02;
+  width: 90vmin;
+  height: 90vmin;
+  margin-left: calc((100vw - 90vmin) / 2);
+  margin-top: calc((100vh - 110vmin) / 2);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: space-between;
+  font-size: calc(var(--header-height) / 2.75);
+  border: 1vmin solid #333;
+  border-radius: 3vmin;
+  transition: transform 310ms ease, opacity 205ms ease;
+  padding: 5vmin;
+  padding-top: 0;
+  opacity: 0;
+  transform: translateX(15%);
+  pointer-events: none;
+  z-index: 12;
+  transition: opacity 320ms ease, transform 320ms ease;
+}
+#store-modal.showing {
+  transform: none;
+  opacity: 1;
+  pointer-events: all;
+}
+#store-modal > .button-area > #cancel-button {
+  background: rgb(124, 118, 39);
+}
+#store-modal > .button-area > button {
+  flex-grow: 0.3;
+  font-size: calc(var(--header-height) / 2.5);
+  font-weight: bolder;
+  width: 60%;
+  height: 20%;
+  border-radius: 1vmax;
+  background: rgb(33, 131, 4);
+  margin: 0;
+}
+#store-modal-message {
+  text-align: center;
+  font-size: calc(var(--font-size) * 1.25);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 40%;
+}
+#store-modal .button-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  flex-grow: 1;
+}

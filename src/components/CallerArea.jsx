@@ -20,6 +20,7 @@ const getBingoLetter = num => {
 
 
 const CallerArea = React.forwardRef((props, ref) => {
+  console.count('CallerArea');
   const callerRef = ref;
   useEffect(() => {
     callerRef.current.addEventListener('transitionstart', (event) => {
@@ -28,7 +29,7 @@ const CallerArea = React.forwardRef((props, ref) => {
         ball.classList.add('bouncing');
         setTimeout(() => {
           ball.classList.remove('bouncing');
-        }, 210);
+        }, 500);
       }
     })
   }, [callerRef]);
@@ -47,10 +48,9 @@ const CallerArea = React.forwardRef((props, ref) => {
   );
 });
 
-// function areEqual(prevProps, nextProps) {
-//   return prevProps.gameStarted === nextProps.gameStarted && prevProps.ballQueue === nextProps.ballQueue
-// }
+function areEqual(prevProps, nextProps) {
+  return prevProps.gameStarted === nextProps.gameStarted && prevProps.ballQueue === nextProps.ballQueue
+}
 
-// export default React.memo(CallerArea, areEqual);
-
-export default CallerArea;
+export default React.memo(CallerArea, areEqual);
+// export default CallerArea;

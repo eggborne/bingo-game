@@ -11,11 +11,12 @@ function Card(props) {
   const [highlightedNumbers, setHighlighted] = useState([]);
   const [active, setActive] = useState(props.active);
   const [bingos, setBingos] = useState({});
+  const [won, setWon] = useState(false);
 
   useEffect(() => {
     if (props.gameStarted && props.ballQueue.length === 0) {
       setActive(true);
-      if (props.opponent) {
+      if (props.autoFreeSpace || props.opponent) {
         autoDaub(99, true);
       }
     } else {
@@ -34,7 +35,6 @@ function Card(props) {
   }, [active, autoDaub(), props.ballQueue, props.opponent, props.gameStarted, props.playersLeft]);
   useEffect(() => {
     if (props.ready && !props.gameStarted && props.ballQueue.length === 0) {
-      console.log('type', props.type, props.gameStarted);
       if (props.type === 'random') {
         let newNumbers = [[], [], [], [], []];
         let used = [];
@@ -55,37 +55,56 @@ function Card(props) {
         });
         setNumbers(newNumbers);
       } else {
-        console.warn('type is', props.type);
         let cardData = props.cardData;
-        console.log(cardData);
         setNumbers(cardData.numbers);
+      }
+      if (won) {
+        setWon(false);
       }
       setMarked([]);
       setHighlighted([]);
       setHidden(false);
     }
-  }, [props.gameStarted, props.ballQueue, props.ready])
+  }, [props.gameStarted, props.ballQueue, props.ready, won])
   useEffect(() => {
     if (markedNumbers.length === 0) {
-      setHighlighted([]);
-    } else {
+      if (highlightedNumbers.length > 0) {
+        setHighlighted([]);
+      }
+    } else if (props.ballQueue.length) {
       checkForBingo();
     }
   }, [markedNumbers]);
   useEffect(() => {
-    if (!props.opponent && active !== props.gameStarted) {
-      setActive(props.gameStarted)
+    if (!props.opponent) {
+      if (active !== props.gameStarted) {
+        setActive(props.gameStarted)
+      }
     }
-  }, [props.gameStarted, props.ballQueue])
+  }, [props.gameStarted, props.ballQueue]);
+  useEffect(() => {
+    if (props.gameStarted) {
+      checkForBingo();
+    }
+  }, props.gameStarted)
   function checkForBingo() {
     let hasBingo = false;
+    let fourCorners = [
+      numbers[0][0],
+      numbers[0][numbers.length - 1],
+      numbers[numbers.length - 1][0],
+      numbers[numbers.length - 1][numbers.length - 1]
+    ];
+    let dangerRating = 0;
     let columnQuantities = [[], [], [], [], []];
     let horizontalLines = [];
     let verticalLines = [];
     let diagonalNWSE = [];
     let diagonalSWNE = [];
+    let cornerBingo = false;
     numbers.map((row, r) => {
       if (row.filter(num => markedNumbers.includes(num)).length === row.length) {
+        // row filled
         horizontalLines.push(row);
       }
       row.map((num, n) => {
@@ -96,6 +115,7 @@ function Card(props) {
     });
     columnQuantities.map((column, c) => {
       if (column.length === columnQuantities.length) {
+        // column filled
         let vertArray = [...column];
         verticalLines.push({ column: c, numberIndexes: vertArray });
       }
@@ -129,20 +149,25 @@ function Card(props) {
     });
     verticalLines = verts;
 
+    if (fourCorners.filter(num => markedNumbers.includes(num)).length === 4) {
+      // has all four corners
+      cornerBingo = true;
+    }
+
     let foundBingos = {
       verticalLines: verticalLines,
       horizontalLines: horizontalLines,
-      diagonals: { NWSE: diagonalNWSE, SWNE: diagonalSWNE }
+      diagonals: { NWSE: diagonalNWSE, SWNE: diagonalSWNE },
+      corners: cornerBingo
     };
+
     let newHighlighted = [...highlightedNumbers];
     for (let cat in foundBingos) {
       if (foundBingos[cat].map) {
         foundBingos[cat].map(arr => {
           newHighlighted = [...newHighlighted, ...arr.filter(num => !highlightedNumbers.includes(num))];
         });
-      } else {
-        // let NWSE = foundBingos[cat].NWSE.filter(num => !highlightedNumbers.includes(num) || num === 99);
-        // let SWNE = foundBingos[cat].SWNE.filter(num => !highlightedNumbers.includes(num) || num == 99);
+      } else if (cat === 'diagonals') {
         let NWSE = foundBingos[cat].NWSE;
         let SWNE = foundBingos[cat].SWNE;
         if (NWSE.length === columnQuantities.length) {
@@ -165,19 +190,23 @@ function Card(props) {
     if (foundBingos.diagonals.SWNE.length === 5) {
       hasBingo = true;
     }
+    if (cornerBingo) {
+      hasBingo = true;
+      newHighlighted = [...newHighlighted, ...fourCorners];
+    }
     if (hasBingo) {
       setHighlighted(newHighlighted);
       if (props.opponent) {
-        props.onAchieveBingo(props.opponent);
-        setActive(false);
+        if (active) {
+          props.onAchieveBingo(props.opponent);
+          setActive(false);
+        }
       } else {
         let bingoCount = 0;
         let foundBingoCount = 0;
         for (let type in bingos) {
-          console.log('type', type);
           if (type === 'verticalLines' || type === 'horizontalLines') {
             bingoCount += bingos[type].length
-            console.warn('adding a vert or horiz')
           } else if (type === 'diagonals') {
             if (bingos[type].NWSE.length === 5) {
               bingoCount++;
@@ -188,10 +217,8 @@ function Card(props) {
           }
         }
         for (let type in foundBingos) {
-          console.log('type', type);
           if (type === 'verticalLines' || type === 'horizontalLines') {
             foundBingoCount += foundBingos[type].length
-            console.warn('adding a vert or horiz')
           } else if (type === 'diagonals') {
             if (foundBingos[type].NWSE.length === 5) {
               foundBingoCount++;
@@ -201,10 +228,17 @@ function Card(props) {
             }
           }
         }
+        if (cornerBingo) {
+          foundBingoCount++;
+        }
         if (bingoCount < foundBingoCount) {
-          setActive(false);
+          setWon(true)
           props.onAchieveBingo(props.opponent);
-          setBingos({});
+          setTimeout(() => {
+            setActive(false);
+            setBingos({});
+            setWon(false)
+          }, 1000)
         }
       }
     }
@@ -221,9 +255,11 @@ function Card(props) {
       touchedNumber = 99;
     }
     if (!markedNumbers.includes(touchedNumber)) {
-      if (props.ballQueue.includes(touchedNumber) || touchedNumber === 99) {
+      if (true || props.ballQueue.includes(touchedNumber) || touchedNumber === 99) {
         setMarked([...markedNumbers, touchedNumber]);
       } else {
+        console.log("props.gameStarted", props.gameStarted)
+        console.log("props.ballQueue.length", props.ballQueue.length)
         if (!props.gameStarted && !props.ballQueue.length) {
           console.log("nt staretd")
           document.getElementById('start-button').classList.add('throbbing');
@@ -266,6 +302,9 @@ function Card(props) {
   if (props.type === 'custom') {
     cardClass += ' custom';
   }
+  if (won) {
+    cardClass += ' won';
+  }
   let isOpponent = props.opponent;
   return (
     <div className={cardClass}>
@@ -276,14 +315,22 @@ function Card(props) {
         <div className='card-head-letter g' />
         <div className='card-head-letter o' />
       </div>
-      <div className='number-grid'>{numbers.map((column, c) => column.map((num, n) => (isOpponent ? <NumberSquare key={(isOpponent && 'opponent-') + c + '-' + n} isOpponent={isOpponent} highlighted={highlightedNumbers.includes(num)} marked={markedNumbers.includes(num)} number={num} /> : <NumberSquare key={c + '-' + n} marked={markedNumbers.includes(num)} highlighted={highlightedNumbers.includes(num)} isOpponent={isOpponent} number={num} onTouchSquare={handleTouchSquare} />)))}</div>
+      <div className='number-grid'>{numbers.map((column, c) => column.map((num, n) => {
+        let marked = markedNumbers.includes(num);
+        let highlighted = highlightedNumbers.includes(num);
+        return (isOpponent ?
+          <NumberSquare key={(isOpponent && 'opponent-') + c + '-' + n} isOpponent={isOpponent} queueLength={props.ballQueue.length} marked={marked} highlighted={highlighted} number={num} />
+          :
+          <NumberSquare key={c + '-' + n} marked={marked} highlighted={highlighted} chipImage={props.chipImage} isOpponent={isOpponent} number={num} onTouchSquare={handleTouchSquare} />)
+      }))}</div>
     </div>
   );
 }
 
 function areEqual(prevProps, nextProps) {
-  // return prevProps.opponent === true && prevProps.ballQueue.length === nextProps.ballQueue.length && prevProps.gameStarted === nextProps.gameStarted;
+  let equalTest = (prevProps.chipImage == nextProps.chipImage) && prevProps.ready == nextProps.ready && (prevProps.ballQueue == nextProps.ballQueue) && prevProps.gameStarted == nextProps.gameStarted;
+  return equalTest;
 }
 
-// export default React.memo(Card, areEqual);
-export default Card;
+export default React.memo(Card, areEqual);
+// export default Card;

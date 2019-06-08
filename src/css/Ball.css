@@ -16,7 +16,7 @@
   background-image: url('../assets/bingoball.webp');
   background-size: cover;
   background-repeat: no-repeat;
-  transition: transform 100ms ease;
+  transition: transform 125ms ease;
   color: black;
   will-change: transform;
   z-index: 5;
@@ -76,11 +76,11 @@
 .ball.bouncing {
   transform-origin: bottom center;
   animation: bounce;
-  animation-duration: 210ms;
-  animation-direction: alternate;
-  animation-fill-mode: forwards;
-  animation-iteration-count: infinite;
-  animation-timing-function: cubic-bezier();
+  animation-duration: 250ms;
+  /* animation-direction: alternate; */
+  /* animation-fill-mode: forwards; */
+  /* animation-iteration-count: infinite; */
+  /* animation-timing-function: cubic-bezier(); */
   animation-play-state: running;
 }
 @keyframes bounce {
@@ -88,14 +88,9 @@
     transform: initial;
   }
   50% {
-    transform: scaleY(0.9);
+    transform: scaleY(0.8);
   }
   100% {
     transform: initial;
   }
-}
-
-@media screen and (orientation: landscape) {
-
-
 }

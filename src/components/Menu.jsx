@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import '../css/Menu.css';
-import { isFullScreen } from '../scripts/util';
+import { chipImages } from '../App.js';
 
 function Menu(props) {
+  console.orange('Menu ------------------');
   const [touchingSlider, setTouchedSlider] = useState(undefined);
-  let menuClass = ' hidden';
+
+  // let menuClass = ' hidden';
+  let menuClass = 'hidden';
   if (props.showing) {
     menuClass = '';
   }
@@ -34,7 +37,7 @@ function Menu(props) {
   }
   let displaySpeed = props.drawSpeed / 1000;
   let itemClass = 'menu-item';
-  if (props.gameStarted || props.ballQueue.length) {
+  if (props.gameStarted || props.gameInProgress) {
     itemClass += ' unavailable';
   }
   let currentOrientation = window.innerWidth > window.innerHeight ? 'landscape' : 'portrait';
@@ -43,22 +46,13 @@ function Menu(props) {
     <div id='menu' className={menuClass}>
       {props.menuMode === 'settings' &&
         <>
-          <div className={itemClass}>
-            <div>Number of Cards</div>
+          <div className='menu-item'>
+            <div>Auto Mark Free Space</div>
             <div className='item-label'></div>
             <div className='number-toggle'>
-              <img alt='' onPointerDown={() => props.onClickMenuArrow('player-cards-minus')} src={require('../assets/leftarrow.png')} />
-              <div>{playerCardCount}</div>
-              <img alt='' onPointerDown={() => props.onClickMenuArrow('player-cards-plus')} src={require('../assets/rightarrow.png')} />
-            </div>
-          </div>
-          <div className={itemClass}>
-            <div>Opponent Cards</div>
-            <div className='item-label'></div>
-            <div className='number-toggle'>
-              <img alt='' onPointerDown={() => props.onClickMenuArrow('opponent-cards-minus')} src={require('../assets/leftarrow.png')} />
-              <div>{opponentCardCount}</div>
-              <img alt='' onPointerDown={() => props.onClickMenuArrow('opponent-cards-plus')} src={require('../assets/rightarrow.png')} />
+              <img alt='' onPointerDown={() => props.onClickMenuArrow('toggleAutoFreeSpace')} src={require('../assets/leftarrow.png')} />
+              <div><small>{props.autoFreeSpace ? 'ON' : 'OFF'}</small></div>
+              <img alt='' onPointerDown={() => props.onClickMenuArrow('toggleAutoFreeSpace')} src={require('../assets/rightarrow.png')} />
             </div>
           </div>
           <div className='menu-item'>
@@ -99,7 +93,7 @@ function Menu(props) {
             <div className='item-label'></div>
             <div className='number-toggle'>
               <img alt='' onPointerDown={() => props.onClickMenuArrow('toggleFullScreen')} src={require('../assets/leftarrow.png')} />
-              <div><small>{isFullScreen() ? 'ON' : 'OFF'}</small></div>
+              <div><small>{props.isFullScreen ? 'ON' : 'OFF'}</small></div>
               <img alt='' onPointerDown={() => props.onClickMenuArrow('toggleFullScreen')} src={require('../assets/rightarrow.png')} />
             </div>
           </div>
@@ -151,10 +145,41 @@ function Menu(props) {
           <div className='menu-item full-panel'>
             <div className='button-row'>
               {props.user.loggedIn ?
-                <button onPointerDown={props.onClickLogOut}  className='menu-button' id='log-out-button'>Log Out</button>
+                <button onPointerDown={props.onClickLogOut} className='menu-button' id='log-out-button'>Log Out</button>
                 :
                 <button onPointerDown={props.onClickLogIn} className='menu-button' id='log-in-button'>Log In / Register</button>
               }
+            </div>
+          </div>
+        </>
+      }
+      {props.menuMode === 'cards' &&
+        <>
+          <div className={itemClass}>
+            <div>Player Cards</div>
+            <div className='item-label'></div>
+            <div className='number-toggle'>
+              <img alt='' onPointerDown={() => props.onClickMenuArrow('player-cards-minus')} src={require('../assets/leftarrow.png')} />
+              <div>{playerCardCount}</div>
+              <img alt='' onPointerDown={() => props.onClickMenuArrow('player-cards-plus')} src={require('../assets/rightarrow.png')} />
+            </div>
+          </div>
+          <div className={itemClass}>
+            <div>Opponent Cards</div>
+            <div className='item-label'></div>
+            <div className='number-toggle'>
+              <img alt='' onPointerDown={() => props.onClickMenuArrow('opponent-cards-minus')} src={require('../assets/leftarrow.png')} />
+              <div>{opponentCardCount}</div>
+              <img alt='' onPointerDown={() => props.onClickMenuArrow('opponent-cards-plus')} src={require('../assets/rightarrow.png')} />
+            </div>
+          </div>
+          <div className={'menu-item'}>
+            <div>Marker</div>
+            <div className='item-label'></div>
+            <div className='number-toggle'>
+              <img alt='' onPointerDown={() => props.onClickMenuArrow('marker-minus')} src={require('../assets/leftarrow.png')} />
+              <img alt='' className='arrow-image' src={chipImages[props.chipImage]} />
+              <img alt='' onPointerDown={() => props.onClickMenuArrow('marker-plus')} src={require('../assets/rightarrow.png')} />
             </div>
           </div>
         </>
@@ -163,4 +188,23 @@ function Menu(props) {
   );
 }
 
-export default Menu;
+function areEqual(prevProps, nextProps) {
+  return (
+    prevProps.showing === nextProps.showing &&
+    prevProps.menuMode === nextProps.menuMode &&
+    prevProps.showOpponentCards == nextProps.showOpponentCards &&
+    prevProps.voiceOn == nextProps.voiceOn &&
+    prevProps.drawSpeed == nextProps.drawSpeed &&
+    prevProps.playerCardCount == nextProps.playerCardCount &&
+    prevProps.opponentCardCount == nextProps.opponentCardCount &&
+    prevProps.fitWide == nextProps.fitWide &&
+    prevProps.cardMargin == nextProps.cardMargin &&
+    prevProps.chipImage == nextProps.chipImage &&
+    prevProps.isFullScreen == nextProps.isFullScreen &&
+    prevProps.autoFreeSpace == nextProps.autoFreeSpace &&
+    prevProps.gameStarted == nextProps.gameStarted
+  );
+}
+
+export default React.memo(Menu, areEqual);
+// export default Menu;

@@ -8,10 +8,10 @@
 
   $passwordMatches = password_verify($pass, $hashedPass);
 
-  $cookieMatch = mysqli_query($link,"SELECT id, username, currency, options, cards, stats, token FROM `players` WHERE username='$username' AND token='$token'");
+  $cookieMatch = mysqli_query($link,"SELECT id, username, currency, options, cards, prizes, stats, token FROM `players` WHERE username='$username' AND token='$token'");
 
   if ($passwordMatches) {
-    $userResult = mysqli_query($link,"SELECT id, username, currency, options, cards, stats, token FROM `players` WHERE username='$username' AND pass='$hashedPass'");
+    $userResult = mysqli_query($link,"SELECT id, username, currency, options, cards, prizes, stats, token FROM `players` WHERE username='$username' AND pass='$hashedPass'");
   } else if (strlen($token) > 0 && $cookieMatch) {
     $userResult = $cookieMatch;
   }
@@ -19,9 +19,9 @@
     echo json_encode(mysqli_fetch_array($userResult, MYSQLI_ASSOC));
   } else {
     if (!$hashedPass) {
-      echo 'badUsername';
+      echo 'NO SUCH USER.';
     } else if (!$passwordMatches) {
-      echo 'badPassword';
+      echo 'WRONG PASSWORD.';
     }
   }
   mysqli_close($link);

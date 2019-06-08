@@ -3,12 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "display": "standalone",
-  "homepage": "https://eggborne.com/bingo",
+  "homepage": "https://chicken.bingo",
   "dependencies": {
     "axios": "^0.19.0",
+    "console-green": "^1.0.3",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
-    "react-scripts": "3.0.1"
+    "react-scripts": "3.0.1",
+    "save-dev": "^2.0.0"
   },
   "scripts": {
     "start": "react-scripts start",

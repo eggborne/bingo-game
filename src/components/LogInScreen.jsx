@@ -3,7 +3,6 @@ import '../css/LogInScreen.css';
 import { isFullScreen } from '../scripts/util';
 
 function LogInScreen(props) {
-  console.log('ogin props', props)
   const [mode, setMode] = useState('logIn');
   const [enteredValues, setEnteredValues] = useState({ username: '', pass: '', repeatPass: '', remember: true });
   let logInClass = '';
@@ -23,10 +22,7 @@ function LogInScreen(props) {
     setEnteredValues({ username: enteredValues.username, pass: enteredValues.pass, repeatPass: event.target.value, remember: enteredValues.remember });
   }
   function handleRememberChange(event) {
-    // event.preventDefault();
     let remember = enteredValues.remember;
-    console.log('rememeber?', remember)
-    console.log('changing to rememeber?', !remember)
     setEnteredValues({ username: enteredValues.username, pass: enteredValues.pass, repeatPass: enteredValues.repeatPass, remember: !remember });
   }
   function handleLogIn(event) {
@@ -41,6 +37,13 @@ function LogInScreen(props) {
       props.onClickRegisterButton(enteredValues.username, enteredValues.pass, enteredValues.remember, `PASSWORDS DON'T MATCH.`)
     }
   }
+  let errorClass = '';
+  if (props.loginError === 'LOGGING IN...' || props.loginError === 'REGISTERING...') {
+    errorClass = ' white';
+  }
+  if (props.loginError === 'LOGGED IN!' || props.loginError === 'ACCOUNT CREATED!') {
+    errorClass = ' green';
+  }
   return (
     <form onSubmit={mode === 'logIn' ? handleLogIn : handleRegister} id='log-in-screen' className={logInClass}>
       {mode === 'logIn' ?
@@ -49,7 +52,7 @@ function LogInScreen(props) {
           <div id='login-inputs'>
             <input onChange={handleUsernameChange} type='text' placeholder='username' value={enteredValues.username} />
             <input onChange={handlePassChange} type='password' placeholder='password' value={enteredValues.pass} />
-            <div id='log-in-error' className={props.loginError && 'showing'}>{props.loginError}</div>
+            <div id='log-in-error' className={props.loginError && 'showing' + errorClass}>{props.loginError}</div>
           </div>
         </>
         :
@@ -59,7 +62,7 @@ function LogInScreen(props) {
             <input onChange={handleUsernameChange} className='register' type='text' placeholder='username (3-16 characters)' value={enteredValues.username} />
             <input onChange={handlePassChange} className='register' type='password' placeholder='password (6+ characters)' value={enteredValues.pass} />
             <input onChange={handleRepeatPassChange} className='register' type='password' placeholder='repeat password' value={enteredValues.repeatPass} />
-            <div id='log-in-error' className={props.loginError && 'showing'}>{props.loginError}</div>
+            <div id='log-in-error' className={props.loginError && 'showing' + errorClass}>{props.loginError}</div>
           </div>
         </>
       }
@@ -76,5 +79,10 @@ function LogInScreen(props) {
     </form>
   );
 }
+function areEqual(prevProps, nextProps) {
+  return prevProps.loginError == nextProps.loginError && prevProps.showing == nextProps.showing;
+}
 
-export default LogInScreen;
+export default React.memo(LogInScreen, areEqual);
+
+// export default LogInScreen;

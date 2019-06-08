@@ -60,6 +60,12 @@
 #log-in-error.showing {
   opacity: 1;
 }
+#log-in-error.white {
+  color: white;
+}
+#log-in-error.green {
+  color: green;
+}
 #log-in-screen > #login-inputs > input {
   width: 100%;
   border-radius: 0.5vmax;

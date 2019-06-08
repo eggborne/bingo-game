@@ -1,6 +1,6 @@
 #menu {
   position: absolute;
-  background-color: #000000df;
+  background-color: #000000ef;
   width: 100vw;
   max-height: 100vh;
   transform: none;
@@ -11,13 +11,13 @@
   grid-row-gap: 1.5vmin;
   color: #aaa;
   align-items: center;
-  font-size: calc(var(--header-height) / 3.5);
+  font-size: calc(var(--header-height) / 4);
   font-weight: bolder;
   padding: calc(var(--header-height) * 0.25);
   padding-top: calc(var(--header-height) * 1.25);
   transition: transform 440ms ease, opacity 440ms ease, background-color 320ms ease;
   pointer-events: none;
-  z-index: 0;
+  z-index: 1;
   will-change: transition, opacity, background-color;
 }
 #menu small {
@@ -111,6 +111,10 @@ img {
   background: #050505ee;
 }
 
+.arrow-image {
+  transform: scale(0.8);
+}
+
 input[type=range] {
   -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
   width: 90%;
@@ -169,7 +173,6 @@ input[type=range]::-ms-thumb {
     height: 100%;
     padding: calc(var(--header-height) * 0.25);
     padding-left: calc(var(--header-height) * 1.2);
-    font-size: calc(var(--header-height) / 4.5);
     align-content: start;
   }
   .menu-item {
