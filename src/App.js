@@ -382,7 +382,7 @@ function App() {
     window.addEventListener('fullscreenchange', event => {
       setLocked(isFullScreen());
     });
-  }, [integrateLoggedInUser, options, user]);
+  }, []);
   useInterval(() => {
     if (gameStarted) {
       console.log('pulling ball at', window.performance.now());
