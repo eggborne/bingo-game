@@ -22,14 +22,26 @@
   pointer-events: all;
 }
 #store-screen > header {
+  font-family: 'Chango';
+  font-weight: normal !important;
   background: #00000088;
-  font-size:  calc(var(--font-size) * 2.5);
+  font-size: calc(var(--font-size) * 2.5);
   font-weight: bolder;
   text-align: center;
   display: flex;
   justify-content: space-between;
+  align-items: center;
   padding-left: 3vmin;
   padding-right: 3vmin;
+}
+#store-screen > header > img {
+  image-rendering: pixelated;
+  width: calc(var(--header-height) / 2);
+  height: calc(var(--header-height) / 2);
+  transform: rotate(10deg);
+}
+#store-screen > header > img.flipped {
+  transform: scaleX(-1) rotate(10deg);
 }
 #store-body {
   overflow-y: auto;
@@ -60,9 +72,6 @@
   border: 1px solid black;
   margin-top: calc(var(--header-height) / 1.5);
 }
-#store-body .category-label.top {
-  margin-top: 0;
-}
 #store-body .item-selection img {
   height: calc(var(--font-size) * 2);
 }
@@ -72,8 +81,44 @@
   justify-content: space-between;
   align-items: center;
   padding: 4vmin;
+  padding-top: 2vmin;
+  padding-bottom: 2vmin;
   border-radius: 2vmin;
   border: 1px solid black;
+}
+#store-body .item-selection {
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  padding-top: 2vmin;
+  padding-bottom: 2vmin;
+  /* max-width: 30vmin; */
+}
+#store-body > #marker-grid .item-selection > div {
+  margin-top: 1.5vmin !important;
+  margin-bottom: 1.5vmin !important;
+}
+#store-body > #marker-grid > .item-selection.owned:after {
+  position: absolute;
+  font-size: calc(var(--font-size) / 1.5);
+  content: 'OWNED';
+}
+#store-body > #marker-grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: 0.25fr 0.25fr 0.25fr 0.25fr;
+  grid-template-rows: auto;
+  width: 100%;
+}
+#store-body > #marker-grid .category-label {
+  margin-top: 0;
+  grid-column-start: 1;
+  grid-column-end: 5;
+}
+#store-body .item-container:first-child {
+  /* width: 30vmin; */
+  background: #77996600;
 }
 #store-body .item-row.owned {
   background-color: #5e44b122;
@@ -81,13 +126,20 @@
 }
 #store-body .item-row.owned:after {
   /* position: absolute; */
+  margin-top: 1vmin;
   font-size: var(--font-size);
   content: 'OWNED';
-
+  color: #aaa;
 }
 #store-body .item-row.owned > button {
   opacity: 0;
   pointer-events: none;
+}
+#store-body .item-selection.owned > button {
+  background: gray;
+  color: rgb(102, 86, 86);
+  pointer-events: none;
+  opacity: 0.5;
 }
 #store-body .item-row.owned > div:last-of-type {
   opacity: 0;
@@ -108,6 +160,11 @@
 #store-body .item-row > div:last-of-type.unavailable {
   color: rgb(255, 184, 184);
   font-weight: normal;
+}
+#store-body > #marker-grid button {
+  margin: 0;
+  padding: 1.5vmin 3vmin;
+  font-size: calc(var(--font-size) / 1.25) !important;
 }
 #store-screen > #info-footer {
   white-space: pre;

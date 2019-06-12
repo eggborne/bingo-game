@@ -1,5 +1,7 @@
 #menu {
   position: absolute;
+  font-family: 'Chango';
+  font-weight: normal !important;
   background-color: #000000ef;
   width: 100vw;
   max-height: 100vh;
@@ -47,10 +49,17 @@ img {
 }
 .menu-item > .account-row {
   display: flex;
-  /* align-items: center; */
+  align-items: center;
   justify-content: space-between;
   /* padding-top: 2vh; */
   padding-bottom: 2vh;
+}
+.account-row > header {
+  width: 100%;
+  font-size: 120%;
+  font-weight: normal !important;
+  color: #81ff91;
+  text-align: center;
 }
 .menu-item > .button-row {
   position: relative;
@@ -64,6 +73,12 @@ img {
   background: rgb(3, 85, 0);
   border-radius: var(--button-bar-border-width);
   padding: 3vh 2vh;
+}
+.menu-button#log-out-button {
+  font-size: 100%;
+  background: rgb(61, 21, 14);
+  padding-top: 1vh;
+  padding-bottom: 1vh;
 }
 .menu-item.unavailable {
   background-color: #222;

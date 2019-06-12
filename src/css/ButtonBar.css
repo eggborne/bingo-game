@@ -1,11 +1,19 @@
 #button-bar {
   display: grid;
-  grid-template-columns: min-content min-content min-content 1fr min-content min-content;
+  grid-template-columns: min-content min-content min-content 1fr 1fr min-content;
   grid-template-rows: 1fr;
   grid-gap: calc(var(--button-bar-border-width) * 1.5);
   /* border: var(--button-bar-border-width) outset #00000044; */
-  background: #000000aa;
+  background: var(--header-footer-color);
   padding: calc(var(--header-border-width) * 1.5);
+  z-index: 10;
+}
+#button-bar.game-started {
+  grid-template-columns: 1fr;
+  grid-template-columns: min-content min-content min-content 1fr;
+}
+#button-bar i {
+  color: white;
 }
 #button-bar > div {
   display: flex;
@@ -18,7 +26,6 @@
 }
 #button-bar > div:last-child > button {
   flex-grow: 0;
-  background: palegoldenrod;
 }
 #button-bar button.status-button {
   background-repeat: no-repeat;
@@ -37,7 +44,8 @@
   border-width: calc(var(--header-border-width) / 2);
   transition: transform 210ms ease, background-color 320ms ease;
 }
-#button-bar button.status-button#reset-button, #button-bar button.status-button#error-button {
+#button-bar button.status-button#reset-button,
+#button-bar button.status-button#error-button {
   width: calc((var(--header-height)) - (var(--header-border-width) * 8));
   height: calc(var(--header-height) - (var(--header-border-width) * 8));
   margin: var(--header-border-width);
@@ -46,44 +54,124 @@
   border-style: outset;
   /* border-color: initial; */
 }
+#button-bar > div:nth-child(2) {
+  display: flex;
+  justify-content: flex-start;
+}
+#button-bar > div:nth-last-child(2) {
+  display: flex;
+  justify-content: flex-start;
+}
+#button-bar > div:nth-last-child(3) {
+  display: flex;
+  justify-content: flex-end;
+}
+#stop-button > i {
+  font-size: calc(var(--button-bar-height) / 2);
+}
+#stop-button {
+  background-color: rgb(63, 5, 5);
+  border-style: outset !important;
+}
+#stop-button.unavailable {
+  background-color: rgb(32, 20, 20);
+  pointer-events: none;
+  border-style: inset !important;
+}
+#stop-button.unavailable > i {
+  color: rgb(95, 82, 82);
+}
+#map-button,
+#chickens-button {
+  background-color: rgb(3, 3, 41);
+  border-style: outset !important;
+}
+#map-button.map-on,
+#chickens-button.chickens-on {
+  outline: 1vmin solid rgb(116, 148, 255);
+}
+#map-button > img {
+  width: 80%;
+  height: 80%;
+}
+#chickens-container {
+  position: relative;
+}
+#chickens-button {
+  background-color: rgb(129, 66, 77);
+}
+#chicken-count {
+  position: absolute;
+  width: calc(calc(var(--button-bar-height) / 3) * 1.2);
+  text-align: center;
+  color: rgb(191, 243, 172);
+  font-size: calc(var(--button-bar-height) / 3.75);
+  right: 0;
+
+  transform: translateX(-100%);
+
+  /* bottom: calc(var(--button-bar-border-width) / 2); */
+  bottom: calc(var(--button-bar-height) / 5);
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+  font-weight: bolder;
+  background: #00000066;
+  border-radius: 50%;
+  pointer-events: none;
+}
+#chickens-container.unavailable {
+  display: none !important;
+}
+#chickens-button > img {
+  image-rendering: pixelated;
+  width: 75%;
+  height: 75%;
+  opacity: 0.75;
+}
+#map-button.unavailable {
+  filter: grayscale(100%);
+  pointer-events: none;
+  outline: 0;
+  display: none;
+}
 #button-bar > div > #start-button {
   background-color: rgb(18, 90, 18);
-  background-image: url('../assets/playicon.png');
   border-style: outset;
-  transform: scale(1);
-  animation: throb 350ms ease;
-  animation-play-state: paused;
-  animation-iteration-count: infinite;
-  animation-fill-mode: backwards;
+  /* z-index: 4; */
+  transform: scale(0.9);
 }
-#button-bar > div > #start-button.throbbing {
+#start-button > i {
+  font-size: calc(var(--button-bar-height) / 1.75);
+}
+#start-button.throbbing {
   animation-play-state: running;
+  background-color: green !important;
 }
-@keyframes throb {
-  0%, 100% {
+@keyframes throb-start {
+  0%,
+  100% {
     transform: scale(1);
+    color: rgb(18, 90, 18);
   }
   50% {
     transform: scale(0.925);
-    background-color: rgb(40, 179, 40);
+    color: rgb(40, 179, 40) !important;
   }
 }
 #button-bar > div > #start-button.inactive {
-  background-color: rgb(34, 44, 31) !important;
+  background-color: rgb(56, 138, 31);
   border-style: outset;
-  transform: scale(1.05);
+  transform: scale(1);
 }
 #button-bar > div > #start-button.game-started {
   background-color: rgb(22, 124, 22);
-  background-image: url('../assets/pauseicon.png');
+  /* background-image: url('../assets/pauseicon.png'); */
   border-style: inset;
-  transform: scale(1);
-  /* border-color: green;
-  border-width: calc(var(--button-bar-border-width) / 2); */
+  transform: scale(0.9);
 }
 #store-button {
   background-color: rgb(51, 27, 26);
-  border-style: outset;
+  outline: 1vmin solid rgb(173, 255, 173);
+  border-width: 0vmin;
   transform: scale(1);
   animation: throb 350ms ease;
   animation-play-state: paused;
@@ -94,12 +182,14 @@
   color: #999 !important;
   background-color: #374431 !important;
   pointer-events: none;
+  display: none;
 }
 #store-button.unavailable > i {
   color: #999 !important;
 }
 #store-button.inactive {
   background-color: #225010;
+  outline: none;
 }
 #store-button > i {
   color: white;
@@ -114,14 +204,6 @@
 #store-button.inactive:after {
   content: 'STORE';
 }
-#view-button {
-  background-color: rgb(80, 130, 143);
-  background-image: url('../assets/viewicon.png');
-}
-#view-button.inactive {
-  background-color: rgb(32, 43, 46);
-  background-image: url('../assets/viewofficon.png');
-}
 #voice-button {
   background-color: rgb(156, 126, 70);
   background-image: url('../assets/voiceicon.png');
@@ -130,37 +212,20 @@
   background-color: rgb(71, 58, 33);
   background-image: url('../assets/voiceofficon.png');
 }
-#button-bar > div > #reset-button {
-  border-style: outset;
-  background-color: rgb(95, 64, 63);
-  background-size: 100%;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-image: url('../assets/refreshicon.png');
-  transition: transform 320ms ease, background-color 320ms ease;
-}
-#button-bar > div > #reset-button.closing {
-  background-color: red;
-  background-image: url('../assets/cancelicon.png');
-  background-size: 70%;
-
+#powerup-area {
+  border: 2px solid rgb(49, 14, 14);
+  height: 100%;
 }
 
-#button-bar > div > #error-button {
-  background-color: transparent;
-  border: 0;
-  background-image: url('../assets/pooicon.png');
-  background-size: 100%;
-  background-position: 50% 50%;
-  background-repeat: no-repeat;
-}
 @media screen and (orientation: landscape) {
   #button-bar {
+    height: 100%;
     grid-template-columns: 1fr;
     grid-template-rows: min-content min-content min-content 1fr min-content min-content;
   }
-  #button-bar button.status-button#reset-button {
-    margin-top: var(--header-border-width);
+  #button-bar.game-started {
+    grid-template-columns: 1fr;
+    grid-template-rows: min-content min-content min-content 1fr;
   }
   #button-bar > div {
     align-items: center;
@@ -168,6 +233,5 @@
   #button-bar > div:last-child {
     display: flex;
     flex-direction: column;
-    /* align-items: flex-end; */
   }
 }

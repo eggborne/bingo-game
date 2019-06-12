@@ -1,0 +1,72 @@
+#bonus-spot {
+  position: absolute;
+  right: 0;
+  top: var(--header-height);
+  content:' ';
+  width: var(--caller-height);
+  height: var(--caller-height);
+  background-color: #8f8a61;
+  border: 0.75vmin solid rgb(35, 83, 3);
+  border-radius: 2vmin;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  transition: opacity 320ms ease;
+  will-change: opacity, transform, background-color;
+  z-index: 20;
+}
+#bonus-spot.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+#bonus-spot.showing-giftbox {
+  /* background-color: #3cff00; */
+  border: 0.75vmin solid rgb(35, 83, 3);
+  animation: glow;
+  animation-duration: 500ms;
+  animation-iteration-count: infinite;
+  animation-play-state: running;
+}
+#bonus-spot > #bonus-chicken {
+  image-rendering: pixelated;
+  width: 65%;
+  height: 65%;
+  animation: pulse;
+  animation-duration: 1600ms;
+  animation-iteration-count: infinite;
+  animation-play-state: running;
+}
+#bonus-spot.hidden > #bonus-chicken {
+  animation-play-state: paused;
+}
+#bonus-spot.showing-giftbox > #bonus-chicken {
+  animation-duration: 420ms;
+  width: 80%;
+  height: 80%;
+}
+@keyframes pulse {
+  0%, 100% {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: scale(0.85);
+  }
+}
+@keyframes glow {
+  0%, 100% {
+    /* background-color: #3cff00; */
+    border-color: green;
+  }
+  50% {
+    background-color: #218a01;
+    border-color: rgb(255, 0, 0);
+  }
+}
+
+@media screen and (orientation:landscape) {
+  #bonus-spot {
+    top: 0;
+    right: var(--button-bar-height);
+  }
+}

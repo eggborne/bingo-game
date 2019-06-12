@@ -1,36 +1,46 @@
 .ball {
-  --ball-height: calc(var(--caller-height) * 0.9);
+  --ball-width: calc(var(--caller-height) * 0.825);
+  --ball-height: calc(var(--caller-height) * 0.95);
+  width: var(--ball-width);
   height: var(--ball-height);
-  width: var(--ball-height);
-  min-width: var(--ball-height);
-  padding: 1.5vmin;
+  max-height: var(--ball-height);
+
+  min-width: var(--ball-width);
   transform: scale(0.85);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  font-size: calc(var(--caller-height) * 0.35);
+  /* border-radius: 50%; */
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  /* font-family: 'Chango'; */
+  font-size: calc(var(--caller-height) * 0.4);
   font-weight: bolder;
   background-image: url('../assets/bingoball.png');
   background-image: url('../assets/bingoball.webp');
-  background-size: cover;
+  background-size: 100% 100%;
   background-repeat: no-repeat;
   transition: transform 125ms ease;
   color: black;
   will-change: transform;
   z-index: 5;
+  /* text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; */
+
   /* border: 0.1vmin solid rgb(128, 118, 118); */
 }
+.ball > div {
+  z-index: 2;
+  flex-grow:1;
+}
 .ball > div:nth-child(1) {
-  position: absolute;
-  display: flex;
-  justify-content: center;
-  top: calc(var(--ball-height) * 0.15);
-  font-size: calc(var(--ball-height) * 0.2);
+  font-size: calc(var(--ball-height) * 0.25);
+  padding-top: 15%
 }
 .ball > div:nth-child(2) {
-  margin-top: calc(var(--ball-height) * 0.1);
+  position: absolute;
+  font-size: calc(var(--ball-height) * 0.4);
+  padding-top: 30%;
+  transform: (0.7);
 }
 .ball:nth-last-child(2) {
   transform: scale(1);
@@ -46,18 +56,32 @@
   position: absolute;
   /* margin: calc(var(--caller-height) * 0.05); */
   margin-left: 0;
-  /* height: var(--ball-height);
-  width: var(--ball-height); */
-  height: calc(var(--ball-height) * 1);
-  width: calc(var(--ball-height) * 1);
+  width: var(--ball-width);
+  height: var(--ball-height);
   top: 0;
-  border: calc(var(--ball-height) / 7) solid;
+  border: calc(var(--ball-height) / 7) solid #00000077;
   /* border-color: var(--b-color); */
   border-radius: 50%;
-  transform: scale(0.95);
+  /* transform: scale(0.95); */
   will-change: transform;
-  /* opacity: 0.2; */
+  opacity: 0.25;
+  z-index: 0;
 }
+/* .ball.b:before {
+  background-color: var(--b-color);
+}
+.ball.i:before {
+  background-color: var(--i-color);
+}
+.ball.n:before {
+  background-color: var(--n-color);
+}
+.ball.g:before {
+  background-color: var(--g-color);
+}
+.ball.o:before {
+  background-color: var(--o-color);
+} */
 .ball.b:before {
   border-color: var(--b-color);
 }
@@ -74,23 +98,19 @@
   border-color: var(--o-color);
 }
 .ball.bouncing {
-  transform-origin: bottom center;
+  transform-origin: bottom;
   animation: bounce;
   animation-duration: 250ms;
-  /* animation-direction: alternate; */
-  /* animation-fill-mode: forwards; */
-  /* animation-iteration-count: infinite; */
-  /* animation-timing-function: cubic-bezier(); */
   animation-play-state: running;
 }
 @keyframes bounce {
   0% {
-    transform: initial;
+    transform: scaleY(1);
   }
   50% {
-    transform: scaleY(0.8);
+    transform: scaleY(0.85);
   }
   100% {
-    transform: initial;
+    transform: scaleY(1);
   }
 }

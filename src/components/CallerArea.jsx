@@ -20,7 +20,7 @@ const getBingoLetter = num => {
 
 
 const CallerArea = React.forwardRef((props, ref) => {
-  console.count('CallerArea');
+  // console.count('CallerArea');
   const callerRef = ref;
   useEffect(() => {
     callerRef.current.addEventListener('transitionstart', (event) => {
@@ -33,9 +33,8 @@ const CallerArea = React.forwardRef((props, ref) => {
       }
     })
   }, [callerRef]);
-  let callerClass = props.gameStarted ? 'game-started' : '';
   return (
-    <div id='caller-area' className={callerClass}>
+    <div id='caller-area'>
       <div ref={ref} id='ball-row'>
         {props.ballQueue.map((ball, i) => {
           let letter = getBingoLetter(ball);

@@ -2,36 +2,16 @@
   position: fixed;
   top: var(--header-height);
   height: var(--caller-height);
-  max-height: var(--caller-height);
+  min-height: var(--caller-height);
   width: calc(100vw);
   left: 0;
   display: flex;
-  flex-direction: column;
+  /* flex-direction: column; */
   justify-content: center;
   align-items: center;
   z-index: 1;
-  background: #00000044;
+  /* background: #00000044; */
 }
-#caller-area:after {
-  position: fixed;
-  left: var(--header-height);
-  color: #ffffff;
-  content: '';
-  display: flex;
-  justify-content: flex-end;
-  align-items: flex-start;
-  width: 100vw;
-  height: var(--caller-height);
-  /* background-color: rgba(6, 1, 17, 0.176); */
-  pointer-events: none;
-  transition: opacity 320ms ease;
-  /* opacity: 0; */
-}
-#caller-area.game-started:after {
-  opacity: 0.1;
-  pointer-events: all;
-}
-
 #ball-row {
   height: 100%;
   width: 100%;
@@ -42,8 +22,10 @@
   overflow-y: hidden;
   overflow-x: scroll;
   scroll-behavior: smooth;
-  flex-grow: 1;
-  padding-right: 1vw;
+  /* flex-grow: 1; */
+  padding-right: calc(var(--caller-height) + 1vw);
+  z-index: 0;
+
 }
 #ball-space {
   min-width: var(--caller-height);

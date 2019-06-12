@@ -26,7 +26,6 @@ function Menu(props) {
   }
   const handleTouchSlider = (event) => {
     if (event.target.id === 'margin-slider') {
-      console.log('setting touched...')
       setTouchedSlider(event.target.id);
       document.getElementById('game-board').classList.remove('blurred');
     }
@@ -42,6 +41,12 @@ function Menu(props) {
   }
   let currentOrientation = window.innerWidth > window.innerHeight ? 'landscape' : 'portrait';
   let displayMargin = props.cardMargin;
+  let winRate = ((props.stats.totalBingos / props.stats.totalGames) * 100).toPrecision(3);
+  if (isNaN(winRate)) {
+    winRate = '-';
+  } else {
+    winRate = ((props.stats.totalBingos / props.stats.totalGames) * 100).toPrecision(3) + '%';
+  }
   return (
     <div id='menu' className={menuClass}>
       {props.menuMode === 'settings' &&
@@ -62,6 +67,15 @@ function Menu(props) {
               <img alt='' onPointerDown={() => props.onClickMenuArrow('toggleShowOpponentCards')} src={require('../assets/leftarrow.png')} />
               <div><small>{props.showOpponentCards ? 'ON' : 'OFF'}</small></div>
               <img alt='' onPointerDown={() => props.onClickMenuArrow('toggleShowOpponentCards')} src={require('../assets/rightarrow.png')} />
+            </div>
+          </div>
+          <div className='menu-item'>
+            <div>Sound Effects</div>
+            <div className='item-label'></div>
+            <div className='number-toggle'>
+              <img alt='' onPointerDown={() => props.onClickMenuArrow('toggleSound')} src={require('../assets/leftarrow.png')} />
+              <div><small>{props.soundOn ? 'ON' : 'OFF'}</small></div>
+              <img alt='' onPointerDown={() => props.onClickMenuArrow('toggleSound')} src={require('../assets/rightarrow.png')} />
             </div>
           </div>
           <div className='menu-item'>
@@ -126,12 +140,15 @@ function Menu(props) {
         <>
           <div className='menu-item full-panel'>
             <div className='account-row'>
-              <div>Username</div>
-              <div>{props.user.username}</div>
+              <header>{props.user.username}'s Statistics</header>
             </div>
             <div className='account-row'>
               <div>Money</div>
               <div>${props.user.currency.cash}</div>
+            </div>
+            <div className='account-row'>
+              <div>Chickens</div>
+              <div>{props.chickenCount}</div>
             </div>
             <div className='account-row'>
               <div>Games Played</div>
@@ -140,6 +157,18 @@ function Menu(props) {
             <div className='account-row'>
               <div>Total Bingos</div>
               <div>{props.stats.totalBingos}</div>
+            </div>
+            <div className='account-row'>
+              <div>Win Rate</div>
+              <div>{winRate}</div>
+            </div>
+            <div className='account-row'>
+              <div>Card Slots</div>
+              <div>{props.user.cardSlots}</div>
+            </div>
+            <div className='account-row'>
+              <div>Bonus Chance</div>
+            <div style={{fontSize: '120%'}}>{props.user.bonusChance}%</div>
             </div>
           </div>
           <div className='menu-item full-panel'>
@@ -157,13 +186,13 @@ function Menu(props) {
         <>
           <div className={itemClass}>
             <div>Player Cards</div>
-            <div className='item-label'></div>
+            <div className='item-label'><small>Slots:</small> {props.user.cardSlots}</div>
             <div className='number-toggle'>
               <img alt='' onPointerDown={() => props.onClickMenuArrow('player-cards-minus')} src={require('../assets/leftarrow.png')} />
               <div>{playerCardCount}</div>
               <img alt='' onPointerDown={() => props.onClickMenuArrow('player-cards-plus')} src={require('../assets/rightarrow.png')} />
             </div>
-          </div>
+        </div>
           <div className={itemClass}>
             <div>Opponent Cards</div>
             <div className='item-label'></div>
@@ -199,12 +228,15 @@ function areEqual(prevProps, nextProps) {
     prevProps.opponentCardCount == nextProps.opponentCardCount &&
     prevProps.fitWide == nextProps.fitWide &&
     prevProps.cardMargin == nextProps.cardMargin &&
+    prevProps.cardSlots == nextProps.cardSlots &&
+    prevProps.bonusChance == nextProps.bonusChance &&
     prevProps.chipImage == nextProps.chipImage &&
     prevProps.isFullScreen == nextProps.isFullScreen &&
     prevProps.autoFreeSpace == nextProps.autoFreeSpace &&
+    prevProps.user.loggedIn == nextProps.user.loggedIn &&
     prevProps.gameStarted == nextProps.gameStarted
   );
 }
 
-export default React.memo(Menu, areEqual);
-// export default Menu;
+// export default React.memo(Menu, areEqual);
+export default Menu;

@@ -1,4 +1,4 @@
-const limits = [{ min: 1, max: 15 }, { min: 16, max: 30 }, { min: 31, max: 45 }, { min: 46, max: 60 }, { min: 61, max: 75 }];
+// const limits = [{ min: 1, max: 15 }, { min: 16, max: 30 }, { min: 31, max: 45 }, { min: 46, max: 60 }, { min: 61, max: 75 }]
 
 const randomInt = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -57,4 +57,32 @@ function isFullScreen() {
   return document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
 }
 
-export { limits, randomInt, isFullScreen, fullScreenCall, exitFullScreenCall, getTimeSinceFromSeconds };
+const limits = [
+  [...Array(15).keys()].map(num => num += 1),
+  [...Array(15).keys()].map(num => num += 16),
+  [...Array(15).keys()].map(num => num += 31),
+  [...Array(15).keys()].map(num => num += 46),
+  [...Array(15).keys()].map(num => num += 61),
+];
+
+const getLetter = num => {
+  let ind = 0;
+  limits.map((letterRow, l) => {
+    if (letterRow.includes(num)) {
+      ind = l;
+    }
+  });
+  return ['b', 'i', 'm', 'g', 'o'][ind];
+};
+
+const shuffle = (array) => {
+  for (var i = array.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var temp = array[i];
+    array[i] = array[j];
+    array[j] = temp;
+  }
+  return array;
+}
+
+export { limits, getLetter, randomInt, isFullScreen, fullScreenCall, exitFullScreenCall, getTimeSinceFromSeconds, shuffle };

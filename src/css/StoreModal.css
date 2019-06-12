@@ -31,7 +31,7 @@
 }
 #store-modal > .button-area > button {
   flex-grow: 0.3;
-  font-size: calc(var(--header-height) / 2.5);
+  font-size: var(--font-size);
   font-weight: bolder;
   width: 60%;
   height: 20%;
