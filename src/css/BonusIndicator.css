@@ -1,5 +1,5 @@
 #bonus-indicator {
-  font-family: 'Chango';
+  font-family: var(--cute-font);;
   position: absolute;
   /* background: #00000066; */
   width: calc(100vw - var(--caller-height));
@@ -31,5 +31,6 @@
     margin-left: calc(var(--header-height));
     width: calc(100vw - var(--header-height)  - var(--button-bar-height));
     font-size: calc(var(--caller-height) / 1.5);
+    /* font-size: calc(var(--caller-height) / 3); */
   }
 }

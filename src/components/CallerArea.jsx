@@ -18,25 +18,31 @@ const getBingoLetter = num => {
   return 'B';
 }
 
+const bounce = (event) => {
+  if (document.querySelector('.ball:nth-last-child(2)') === event.target && event.propertyName === 'transform') {
+    let ball = event.target;
+    ball.classList.add('bouncing');
+    setTimeout(() => {
+      ball.classList.remove('bouncing');
+    }, 500);
+  }
+}
 
 const CallerArea = React.forwardRef((props, ref) => {
-  // console.count('CallerArea');
+  console.count('CallerArea');
   const callerRef = ref;
   useEffect(() => {
     callerRef.current.addEventListener('transitionstart', (event) => {
-      if (document.querySelector('.ball:nth-last-child(2)') === event.target && event.propertyName === 'transform') {
-        let ball = event.target;
-        ball.classList.add('bouncing');
-        setTimeout(() => {
-          ball.classList.remove('bouncing');
-        }, 500);
-      }
-    })
+      bounce(event);
+    });
+    // return (() => {
+      // callerRef.current.removeEventListener(bounce);
+    // })
   }, [callerRef]);
   return (
     <div id='caller-area'>
       <div ref={ref} id='ball-row'>
-        {props.ballQueue.map((ball, i) => {
+        {props.calledBalls.map((ball, i) => {
           let letter = getBingoLetter(ball);
           return <Ball letter={letter} number={ball} key={letter + ball} />
         })}
@@ -48,7 +54,7 @@ const CallerArea = React.forwardRef((props, ref) => {
 });
 
 function areEqual(prevProps, nextProps) {
-  return prevProps.gameStarted === nextProps.gameStarted && prevProps.ballQueue === nextProps.ballQueue
+  return prevProps.gameStarted === nextProps.gameStarted && prevProps.calledBalls.length === nextProps.calledBalls.length
 }
 
 export default React.memo(CallerArea, areEqual);

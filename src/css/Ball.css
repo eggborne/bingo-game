@@ -13,7 +13,7 @@
   justify-content: center;
   /* border-radius: 50%; */
   border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-  /* font-family: 'Chango'; */
+  /* font-family: var(--cute-font);; */
   font-size: calc(var(--caller-height) * 0.4);
   font-weight: bolder;
   background-image: url('../assets/bingoball.png');

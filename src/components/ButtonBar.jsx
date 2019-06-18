@@ -1,27 +1,28 @@
 import React from 'react';
 import '../css/ButtonBar.css';
+import { prizes } from './StoreScreen';
+let chickenPng = require('../assets/chickenstand.png');
 let globeIconPng = require('../assets/globeicon.png');
-let chickenPng = require('../assets/chicken.png');
 
 function ButtonBar(props) {
   console.orange('ButtonBar ----------------')
-  console.count('ButtonBar');
-  // let chickenCount = props.chickenCount;
-  let chickenCount = 'RESET';
+  console.log(props);
+  let chickenCount = props.chickenCount;
+  // let chickenCount = 'RESET';
   let startClass = 'status-button';
   let stopClass = 'status-button';
   let mapClass = 'status-button';
   let chickensClass = '';
   if (props.gameStarted) {
     startClass += ' game-started';
-    stopClass += ' game-paused'
   } else {
+    stopClass += ' showing';
     if (!props.gameInProgress) {
-      stopClass += ' unavailable';
-      startClass += ' inactive';
+      // stopClass += ' unavailable';
+      startClass += ' inactive throbbing';
+      // stopClass += ' hidden';
     }
   }
-  let resetClass = 'status-button closing';
   let voiceClass = 'status-button';
   if (!props.voiceOn) {
     voiceClass += ' inactive';
@@ -40,44 +41,98 @@ function ButtonBar(props) {
   if (props.mapOn) {
     mapClass += ' map-on';
   }
-  if (props.gameInProgress && !props.gameStarted) {
-
+  if (props.gameInProgress) {
+    voiceClass += ' hidden';
   }
+  let barClass = '';
+  if (props.gameStarted) {
+    barClass += 'game-started'
+  }
+  if (props.gameInProgress) {
+    barClass += ' game-in-progress';
+    if (!props.gameStarted) {
+      barClass += ' game-paused';
+    }
+  }
+  let unavailableItemSlots = 3 - props.itemSlots.length;
+  let emptyItemSlots = 3 - props.itemSlots.filter(slot => slot.item).length;
+  console.log('empty?', emptyItemSlots)
+  console.log('unavailable?', unavailableItemSlots)
   return (
-    <div id='button-bar' className={props.gameStarted || props.gameInProgress ? 'game-started' : ''}>
-      <div><button id='start-button' onPointerDown={props.onClickStartButton} className={startClass}><i className='material-icons'>
-        {props.gameStarted ? 'pause' : 'play_arrow'}</i></button></div>
-      <div><button id='stop-button' onPointerDown={props.onClickStopButton} className={stopClass}><i className='material-icons'>stop</i></button></div>
-      <div><button id='voice-button' onPointerDown={props.onClickVoiceButton} className={voiceClass}></button></div>
-      {props.gameStarted || props.gameInProgress ?
-        <>
-          <div id='powerup-area'>
-
+    // <div id='button-bar' className={props.gameStarted || props.gameInProgress ? 'game-started' : ''}>
+    <div id='button-bar' className={barClass}>
+      <div><div id='start-button' onPointerDown={props.onClickStartButton} className={startClass}><i className='material-icons'>
+      {props.gameStarted ? 'pause' : 'play_arrow'}</i></div></div>
+      {/* {props.gameStarted || props.gameInProgress ? */}
+      {/* {props.gameStarted || props.gameInProgress ? */}
+      <div id='powerup-area' onPointerDown={!props.gameInProgress ? props.onClickStoreButton : undefined} className={props.gameStarted ? '' : ' game-paused'}>
+          <div id='item-slots' className='slot-area'>
+            <div className='item-slot-label'>ITEMS</div>
+            {props.itemSlots.map((slot, i) => {
+              console.info(slot, 'slot');
+              if (slot.item) {
+                return (
+                  <div key={slot.item.description} onPointerDown={props.gameStarted ? () => props.onClickPowerup(slot.item) : undefined} id={`item-slot-${i+1}`} className={props.powerupSelected && props.powerupSelected.description === slot.item.description ? 'item-slot selected' : 'item-slot'}>
+                    <img src={slot.item.imgSrc} />
+                    <div className='quantity-label'>{slot.item.uses}</div>
+                  </div>
+                );
+              } else {
+                return (
+                  <div key={i} id={`empty-slot-${i + 1}`} className={'item-slot empty'}>
+                    <div className="label">EMPTY</div>
+                  </div>
+                );
+              }
+            })}
+          {Array(unavailableItemSlots).fill().map((item, i, arr) => {
+              let slotClass = 'item-slot';
+              let slotText = '';
+              if (i > emptyItemSlots) {
+                slotClass += ' empty';
+                slotText = 'EMPTY';
+              } else {
+                console.log('slots', prizes['Item Slots'])
+                slotClass += ' unavailable';
+                slotText = prizes['Item Slots'][props.itemSlots.length + i].cost;
+              }
+              return (
+                <div key={i} id={`${slotClass}-slot-${i+1}`} className={slotClass}>
+                  <i className="material-icons">lock</i>
+                  <div className="label">{slotText}</div>
+                </div>
+              );
+            })}
           </div>
-        </>
-        :
+        </div>
+      {/* : */}
+      {!props.gameInProgress &&
         <>
-          <div><button id='store-button' onPointerDown={props.onClickStoreButton} className={storeClass}><i className='material-icons'>attach_money</i></button></div>
-          <div><button id='map-button' onPointerDown={props.onClickMapButton} className={mapClass}><img alt='' src={globeIconPng} /></button></div>
           <div id='chickens-container' className={chickensClass}>
-            <button id='chickens-button' onPointerDown={props.onClickChickensButton} className={'status-button'}><img alt='' src={chickenPng} /></button>
+            <div id='chickens-button' onPointerDown={props.onClickChickensButton} className={'status-button'}><img alt='' src={chickenPng} />CHICKENS</div>
             <div id='chicken-count'>{chickenCount}</div>
           </div>
+          <div><div id='store-button' onPointerDown={props.onClickStoreButton} className={storeClass}><i className='material-icons'>attach_money</i></div></div>
+          <div><div id='map-button' onPointerDown={props.onClickMapButton} className={mapClass}><img alt='' src={globeIconPng} /></div></div>
         </>
       }
+      {/* } */}
+      {props.gameInProgress && <div><div id='stop-button' onClick={props.onClickStopButton} className={stopClass}><i className='material-icons'>stop</i></div></div>}
     </div>
   );
 }
 function areEqual(prevProps, nextProps) {
   let equalTest =
-    prevProps.gameStarted == nextProps.gameStarted &&
-    prevProps.gameInProgress == nextProps.gameInProgress &&
-    prevProps.closing == nextProps.closing &&
-    prevProps.storeOpen == nextProps.storeOpen &&
-    prevProps.showOpponentCards == nextProps.showOpponentCards &&
-    prevProps.mapOn == nextProps.mapOn &&
-    prevProps.queueLength > 0 && nextProps.queueLength > 0 &&
-    prevProps.voiceOn == nextProps.voiceOn
+    prevProps.gameStarted === nextProps.gameStarted &&
+    prevProps.gameInProgress === nextProps.gameInProgress &&
+    prevProps.storeOpen === nextProps.storeOpen &&
+    prevProps.showOpponentCards === nextProps.showOpponentCards &&
+    prevProps.powerupSelected === nextProps.powerupSelected &&
+    prevProps.mapOn === nextProps.mapOn &&
+    prevProps.itemUses === nextProps.itemUses &&
+    prevProps.itemSlots === nextProps.itemSlots &&
+    prevProps.itemsEquippedCount === nextProps.itemsEquippedCount &&
+    prevProps.voiceOn === nextProps.voiceOn
   ;
   return equalTest;
 }

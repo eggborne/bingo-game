@@ -1,0 +1,22 @@
+.click-bonus-indicator {
+  position: fixed;
+  background: green;
+  color: white;
+  font-family: var(--cute-font);
+  transform: translateX(-50%) translateY(-50%) scale(0.8);
+  left: 50vw;
+  top: calc(var(--caller-height) / 2);
+  font-size: calc(var(--header-height) / 2.5);
+  /* font-weight: bolder; */
+  transform-origin: center;
+  border-radius: calc(var(--caller-height) / 8);
+  padding: 1vmin 5vmin;
+  opacity: 0;
+  z-index: 5;
+  transition: transform 320ms ease, opacity 320ms ease;
+}
+.click-bonus-indicator.showing {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-50%) scale(1);
+  transition: transform 320ms ease, opacity 320ms ease;
+}

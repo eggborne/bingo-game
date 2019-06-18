@@ -4,6 +4,7 @@ import { chipImages } from '../App.js';
 
 function Menu(props) {
   console.orange('Menu ------------------');
+  console.info(props);
   const [touchingSlider, setTouchedSlider] = useState(undefined);
 
   // let menuClass = ' hidden';
@@ -39,14 +40,9 @@ function Menu(props) {
   if (props.gameStarted || props.gameInProgress) {
     itemClass += ' unavailable';
   }
-  let currentOrientation = window.innerWidth > window.innerHeight ? 'landscape' : 'portrait';
+  let currentOrientation = window.innerWidth > window.innerHeight ? 'land' : 'port';
+  let orientationLock = props.orientationLock ? `${props.orientationLock.substr(0, 4)}` : 'none';
   let displayMargin = props.cardMargin;
-  let winRate = ((props.stats.totalBingos / props.stats.totalGames) * 100).toPrecision(3);
-  if (isNaN(winRate)) {
-    winRate = '-';
-  } else {
-    winRate = ((props.stats.totalBingos / props.stats.totalGames) * 100).toPrecision(3) + '%';
-  }
   return (
     <div id='menu' className={menuClass}>
       {props.menuMode === 'settings' &&
@@ -78,6 +74,10 @@ function Menu(props) {
               <img alt='' onPointerDown={() => props.onClickMenuArrow('toggleSound')} src={require('../assets/rightarrow.png')} />
             </div>
           </div>
+        </>
+      }
+      {props.menuMode === 'caller' &&
+        <>
           <div className='menu-item'>
             <div>Caller Voice</div>
             <div className='item-label'></div>
@@ -85,6 +85,29 @@ function Menu(props) {
               <img alt='' onPointerDown={() => props.onClickMenuArrow('toggleVoice')} src={require('../assets/leftarrow.png')} />
               <div><small>{props.voiceOn ? 'ON' : 'OFF'}</small></div>
               <img alt='' onPointerDown={() => props.onClickMenuArrow('toggleVoice')} src={require('../assets/rightarrow.png')} />
+            </div>
+          </div>
+          <div className='menu-item'>
+            <div>Fancy Calls</div>
+            <div className='item-label'></div>
+            <div className='number-toggle'>
+              <img alt='' onPointerDown={() => props.onClickMenuArrow('toggleFancyCalls')} src={require('../assets/leftarrow.png')} />
+              <div><small>{props.fancyCalls ? 'ON' : 'OFF'}</small></div>
+              <img alt='' onPointerDown={() => props.onClickMenuArrow('toggleFancyCalls')} src={require('../assets/rightarrow.png')} />
+            </div>
+          </div>
+          <div id='margin-control' className='menu-item'>
+            <div>Caller<br />Volume</div>
+            <div className='item-label'></div>
+            <div style={{ textAlign: 'center' }}>
+              <input
+                id='margin-slider'
+                // onPointerDown={handleTouchSlider}
+                // onTouchEnd={handleEndTouchSlider}
+                // onTouchCancel={handleEndTouchSlider}
+                // onChange={changeSelectedMargin}
+                type='range' min='0' max='0.2' step='0.01' value={8}
+              />
             </div>
           </div>
           <div className='menu-item'>
@@ -112,8 +135,17 @@ function Menu(props) {
             </div>
           </div>
           <div className='menu-item'>
+          <div style={{minWidth: '100%', fontSize: '90%'}}>Lock Full Screen Orientation</div>
+            <div></div>
+            <div style={{alignSelf: 'flex-end'}} className='number-toggle'>
+              <img alt='' onPointerDown={() => props.onClickMenuArrow('lock-minus')} src={require('../assets/leftarrow.png')} />
+              <div><small>{orientationLock}</small></div>
+              <img alt='' onPointerDown={() => props.onClickMenuArrow('lock-plus')} src={require('../assets/rightarrow.png')} />
+            </div>
+          </div>
+          <div className='menu-item'>
             <div>Card Size</div>
-            <div className='item-label'><span style={{ fontSize: `calc(var(--header-height) / 5)` }}>{currentOrientation}</span></div>
+            <div className='item-label'><small>{currentOrientation}</small></div>
             <div className='number-toggle'>
               <img alt='' onPointerDown={() => props.onClickMenuArrow('fit-minus')} src={require('../assets/leftarrow.png')} />
               <div>{fitWide}<br /><span style={{ fontSize: `calc(var(--header-height) / 5)` }}>wide</span></div>
@@ -159,12 +191,24 @@ function Menu(props) {
               <div>{props.stats.totalBingos}</div>
             </div>
             <div className='account-row'>
+              <div>Bees Killed</div>
+              <div>{props.stats.beesKilled}</div>
+            </div>
+            {/* <div className='account-row'>
               <div>Win Rate</div>
               <div>{winRate}</div>
-            </div>
+            </div> */}
             <div className='account-row'>
               <div>Card Slots</div>
-              <div>{props.user.cardSlots}</div>
+              <div>{props.cardSlots.length}</div>
+            </div>
+            <div className='account-row'>
+              <div>Item Slots</div>
+              <div>{props.itemSlots.length}</div>
+            </div>
+            <div className='account-row'>
+              <div>Chicken Slots</div>
+              <div>{props.chickenCount}</div>
             </div>
             <div className='account-row'>
               <div>Bonus Chance</div>
@@ -174,9 +218,9 @@ function Menu(props) {
           <div className='menu-item full-panel'>
             <div className='button-row'>
               {props.user.loggedIn ?
-                <button onPointerDown={props.onClickLogOut} className='menu-button' id='log-out-button'>Log Out</button>
+                <button onClick={props.onClickLogOut} className='menu-button' id='log-out-button'>Log Out</button>
                 :
-                <button onPointerDown={props.onClickLogIn} className='menu-button' id='log-in-button'>Log In / Register</button>
+                <button onClick={props.onClickLogIn} className='menu-button' id='log-in-button'>Log In / Register</button>
               }
             </div>
           </div>
@@ -186,7 +230,7 @@ function Menu(props) {
         <>
           <div className={itemClass}>
             <div>Player Cards</div>
-            <div className='item-label'><small>Slots:</small> {props.user.cardSlots}</div>
+            <div className='item-label'><small>Slots:</small> {props.user.itemSlots.length}</div>
             <div className='number-toggle'>
               <img alt='' onPointerDown={() => props.onClickMenuArrow('player-cards-minus')} src={require('../assets/leftarrow.png')} />
               <div>{playerCardCount}</div>
@@ -221,22 +265,25 @@ function areEqual(prevProps, nextProps) {
   return (
     prevProps.showing === nextProps.showing &&
     prevProps.menuMode === nextProps.menuMode &&
-    prevProps.showOpponentCards == nextProps.showOpponentCards &&
-    prevProps.voiceOn == nextProps.voiceOn &&
-    prevProps.drawSpeed == nextProps.drawSpeed &&
-    prevProps.playerCardCount == nextProps.playerCardCount &&
-    prevProps.opponentCardCount == nextProps.opponentCardCount &&
-    prevProps.fitWide == nextProps.fitWide &&
-    prevProps.cardMargin == nextProps.cardMargin &&
-    prevProps.cardSlots == nextProps.cardSlots &&
-    prevProps.bonusChance == nextProps.bonusChance &&
-    prevProps.chipImage == nextProps.chipImage &&
-    prevProps.isFullScreen == nextProps.isFullScreen &&
-    prevProps.autoFreeSpace == nextProps.autoFreeSpace &&
-    prevProps.user.loggedIn == nextProps.user.loggedIn &&
-    prevProps.gameStarted == nextProps.gameStarted
+    prevProps.showOpponentCards === nextProps.showOpponentCards &&
+    prevProps.voiceOn === nextProps.voiceOn &&
+    prevProps.soundOn === nextProps.soundOn &&
+    prevProps.drawSpeed === nextProps.drawSpeed &&
+    prevProps.playerCardCount === nextProps.playerCardCount &&
+    prevProps.opponentCardCount === nextProps.opponentCardCount &&
+    prevProps.fitWide === nextProps.fitWide &&
+    prevProps.cardMargin === nextProps.cardMargin &&
+    prevProps.cardSlots === nextProps.cardSlots &&
+    prevProps.bonusChance === nextProps.bonusChance &&
+    prevProps.chipImage === nextProps.chipImage &&
+    prevProps.isFullScreen === nextProps.isFullScreen &&
+    prevProps.autoFreeSpace === nextProps.autoFreeSpace &&
+    prevProps.user.loggedIn === nextProps.user.loggedIn &&
+    prevProps.orientationLock === nextProps.orientationLock &&
+    prevProps.fancyCalls === nextProps.fancyCalls &&
+    prevProps.gameStarted === nextProps.gameStarted
   );
 }
 
-// export default React.memo(Menu, areEqual);
-export default Menu;
+export default React.memo(Menu, areEqual);
+// export default Menu;

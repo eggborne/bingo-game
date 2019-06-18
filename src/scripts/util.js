@@ -1,5 +1,3 @@
-// const limits = [{ min: 1, max: 15 }, { min: 16, max: 30 }, { min: 31, max: 45 }, { min: 46, max: 60 }, { min: 61, max: 75 }]
-
 const randomInt = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
@@ -47,7 +45,7 @@ const getTimeSinceFromSeconds = sessionLengthInSeconds => {
 
 function fullScreenCall() {
   let root = document.getElementById('app');
-  console.log(root);
+  // console.log(root);
   return root.requestFullscreen || root.webkitRequestFullscreen || root.mozRequestFullScreen || root.msRequestFullscreen;
 }
 function exitFullScreenCall() {
@@ -65,6 +63,100 @@ const limits = [
   [...Array(15).keys()].map(num => num += 61),
 ];
 
+const calls = [
+  undefined,
+  'Kelly’s Eye',
+  'One Little Duck',
+  'Cup of Tea',
+  'Knock at the Door',
+  'Man Alive',
+  'Tom Mix',
+  'Lucky Seven',
+  'Garden Gate',
+  'Doctor’s Orders',
+  'Cameron’s Den',
+  'Legs 11',
+  'One Dozen',
+  'Unlucky for Some',
+  'Valentine’s Day',
+  'Young and Keen',
+  'Sweet 16',
+  'Dancing Queen',
+  'Coming of Age',
+  'Goodbye Teens',
+  'One Score',
+  'Royal Salute',
+  'Two Little Ducks',
+  'Thee and Me',
+  'Two Dozen',
+  'Duck and Dive',
+  'Pick and Mix',
+  'Gateway to Heaven',
+  'Over Weight',
+  'Rise and Shine',
+  'Dirty Gertie',
+  'Get Up and Run',
+  'Buckle My Shoe',
+  'Dirty Knee',
+  'Ask for More',
+  'Jump and Jive',
+  'Three Dozen',
+  'More than 11',
+  'Christmas Cake',
+  'Steps',
+  'Naughty 40',
+  'Time for Fun',
+  'Winnie the Pooh',
+  'Down on Your Knees',
+  'Droopy Drawers',
+  'Halfway There',
+  'Up to Tricks',
+  'Four and Seven',
+  'Four Dozen',
+  'PC',
+  'Half a Century',
+  'Tweak of the Thumb',
+  'Danny La Rue',
+  'Stuck in the Tree',
+  'Clean the Floor',
+  'Snakes Alive',
+  'Was She Worth It?',
+  'Heinz Varieties',
+  'Make Them Wait',
+  'Brighton Line',
+  'Five Dozen',
+  'Bakers Bun',
+  'Turn the Screw',
+  'Tickle Me 63',
+  'Red Raw',
+  'Old Age Pension',
+  'Clickety Click',
+  'Made in Heaven',
+  'Saving Grace',
+  'Either Way Up',
+  'Three Score and 10',
+  'Bang on the Drum',
+  'Six Dozen',
+  'Queen B',
+  'Candy Store',
+  'Strive and Strive',
+  'Trombones',
+  'Sunset Strip',
+  'Heaven’s Gate',
+  'One More Time',
+  'Eight and Blank',
+  'Stop and Run',
+  'Straight On Through',
+  'Time for Tea',
+  'Seven Dozen',
+  'Staying Alive',
+  'Between the Sticks',
+  'Torquay in Devon',
+  'Two Fat Ladies',
+  'Nearly There',
+  'Top of the Shop'
+];
+
 const getLetter = num => {
   let ind = 0;
   limits.map((letterRow, l) => {
@@ -72,7 +164,7 @@ const getLetter = num => {
       ind = l;
     }
   });
-  return ['b', 'i', 'm', 'g', 'o'][ind];
+  return ['b', 'i', 'n', 'g', 'o'][ind];
 };
 
 const shuffle = (array) => {
@@ -85,4 +177,4 @@ const shuffle = (array) => {
   return array;
 }
 
-export { limits, getLetter, randomInt, isFullScreen, fullScreenCall, exitFullScreenCall, getTimeSinceFromSeconds, shuffle };
+export { limits, getLetter, calls, randomInt, isFullScreen, fullScreenCall, exitFullScreenCall, getTimeSinceFromSeconds, shuffle };

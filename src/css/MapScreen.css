@@ -8,7 +8,7 @@
   color: white;
   font-size: calc(var(--font-size) / 1.5);
   display: grid;
-  grid-template-rows: min-content 1fr calc(var(--font-size) * 2.5);
+  grid-template-rows: min-content 1fr calc(var(--font-size) * 2);
   border: 1.5vmin solid rgb(116, 148, 255);
   opacity: 0;
   transform: scale(0.95);
@@ -23,7 +23,7 @@
 }
 #map-screen > header {
   background: #00000088;
-  font-size:  calc(var(--font-size) * 2.5);
+  font-size:  calc(var(--font-size) * 2);
   font-weight: bolder;
   text-align: center;
   display: flex;
@@ -32,9 +32,6 @@
   padding-right: 3vmin;
 }
 #map-body {
-  /* background-image: url('../assets/worldmap.png');
-  background-position: center;
-  background-size: cover; */
   overflow-X: auto;
   overflow-y: auto;
 }
@@ -43,9 +40,11 @@
   height: 120%;
 }
 #map-screen > #info-footer {
+  font-family: var(--cute-font);
+  font-weight: normal;
   white-space: pre;
   background: #00000088;
-  font-size: var(--font-size);
+  font-size: calc(var(--font-size) / 1.25);
   display: flex;
   align-items: center;
   justify-content: center;

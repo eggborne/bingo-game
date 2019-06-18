@@ -69,7 +69,7 @@ function LogInScreen(props) {
       <div id='remember-check'>Remember (uses cookie): <input onChange={handleRememberChange} type='checkbox' checked={enteredValues.remember} /></div>
       <div className='button-area'>
         <button type='submit' id='agree-button' className='modal-button'>{mode === 'logIn' ? 'Log In' : 'Register'}</button>
-        <button id='cancel-button' onPointerDown={props.onClickCancelButton} className='modal-button'>Cancel</button>
+        <button id='cancel-button' onClick={props.onClickCancelButton} className='modal-button'>Cancel</button>
       </div>
       {mode === 'logIn' ?
         <div id='mode-swap'>Need to <a onClick={() => setMode('register')}>Register</a>?</div>
@@ -80,7 +80,7 @@ function LogInScreen(props) {
   );
 }
 function areEqual(prevProps, nextProps) {
-  return prevProps.loginError == nextProps.loginError && prevProps.showing == nextProps.showing;
+  return prevProps.loginError === nextProps.loginError && prevProps.showing === nextProps.showing;
 }
 
 export default React.memo(LogInScreen, areEqual);

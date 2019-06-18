@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import '../css/PreGameModal.css';
 
 function PreGameModal(props) {
-  console.count('PreGameModal');
   const [ready, setReady] = useState(false);
   useEffect(() => {
     if (props.showing) {
@@ -31,24 +30,28 @@ function PreGameModal(props) {
   if (gameName === 'Limited Balls') {
     opponentCount = 0;
     modalClass += ' limited-balls';
-    stat1Name = 'Number of balls:'
+    stat1Name = 'Number of balls'
     stat1Value = props.ballLimit;
   } else if (gameName === 'Ranked') {
     modalClass += ' ranked';
-    stat1Name = 'Places awarded:'
+    stat1Name = 'Places awarded'
+    stat1Value = props.winnerLimit;
+  } else if (gameName === 'Bonanza') {
+    modalClass += ' ranked';
+    stat1Name = 'Places awarded'
     stat1Value = props.winnerLimit;
   } else if (gameName === 'Classic') {
     modalClass += ' classic';
-    stat1Name = 'Winning Pattern:'
+    stat1Name = 'Winning Pattern'
     stat1Value = props.winPattern;
   } else if (gameName === 'Lightning') {
     opponentCount = 0;
     modalClass += ' lightning';
-    stat1Name = 'Time limit:'
+    stat1Name = 'Time limit'
     stat1Value = props.timeLimit;
   } else if (gameName === 'Standoff') {
     modalClass += ' standoff';
-    stat1Name = 'Places awarded:'
+    stat1Name = 'Places awarded'
     stat1Value = props.winnerLimit;
   } else if (gameName === 'Danger Zones') {
     modalClass += ' danger-zones';
@@ -65,18 +68,34 @@ function PreGameModal(props) {
               <div><div onPointerDown={() => props.onClickChangeMode('previous')}>{'<'}</div><div onPointerDown={() => props.onClickChangeMode('next')}>{'>'}</div></div>
             </div>
             <div id='pre-game-description'>
-              <small>Opponents:</small>
+              <small>Opponents</small>
               <div>{opponentCount}</div>
               <div>
                 <small>{stat1Name}</small>
                 <div>{stat1Value}</div>
               </div>
-
             </div>
           </div>
-          <div id='button-area' className={buttonsClass}>
-            <button id='begin-button' onPointerDown={props.onClickBeginGame} className='modal-button'>START</button>
+
+        <div id='button-area' className={buttonsClass}>
+          <div id='pre-game-stats'>
+            {props.loggedIn && props.stats[props.gameMode.name] && Object.values(props.stats[props.gameMode.name]).map((stat, i) => {
+              let recordName = Object.keys(props.stats[props.gameMode.name])[i];
+              return (
+                <div key={i} className='stat-row'>
+                  <div>{recordName}</div>
+                  <div>{stat + ((recordName === 'Quickest Bingo') && ' balls')}</div>
+                </div>
+              );
+            })}
+            {!props.loggedIn &&
+              <div id='log-in-nagger'><a onClick={props.onClickLoginButton}>Log In</a> to save your stats and progress!</div>
+            }
+          </div>
+          <div id='pre-game-buttons'>
+            <button id='begin-button' onPointerDown={props.onClickBeginGame} className={`modal-button${(gameName !== 'Ranked' && gameName !== 'Bonanza') ? ' disabled' : ''}`}>START</button>
             <button id='cancel-button' onPointerDown={props.onClickCancelButton} className='modal-button'>NEVER MIND</button>
+          </div>
           </div>
         </>
       }

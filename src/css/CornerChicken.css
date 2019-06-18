@@ -1,4 +1,5 @@
 #bonus-spot {
+  --danger-color: rgb(10, 243, 10);
   position: absolute;
   right: 0;
   top: var(--header-height);
@@ -6,7 +7,7 @@
   width: var(--caller-height);
   height: var(--caller-height);
   background-color: #8f8a61;
-  border: 0.75vmin solid rgb(35, 83, 3);
+  border: 1.25vmin solid var(--danger-color);
   border-radius: 2vmin;
   display: flex;
   align-items: center;
@@ -14,15 +15,38 @@
   z-index: 1;
   transition: opacity 320ms ease;
   will-change: opacity, transform, background-color;
-  z-index: 20;
+  z-index: 3;
+}
+#bonus-spot.danger-0 {
+  --danger-color: rgb(10, 243, 10);
+  /* border-color: rgb(10, 243, 10); */
+}
+#bonus-spot.danger-1 {
+  --danger-color: rgb(149, 214, 8);
+  /* border-color: rgb(149, 214, 8); */
+}
+#bonus-spot.danger-2 {
+  --danger-color: rgb(214, 166, 8);
+  /* border-color: rgb(214, 166, 8); */
+}
+#bonus-spot.danger-3 {
+  --danger-color: rgb(214, 8, 8);
+  /* border-color: rgb(214, 8, 8); */
 }
 #bonus-spot.hidden {
   opacity: 0;
   pointer-events: none;
 }
+#bonus-spot.bust {
+  /* background: rgb(158, 0, 0); */
+}
+#bonus-spot.bust > #bonus-chicken {
+  /* transform: scale(0.6); */
+  /* animation: none; */
+}
 #bonus-spot.showing-giftbox {
   /* background-color: #3cff00; */
-  border: 0.75vmin solid rgb(35, 83, 3);
+  border: 1.25vmin solid rgb(35, 83, 3);
   animation: glow;
   animation-duration: 500ms;
   animation-iteration-count: infinite;
@@ -30,8 +54,8 @@
 }
 #bonus-spot > #bonus-chicken {
   image-rendering: pixelated;
-  width: 65%;
-  height: 65%;
+  width: 80%;
+  height: 80%;
   animation: pulse;
   animation-duration: 1600ms;
   animation-iteration-count: infinite;
@@ -41,26 +65,57 @@
   animation-play-state: paused;
 }
 #bonus-spot.showing-giftbox > #bonus-chicken {
-  animation-duration: 420ms;
-  width: 80%;
-  height: 80%;
+  animation-duration: 520ms;
+}
+#corner-chicken-overlay {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  padding: calc(var(--font-size) / 6);
+  color: var(--danger-color);
+  font-size: calc(var(--font-size) / 1.25);
+  font-weight: bolder;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+  pointer-events: none;
+  display: none;
 }
 @keyframes pulse {
   0%, 100% {
-    transform: rotate(0deg) scale(1);
+    transform: scale(1);
   }
   50% {
-    transform: scale(0.85);
+    transform: scale(0.9);
   }
 }
 @keyframes glow {
-  0%, 100% {
-    /* background-color: #3cff00; */
-    border-color: green;
+  0% {
+    background-color: var(--danger-color);
+    border-color: rgb(0, 102, 128);
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-5deg);
   }
   50% {
-    background-color: #218a01;
-    border-color: rgb(255, 0, 0);
+    background-color: white;
+    border-color: rgb(0, 31, 172);
+    transform: rotate(0deg);
+  }
+  75% {
+    transform: rotate(5deg);
+  }
+  100% {
+    background-color: var(--danger-color);
+    border-color: rgb(0, 102, 128);
+    transform: rotate(0deg);
+  }
+}
+@keyframes peck {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.9);
   }
 }
 

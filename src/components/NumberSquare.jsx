@@ -3,7 +3,7 @@ import '../css/NumberSquare.css';
 
 function NumberSquare(props) {
   if (!props.isOpponent) {
-    // console.log('NumberSquare', props.number)
+    // // console.log('NumberSquare', props.number)
   }
   const [showing, setShowing] = useState(false);
   const [flashing, setFlashing] = useState(undefined);
@@ -21,35 +21,54 @@ function NumberSquare(props) {
         setFlashing(undefined)
       }, 1200);
     }
-  }, [props.madeFree]);
+    if (props.blocked) {
+      setFlashing('red');
+      setTimeout(() => {
+        setFlashing(undefined)
+      }, 1200);
+    }
+  }, [props.madeFree, props.blocked]);
   let chipClass = props.isOpponent ? 'mark' : 'chip';
+
   let displayNumber = props.number;
-  let squareClass = 'number-square';
+  let squareClass = props.isOpponent ? 'number-square' : 'number-square opponent';
   if (showing) {
     squareClass += ' showing';
   }
-  if (props.marked) {
+  if (props.endangered) {
+    squareClass += ' endangered';
+  }
+  if (!props.blocked && props.marked) {
     squareClass += ' marked';
   }
   if (props.highlighted) {
     squareClass += ' highlighted';
   }
-  if (props.number === 99) {
-    displayNumber = 'FREE';
-    squareClass += ' free';
-  }
   if (props.madeFree) {
     squareClass += ' made-free';
+  }
+  if (!props.blocked && (props.number === 99 || props.madeFree)) {
+    displayNumber = 'FREE';
+    squareClass += ' free';
   }
   if (props.tinted) {
     squareClass += ' tinted';
   }
   if (flashing) {
+    chipClass += ' ' + flashing;
     squareClass += ' flashing';
+    squareClass += ' highlighted';
   }
+  if (props.canBeMarked || flashing) {
+    chipClass += ' markable';
+  }
+  if (props.blocked) {
+    squareClass += ' blocked';
+  }
+
   return (
     !props.isOpponent ?
-      <div id={`card-square-${props.number}`}
+      <div
         className={squareClass + ' ' + props.chipImage}
         onPointerDown={!props.isOpponent ? props.onTouchSquare : null}
         onTouchEnd={!props.isOpponent ? props.onTouchEndSquare : null}
@@ -58,9 +77,7 @@ function NumberSquare(props) {
         <div className={chipClass} />
       </div>
       :
-        <div id={`card-square-${props.number}`}
-          className={squareClass + ' ' + props.chipImage}
-        >
+      <div id={`card-square-${props.number}`} className={squareClass + ' ' + props.chipImage} >
         <div className={chipClass} />
       </div>
   );
@@ -68,24 +85,25 @@ function NumberSquare(props) {
 
 function areEqual(prevProps, nextProps) {
   let equalTest = (
-    prevProps.highlighted == nextProps.highlighted &&
-    prevProps.madeFree == nextProps.madeFree &&
-    prevProps.touched == nextProps.touched &&
-    prevProps.canBeMarked == nextProps.canBeMarked &&
-    prevProps.marked == nextProps.marked &&
-    prevProps.gameStarted == nextProps.gameStarted &&
-    !(nextProps.canBeMarked && !nextProps.marked)
+    !(nextProps.canBeMarked && !nextProps.marked) &&
+    prevProps.highlighted === nextProps.highlighted &&
+    prevProps.madeFree === nextProps.madeFree &&
+    prevProps.touched === nextProps.touched &&
+    prevProps.blocked === nextProps.blocked &&
+    prevProps.canBeMarked === nextProps.canBeMarked &&
+    prevProps.marked === nextProps.marked &&
+    prevProps.gameStarted === nextProps.gameStarted
   );
   // if (!equalTest && !prevProps.isOpponent) {
-  //   console.green('-------------------------------------------');
-  //   console.log(prevProps.number);
-  //   console.log('highlighted', prevProps.highlighted == nextProps.highlighted);
-  //   console.log('madeFree', prevProps.madeFree == nextProps.madeFree);
-  //   console.log('touched', prevProps.touched == nextProps.touched);
-  //   console.log('canBeMarked', prevProps.canBeMarked == nextProps.canBeMarked);
-  //   console.log('marked', prevProps.marked == nextProps.marked);
-  //   console.log('nextProps.lastBall !== nextProps.number', nextProps.lastBall !== nextProps.number);
-  //   console.green('-------------------------------------------');
+  //   // console.green('-------------------------------------------');
+  //   // console.log(prevProps.number);
+  //   // console.log('highlighted', prevProps.highlighted === nextProps.highlighted);
+  //   // console.log('madeFree', prevProps.madeFree === nextProps.madeFree);
+  //   // console.log('touched', prevProps.touched === nextProps.touched);
+  //   // console.log('canBeMarked', prevProps.canBeMarked === nextProps.canBeMarked);
+  //   // console.log('marked', prevProps.marked === nextProps.marked);
+  //   // console.log('nextProps.lastBall !== nextProps.number', nextProps.lastBall !== nextProps.number);
+  //   // console.green('-------------------------------------------');
   // }
   return equalTest;
 }

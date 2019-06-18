@@ -1,6 +1,6 @@
 #confirm-modal {
   position: absolute;
-  background-color: #000000bb;
+  background: #111;
   width: 90vmin;
   height: 110vmin;
   margin-left: calc((100vw - 90vmin) / 2);
@@ -32,28 +32,15 @@
   color: #ee0606;
   font-weight: bolder;
 }
-#confirm-modal.reload > div:first-child {
-  background-color: transparent;
-}
-#confirm-modal.reload {
-  background-color: rgb(56, 32, 13);
-}
-#confirm-modal.reload > #confirm-message {
-  background-color: transparent;
-  color: rgb(240, 202, 152);
-  font-weight: bolder;
-}
 #confirm-message {
   display: flex;
   padding: 2vmin;
   text-align: center;
   align-items: center;
   justify-content: center;
-  background: black;
   color: white;
   flex-grow: 1;
   width: 100%;
-  background: #111;
 }
 #reload-pic {
   height: 20vmin;

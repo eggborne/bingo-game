@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import '../css/MapScreen.css';
 
 function MapScreen(props) {
-  console.pink('MapScreen ------------------');
+  // console.pink('MapScreen ------------------');
   const [selectedRegion, setSelectedRegion] = useState(undefined);
   let mapClass = props.showing ? 'showing' : '';
   let cash = props.userCash;
@@ -22,8 +22,8 @@ function MapScreen(props) {
 
 const isEqual = (prevProps, nextProps) => {
   return (
-    prevProps.showing == nextProps.showing &&
-    prevProps.userCash == nextProps.userCash
+    prevProps.showing === nextProps.showing &&
+    prevProps.userCash === nextProps.userCash
   );
 };
 

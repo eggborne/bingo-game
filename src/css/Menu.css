@@ -1,6 +1,6 @@
 #menu {
   position: absolute;
-  font-family: 'Chango';
+  font-family: var(--cute-font);;
   font-weight: normal !important;
   background-color: #000000ef;
   width: 100vw;
@@ -17,7 +17,7 @@
   font-weight: bolder;
   padding: calc(var(--header-height) * 0.25);
   padding-top: calc(var(--header-height) * 1.25);
-  transition: transform 440ms ease, opacity 440ms ease, background-color 320ms ease;
+  transition: transform 500ms ease;
   pointer-events: none;
   z-index: 1;
   will-change: transition, opacity, background-color;
@@ -36,8 +36,8 @@ img {
   grid-template-columns: 0.45fr 0.2fr 0.35fr;
   grid-template-rows: 1fr;
   justify-content: space-between;
+  /* justify-content: flex-end; */
   width: 100%;
-  /* height: 11vh; */
   padding: 3vmin;
   pointer-events: all;
   border: 0.5vmin solid #333;
@@ -189,6 +189,7 @@ input[type=range]::-ms-thumb {
     padding: calc(var(--header-height) * 0.25);
     padding-left: calc(var(--header-height) * 1.2);
     align-content: start;
+    font-size: 4vh;
   }
   .menu-item {
     min-height: 15vh;
