@@ -25,3 +25,4 @@ deploy.sh
 .bashrc
 now.sh
 .env
+.htaccess
