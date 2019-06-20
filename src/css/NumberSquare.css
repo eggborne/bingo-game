@@ -12,7 +12,7 @@
 }
 .number-square.showing {
   opacity: 1;
-  transform: none;
+  /* transform: none; */
 }
 .number-square {
   transition: transform 420ms ease !important;
@@ -27,10 +27,10 @@
   background-color: rgb(24, 184, 24) !important;
 }
 .number-square.flashing.red {
-  background-color: transparent;
+  /* background-color: transparent; */
 }
-.number-square.blocked.flashing {
-  background-color: transparent !important;
+.number-square.flashing.red {
+  /* background-color: transparent; */
 }
 .number-square.made-free > .chip:after {
   content: ' ';
@@ -47,7 +47,7 @@
   opacity: 1;
 }
 .number-square.blocked > .chip:after {
-  outline: 1vmin solid rgb(165, 24, 24) !important;
+  outline: 0.75vmin solid rgb(165, 24, 24) !important;
 }
 .number-square.made-free > .chip:after {
   outline: 0.75vmin solid rgb(24, 165, 24);
@@ -64,15 +64,25 @@
   height: 100%;
   opacity: 0;
   display: none;
-  transform: scale(1.35);
+  /* transform: scale(1.35); */
   pointer-events: none;
   background-size: 100% 100%;
   background-repeat: no-repeat;
   transition: opacity 280ms ease, transform 280ms ease;
   will-change: transform, opacity;
+  /* opacity: 0.5; */
+  transform: scale(1.35);
+}
+.number-square:not(.blocked) > .chip {
+}
+
+.number-square.markable:not(.marked) {
+  background-color: rgb(68, 185, 214) !important;
 }
 .number-square.blocked {
   /* background-color: rgba(146, 0, 0, 0.493) !important; */
+  color: transparent;
+  z-index: 3;
 }
 .number-square.blocked > .chip {
   image-rendering: pixelated;
@@ -86,10 +96,14 @@
   animation-iteration-count: infinite;
   animation-delay: 1200ms;
   pointer-events: none;
-  /* transform: scale(0.6) !important; */
+  transition: transform 300ms ease, opacity 300ms ease;
+}
+.number-square.blocked.flashing > .chip {
+  /* opacity: 0; */
+  transform: scale(1.25);
 }
 .number-square.blocked > .chip.dead {
-  transform: rotate(720deg) scale(0);
+  /* transform: rotate(720deg) scale(0); */
 }
 @keyframes wobble {
   0%, 100% {
@@ -105,7 +119,6 @@
 .number-square.marked > .chip {
   opacity: 1;
   transform: scale(1.1);
-  /* display: block; */
 }
 .number-square.blue > .chip {
   background-image: url('../assets/bingochipblue.png');
@@ -115,6 +128,22 @@
 }
 .number-square.orange > .chip {
   background-image: url('../assets/bingochiporange.png');
+}
+.number-square.pepper > .chip {
+  background-image: url('../assets/pepper.png');
+  filter: contrast(150%) brightness(80%);
+  z-index: 1;
+  transform: scale(1);
+}
+.number-square.tomato > .chip {
+  background-image: url('../assets/tomato.png');
+  background-image: url('../assets/tomato.webp');
+  filter: contrast(150%) brightness(80%);
+  z-index: 1;
+  transform: scale(1);
+}
+.number-square.tomato.marked > .chip {
+  transform: scaleX(1.2) scaleY(1.25);
 }
 .number-square > .mark {
   position: absolute;
@@ -144,7 +173,8 @@
   background: white;
 }
 .number-square.endangered > .chip {
-  opacity: 0.7;
+  /* opacity: 0.7; */
+  animation-duration: 120ms;
 }
 .number-square.highlighted > .mark {
   border: 0 !important;

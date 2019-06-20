@@ -11,6 +11,7 @@
   align-items: center;
   z-index: 1;
   background: #00000044;
+  pointer-events: none;
 }
 #ball-row {
   height: 100%;

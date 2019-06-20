@@ -32,13 +32,13 @@ const CallerArea = React.forwardRef((props, ref) => {
   console.count('CallerArea');
   const callerRef = ref;
   useEffect(() => {
-    callerRef.current.addEventListener('transitionstart', (event) => {
-      bounce(event);
-    });
-    // return (() => {
-      // callerRef.current.removeEventListener(bounce);
-    // })
-  }, [callerRef]);
+    console.log('cock', ref.current)
+    if (!callerRef.current.onTransitionStart) {
+      callerRef.current.addEventListener('transitionstart', (event) => {
+        bounce(event);
+      });
+    }
+  }, [ref]);
   return (
     <div id='caller-area'>
       <div ref={ref} id='ball-row'>

@@ -40,7 +40,6 @@
   position: absolute;
   font-size: calc(var(--ball-height) * 0.4);
   padding-top: 30%;
-  transform: (0.7);
 }
 .ball:nth-last-child(2) {
   transform: scale(1);

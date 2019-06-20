@@ -67,17 +67,23 @@
 #bonus-spot.showing-giftbox > #bonus-chicken {
   animation-duration: 520ms;
 }
+#bonus-spot.showing-giftbox > #corner-chicken-overlay {
+  opacity: 1;
+}
 #corner-chicken-overlay {
   position: absolute;
-  right: 0;
-  bottom: 0;
+  /* right: 0; */
+  /* bottom: 0; */
   padding: calc(var(--font-size) / 6);
   color: var(--danger-color);
-  font-size: calc(var(--font-size) / 1.25);
-  font-weight: bolder;
+  font-family: var(--cute-font);
+  font-size: calc(var(--font-size) / 1.1);
+  font-weight: normal;
   text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
   pointer-events: none;
-  display: none;
+  opacity: 0.5;
+  transform: scaleX(0.75);
+  transition: opacity 210ms ease, transform 210ms ease;
 }
 @keyframes pulse {
   0%, 100% {

@@ -5,7 +5,8 @@
   font-family: var(--cute-font);
   transform: translateX(-50%) translateY(-50%) scale(0.8);
   left: 50vw;
-  top: calc(var(--caller-height) / 2);
+  /* top: calc(var(--caller-height) / 2); */
+  bottom: 0;
   font-size: calc(var(--header-height) / 2.5);
   /* font-weight: bolder; */
   transform-origin: center;

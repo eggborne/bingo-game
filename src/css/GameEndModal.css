@@ -34,13 +34,13 @@
 #game-end-modal.hidden > video {
   /* display: none; */
 }
-#game-end-modal.limited-balls #game-end-title {
+#game-end-modal.countdown #game-end-title {
   font-size: calc(var(--header-height) / 1.5);
 }
-#game-end-modal.limited-balls #game-end-rank {
+#game-end-modal.countdown #game-end-rank {
   font-size: calc(var(--header-height) / 2.5);
 }
-#game-end-modal.limited-balls #game-end-message {
+#game-end-modal.countdown #game-end-message {
   font-size: calc(var(--header-height) / 3);
 }
 #game-end-modal.playing-video {

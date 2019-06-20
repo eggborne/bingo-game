@@ -20,69 +20,61 @@ function Card(props) {
     // // console.count('opp card ' + props.index)
   }
   const [hidden, setHidden] = useState(props.ready);
-  const [numbers, setNumbers] = useState([[], [], [], [], []]);
+  const [numbers, setNumbers] = useState(undefined);
   const [blockedNumbers, setBlockedNumbers] = useState([]);
   const [markedNumbers, setMarked] = useState([]);
   const [highlightedNumbers, setHighlighted] = useState([]);
   const [tintedNumbers, setTintedNumbers] = useState([]);
-  const [madeFree, setMadeFree] = useState([99]);
+  const [madeFree, setMadeFree] = useState([]);
   const [active, setActive] = useState(false);
   const [bingos, setBingos] = useState({});
   const [won, setWon] = useState(false);
   const [touchedNumber, setTouchedNumber] = useState(false);
 
   const allNumbers = useCallback(() => {
-    return [...numbers[0], ...numbers[1], ...numbers[2], ...numbers[3], ...numbers[4]];
+    if (numbers) {
+      return [...numbers[0], ...numbers[1], ...numbers[2], ...numbers[3], ...numbers[4]];
+    }
+    return [];
   }, [numbers]);
 
-  const autoDaub = (newBall) => {
+  const autoDaub = (num) => {
     // let allNumbers = [numbers].flat(2);
-    if (allNumbers().includes(newBall)) {
-      setMarked([...markedNumbers, newBall]);
+    if (num === 99 || allNumbers().includes(num)) {
+      setMarked([...markedNumbers, num]);
+      return true;
     }
+    return false;
   };
-
-  useEffect(() => {
-    if (props.gameStarted && props.calledBalls.length === 0) {
-      // game just started
-      if (active) {
-        setActive(true);
-      }
-      if (props.autoFreeSpace || props.opponent) {
-        autoDaub(99, true);
-      }
-    } else {
-      if (props.opponent && active) {
-        autoDaub(props.calledBalls[props.calledBalls.length - 1]);
-      }
-    }
-  }, [active, props.calledBalls, props.opponent, props.gameStarted]);
   useEffect(() => {
     if (props.ready && props.calledBalls.length === 0) {
       if (props.opponent) {
-        let newNumbers = [[], [], [], [], []];
-        let used = [];
-        newNumbers.map((column, i) => {
-          for (let n = 0; n < 5; n++) {
-            let randomNumber = 99;
-            if (i === 2 && n === 2) {
-              // free space
-            } else {
-              randomNumber = randomInt(limits[n][0], limits[n][limits[n].length-1]);
-              while (used.includes(randomNumber)) {
-                randomNumber = randomInt(limits[n][0], limits[n][limits[n].length-1]);
+        if (!numbers) {
+          let newNumbers = [[], [], [], [], []];
+          let used = [];
+          newNumbers.map((column, i) => {
+            for (let n = 0; n < 5; n++) {
+              let randomNumber = 99;
+              if (i === 2 && n === 2) {
+                // free space
+              } else {
+                randomNumber = randomInt(limits[n][0], limits[n][limits[n].length - 1]);
+                while (used.includes(randomNumber)) {
+                  randomNumber = randomInt(limits[n][0], limits[n][limits[n].length - 1]);
+                }
               }
+              column[n] = randomNumber;
+              used.push(randomNumber);
             }
-            column[n] = randomNumber;
-            used.push(randomNumber);
-          }
-        });
-        if (props.opponent) {
-          setNumbers(newNumbers)
+          });
+          setNumbers(newNumbers);
+          console.big('reset opponent random numbers');
         }
-      } else if (props.cardData) {
-        console.log(props.username, 'Card setting from cardData', props.cardData)
-        setNumbers(props.cardData.numbers);
+      } else {
+        if (props.cardData) {
+          console.log(props.username, 'Card setting from cardData', props.cardData)
+          setNumbers(props.cardData.numbers);
+        }
       }
       // if (won) {
       //   setWon(false);
@@ -93,21 +85,45 @@ function Card(props) {
       setBlockedNumbers([]);
       setHidden(false);
     }
-  }, [props.gameStarted, props.username, props.calledBalls, props.ready, props.cardData, won])
+  }, [props.gameStarted, props.username, props.calledBalls, props.ready, props.cardData, won]);
+  useEffect(() => {
+    if (props.gameStarted && numbers && props.calledBalls.length === 0) {
+      // game just started
+      if (active) {
+        setActive(true);
+      }
+      if (props.autoFreeSpace || props.opponent) {
+        autoDaub(99);
+        if (props.opponent) {
+          props.reportStatus(props.index, markedNumbers.length - 1, active);
+          console.pink('OPP DAUB FREE -------------' + props.index)
+        }
+      }
+    } else {
+      if (props.opponent && active) {
+        let daub = autoDaub(props.calledBalls[props.calledBalls.length - 1]);
+        if (daub) {
+          setTimeout(() => {
+            props.reportStatus(props.index, markedNumbers.length - 1, active);
+          }, 800 + (props.index*100));
+        }
+      }
+    }
+  }, [active, props.calledBalls, props.opponent, props.gameInProgress]);
   useEffect(() => {
     if (markedNumbers.length === 0) {
       if (highlightedNumbers.length > 0) {
         setHighlighted([]);
       }
-    } else if (props.calledBalls.length > 0) {
+    } else if (props.calledBalls.length > 3) {
       checkForBingo();
     }
-  }, [markedNumbers]);
+  }, [props.calledBalls]);
   useEffect(() => {
     // if (!props.opponent) {
-      if (active !== props.gameStarted) {
+    if (props.gameStarted && active !== props.gameStarted) {
         setActive(props.gameStarted)
-      }
+    }
     // }
   }, [props.gameStarted]);
 
@@ -119,14 +135,25 @@ function Card(props) {
 
   useEffect(() => {
     if (!props.opponent) {
+      console.pink('RUNNING freespace card effect!')
       let latestFreeSpace = props.freeSpaces[props.freeSpaces.length - 1];
+      console.orange('CARD INDEX ------------------- ' + props.index)
+      if (latestFreeSpace) {
+        console.orange('FREE TYPE ------------------- ' + latestFreeSpace.type)
+        console.info(latestFreeSpace)
+        console.orange('INDEX ------------------- ' + latestFreeSpace.cardIndex)
+      }
       if (latestFreeSpace && latestFreeSpace.cardIndex === props.index) {
         if (latestFreeSpace.type === 'FREE') {
+          console.orange('last waas free!')
           setMadeFree([...madeFree, latestFreeSpace.num]);
           if (props.autoFreeSpace) {
+            console.orange('marking!')
             setMarked([...markedNumbers, latestFreeSpace.num, [...madeFree, latestFreeSpace.num]]);
+            // setMarked([...markedNumbers, latestFreeSpace.num]);
           }
         }
+        console.orange('BEE was last!')
         if (latestFreeSpace.type === 'BEE') {
           console.log('BEE blocked', latestFreeSpace)
           setBlockedNumbers([...blockedNumbers, latestFreeSpace.num])
@@ -135,11 +162,12 @@ function Card(props) {
     }
   }, [props.freeSpaces.length, props.autoFreeSpace]);
 
-  useEffect(() => {
-    if (props.ballLimitReached && !hidden) {
-      setHidden(true);
-    }
-  }, [props.ballLimitReached, hidden])
+  // useEffect(() => {
+  //   if (props.ballLimitReached && !hidden) {
+  //     setHidden(true);
+  //   }
+  // }, [props.ballLimitReached, hidden])
+
   const checkForBingo = () => {
     let hasBingo = false;
     let fourCorners = [
@@ -301,7 +329,7 @@ function Card(props) {
               setBingos({});;
               setWon(false)
             }, 2000)
-          } else if (props.gameMode.name === 'Limited Balls') {
+          } else if (props.gameMode.name === 'Countdown') {
             setTimeout(() => {
               setWon(false)
             }, 1000)
@@ -312,11 +340,14 @@ function Card(props) {
   };
   // }, [markedNumbers, props.calledBalls.length]);
   const handleTouchSquare = (event, num) => {
-    let numberTouched = event ? parseInt(event.target.innerText) : num;
+    // let numberTouched = event ? parseInt(event.target.innerText) : num;
+    let numberTouched = parseInt(event.target.id.split('-')[1]);
+    console.log('touched ---------------------------------------------------------------- ', numberTouched)
     setTouchedNumber(numberTouched);
-    if (isNaN(numberTouched)) {
-      numberTouched = 99;
-    }
+    // if (isNaN(numberTouched)) {
+    //   numberTouched = 99;
+    // }
+    console.log('touched ---------------------------------------------------------------- ', numberTouched)
     if (props.powerupSelected && props.powerupSelected.displayName.indexOf('Spray') > -1 && blockedNumbers.includes(numberTouched)) {
       let newBlocked = [...blockedNumbers];
       let newMadeFree = [...madeFree];
@@ -326,12 +357,15 @@ function Card(props) {
       setMadeFree(newMadeFree);
       props.onKillBee(props.index, numberTouched);
     } else if (!markedNumbers.includes(numberTouched)) {
+      console.log('----------------------------------------------------------------', numberTouched, 'not in markedNumbers')
       if (props.calledBalls.includes(numberTouched) || madeFree.includes(numberTouched) || (event && props.gameStarted && event.target.innerText === 'FREE')) {
+        console.log('----------------------------------------------------------------', numberTouched, 'MARKED????????????????????????????????????????')
         setMarked([...markedNumbers, numberTouched]);
         if (!props.opponent) {
           props.onDaubSquare(props.calledBalls[props.calledBalls.length - 1] === numberTouched && numberTouched !== 99);
         }
       } else {
+
         // let arrow = document.getElementById('hint-arrow');
         // if (arrow && !bounceTimeout && !props.gameStarted && !props.calledBalls.length) {
         //   arrow.classList.add('pointing');
@@ -407,7 +441,7 @@ function Card(props) {
         // let free = madeFree.includes(num) || props.freeSpaces.filter(space => space.cardIndex === props.type === 'FREE' && props.index && space.num === num).length > 0;
         let free = madeFree.includes(num) || props.freeSpaces.filter(space => space.cardIndex === props.index && space.num === num).length > 0;
         let marked = markedNumbers.includes(num);
-        let blocked = blockedNumbers.includes(num);
+        let blocked = blockedNumbers.includes(num) || props.freeSpaces.filter(space => space.type === 'BEE' && space.cardIndex === props.index && space.num === num).length > 0;
         let endangered = (blocked && props.powerupSelected && props.powerupSelected.displayName.indexOf('Bee Spray') > -1);
 
         let highlighted = highlightedNumbers.includes(num);
@@ -441,6 +475,7 @@ function Card(props) {
             onTouchSquare={handleTouchSquare}
             onTouchEndSquare={handleTouchEndSquare}
             gameStarted={props.gameStarted}
+            ownerIndex={props.index}
           />)
         }))}
       </div>
@@ -454,6 +489,7 @@ function areEqual(prevProps, nextProps) {
     prevProps.ready === nextProps.ready &&
     prevProps.calledBalls.length === nextProps.calledBalls.length &&
     prevProps.gameStarted === nextProps.gameStarted &&
+    prevProps.gameInProgress === nextProps.gameInProgress &&
     prevProps.powerupSelected === nextProps.powerupSelected &&
     prevProps.freeSpaces.length === nextProps.freeSpaces.length &&
     prevProps.bonusOffered === nextProps.bonusOffered &&

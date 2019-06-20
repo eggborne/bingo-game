@@ -230,7 +230,7 @@ function Menu(props) {
         <>
           <div className={itemClass}>
             <div>Player Cards</div>
-            <div className='item-label'><small>Slots:</small> {props.user.itemSlots.length}</div>
+            <div className='item-label'><small>Slots:</small> {props.user.cardSlots.length}</div>
             <div className='number-toggle'>
               <img alt='' onPointerDown={() => props.onClickMenuArrow('player-cards-minus')} src={require('../assets/leftarrow.png')} />
               <div>{playerCardCount}</div>

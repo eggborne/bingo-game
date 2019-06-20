@@ -2,14 +2,26 @@ import React, { useState, useEffect } from 'react';
 import '../css/NumberSquare.css';
 
 function NumberSquare(props) {
-  if (!props.isOpponent) {
-    // // console.log('NumberSquare', props.number)
+  if (!props.isOpponent && props.blocked) {
+    console.log('NumberSquare', props)
   }
   const [showing, setShowing] = useState(false);
   const [flashing, setFlashing] = useState(undefined);
 
   useEffect(() => {
     setShowing(true);
+    if (props.madeFree) {
+      setFlashing('green');
+      setTimeout(() => {
+        setFlashing(undefined)
+      }, 1800);
+    }
+    if (props.blocked) {
+      setFlashing('red');
+      setTimeout(() => {
+        setFlashing(undefined)
+      }, 1800);
+    }
     return (() => {
       setShowing(false);
     });
@@ -19,21 +31,24 @@ function NumberSquare(props) {
       setFlashing('green');
       setTimeout(() => {
         setFlashing(undefined)
-      }, 1200);
+      }, 900);
     }
     if (props.blocked) {
       setFlashing('red');
       setTimeout(() => {
         setFlashing(undefined)
-      }, 1200);
+      }, 900);
     }
   }, [props.madeFree, props.blocked]);
   let chipClass = props.isOpponent ? 'mark' : 'chip';
 
   let displayNumber = props.number;
-  let squareClass = props.isOpponent ? 'number-square' : 'number-square opponent';
+  let squareClass = !props.isOpponent ? 'number-square' : 'number-square opponent';
   if (showing) {
     squareClass += ' showing';
+  }
+  if (props.blocked) {
+    squareClass += ' blocked';
   }
   if (props.endangered) {
     squareClass += ' endangered';
@@ -44,9 +59,7 @@ function NumberSquare(props) {
   if (props.highlighted) {
     squareClass += ' highlighted';
   }
-  if (props.madeFree) {
-    squareClass += ' made-free';
-  }
+
   if (!props.blocked && (props.number === 99 || props.madeFree)) {
     displayNumber = 'FREE';
     squareClass += ' free';
@@ -57,21 +70,24 @@ function NumberSquare(props) {
   if (flashing) {
     chipClass += ' ' + flashing;
     squareClass += ' flashing';
-    squareClass += ' highlighted';
+    // squareClass += ' highlighted';
   }
   if (props.canBeMarked || flashing) {
     chipClass += ' markable';
+    squareClass += ' markable';
   }
-  if (props.blocked) {
-    squareClass += ' blocked';
+
+  if (props.madeFree || props.blocked) {
+    squareClass += ' made-free';
   }
 
   return (
     !props.isOpponent ?
       <div
         className={squareClass + ' ' + props.chipImage}
-        onPointerDown={!props.isOpponent ? props.onTouchSquare : null}
-        onTouchEnd={!props.isOpponent ? props.onTouchEndSquare : null}
+        id={`${props.ownerIndex}-${props.number}`}
+        onPointerDown={props.onTouchSquare}
+        onTouchEnd={props.onTouchEndSquare}
       >
         <div>{displayNumber}</div>
         <div className={chipClass} />
@@ -85,13 +101,17 @@ function NumberSquare(props) {
 
 function areEqual(prevProps, nextProps) {
   let equalTest = (
-    !(nextProps.canBeMarked && !nextProps.marked) &&
+    // !(nextProps.canBeMarked && !nextProps.marked) &&
+    !(nextProps.canBeMarked && !nextProps.touched) &&
     prevProps.highlighted === nextProps.highlighted &&
     prevProps.madeFree === nextProps.madeFree &&
     prevProps.touched === nextProps.touched &&
     prevProps.blocked === nextProps.blocked &&
     prevProps.canBeMarked === nextProps.canBeMarked &&
     prevProps.marked === nextProps.marked &&
+    prevProps.chipImage === nextProps.chipImage &&
+    prevProps.number === nextProps.number &&
+    prevProps.ownerIndex === nextProps.ownerIndex &&
     prevProps.gameStarted === nextProps.gameStarted
   );
   // if (!equalTest && !prevProps.isOpponent) {

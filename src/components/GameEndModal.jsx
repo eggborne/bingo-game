@@ -70,8 +70,8 @@ function GameEndModal(props) {
     }
   }
 
-  if (props.gameMode.name === 'Limited Balls') {
-    modalClass += ' limited-balls';
+  if (props.gameMode.name === 'Countdown') {
+    modalClass += ' countdown';
     title = 'Round Over';
     rank = `${props.currentBingos.length} BINGOS`;
     message = `Prize: $${props.prizeMoney}`

@@ -39,9 +39,9 @@ const CornerChicken = React.forwardRef((props, ref) => {
     <div id='bonus-spot' className={spotClass}>
 
       <img ref={cornerChickenRef} onPointerDown={clickEffect} alt='' id='bonus-chicken' src={imageSource} />
-      {/* <div id='corner-chicken-overlay'>{props.currentBeeChance}</div> */}
+      <div id='corner-chicken-overlay'>{100 - (props.currentBeeChance * 10)}</div>
       </div>
-      </>
+    </>
   );
 });
 function areEqual(prevProps, nextProps) {

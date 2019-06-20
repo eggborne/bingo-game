@@ -17,7 +17,7 @@
   --card-size: 0.95;
   --card-size-landscape: 0.95;
 
-  --card-padding: calc(3vmin / var(--user-cards-wide));
+  --card-padding: calc(4vmin / var(--user-cards-wide));
   --card-backing-color: rgb(63, 75, 98);
   --card-face-color: #ffdedeca;
   --card-number-color: black;
@@ -49,7 +49,7 @@
     --header-height: 8.5vw;
     --card-grid-border-width: calc(0.6vmin / var(--user-cards-wide-landscape));
     --card-padding: calc(5vmin / var(--user-cards-wide-landscape));
-    --caller-height: 16vh;
+    /* --caller-height: 16vh; */
   }
 }
 body {
@@ -133,10 +133,10 @@ input[type='checkbox'] {
   position: absolute;
   width: 100vw;
   height: var(--view-height);
-  background-image: url('../assets/mountains.jpg');
+  background-image: url('../assets/bluehills.jpg');
   background-repeat: no-repeat;
   background-size: cover;
-  background-position: top;
+  background-position: top center;
   transform: none;
   transition: transform 1600ms ease-out;
   pointer-events: none;
@@ -505,7 +505,7 @@ button #account-button {
   height: 100%;
   display: grid;
   grid-template-columns: repeat(var(--opponent-cards), 1fr);
-  grid-column-gap: 2px;
+  /* grid-column-gap: 2px; */
   transition: filter 320ms ease;
 }
 #danger-meter.blurred > #danger-bar-list {
@@ -583,12 +583,13 @@ button #account-button {
 }
 .danger-bar {
   color: red;
-  /* width: 1vw; */
+  width: 100%;
   height: 100%;
   transition: all 320ms ease;
-  transform: rotate(180deg);
   background: green;
-  transition: opacity 420ms ease, background-color 420ms ease;
+  transform-origin: 0% 50%;
+  transform-origin: 50% 100%;
+  transition: transform 310ms linear, opacity 420ms ease, background 420ms ease;
 }
 .danger-bar.called {
   opacity: 0.2;
@@ -600,38 +601,31 @@ button #account-button {
   border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
 }
 .danger-bar.out-of-game {
-  transform: scaleX(0.25);
-  opacity: 0.2 !important;
-  background: rgb(92, 10, 10);
+  /* transform: scaleY(0.25); */
+  /* opacity: 0.2 !important; */
+  background: rgb(86, 84, 219) !important;
 }
-.danger-bar.dark-red,
-#prize-label.dark-red {
-  color: rgb(170, 22, 22);
+.danger-bar.dark-red {
   background: rgb(170, 22, 22);
 }
-.danger-bar.red,
-#prize-label.red {
-  /* color: red; */
+.danger-bar.red {
   background: red !important;
 }
-.danger-bar.orange,
-#prize-label.orange {
-  /* color: orange; */
+.danger-bar.orange {
   background: orange !important;
 }
-.danger-bar.yellow,
-#prize-label.yellow {
-  /* color: yellow; */
-  background: yellow;
+.danger-bar.yellow {
+  background: rgb(204, 204, 0);
 }
-.danger-bar.green,
-#prize-label.green {
-  /* color: green; */
+.danger-bar.yellowgreen {
+  background: yellowgreen;
+}
+.danger-bar.green {
   background: green;
 }
 
 #game-board {
-  --board-padding: 1vw;
+  --board-padding: 0.5vw;
   display: grid;
   grid-template-rows: auto;
   grid-template-columns: 1fr;
@@ -646,6 +640,7 @@ button #account-button {
 }
 .card-area {
   display: flex;
+  flex-flow: row;
   align-items: center;
   /* justify-content: center; */
   flex-wrap: wrap;
@@ -681,11 +676,14 @@ button #account-button {
   --user-cards-wide: 6 !important;
   margin: 0.25vmin;
 }
-.limited-balls {
+.countdown {
   background-color: #0c142f;
 }
 .ranked {
   background-color: #0c2f2a;
+}
+.bonanza {
+  background-color: #553b13;
 }
 .classic {
   background-color: #1b1b1b;
@@ -785,7 +783,7 @@ button #account-button {
     font-size: calc(var(--header-height) / 5);
   }
   #header-end {
-    justify-content: flex-start;
+    /* justify-content: flex-start; */
   }
   .card-space {
     width: calc(((100vw - var(--header-height) - var(--button-bar-height)) / var(--user-cards-wide)) - var(--board-padding));
@@ -807,26 +805,28 @@ button #account-button {
     /* display: none; */
   }
   #danger-bar-list {
+    position: relative;
     writing-mode: lr;
     width: calc(var(--header-height) - (var(--header-border-width) * 3));
     min-height: 0;
-    max-height: 300vh;
+    /* max-height: 300vh; */
     flex-grow:1;
     display: grid;
     grid-template-columns: 1fr;
+
     /* grid-template-rows: repeat(calc(var(--ball-limit / 3)), 1fr); */
     grid-template-rows: repeat(var(--opponent-cards), 1fr);
-
-    grid-row-gap: 2px;
+    grid-row-gap: calc(var(--header-height) / (var(--opponent-cards) * 2));
     transform: rotate(180deg);
-    margin-top: 2vh;
-    margin-bottom: 2vh;
+    /* margin-top: 2vh;
+    margin-bottom: 2vh; */
+  }
+  .danger-bar {
+    /* transform: scaleY(1); */
+    transform-origin: 0% 50%;
   }
   #prize-label, #bingos-label {
     text-align: center;
-  }
-  .danger-bar {
-    transition: all 320ms ease;
   }
   #danger-bar-list.ball-counter {
     grid-template-columns: 1fr 1fr 1fr;
@@ -836,8 +836,9 @@ button #account-button {
     height: 100%;
   }
   #bingos-left-display, #balls-left-display {
+    position: relative;
     left: 0;
-    bottom: var(--header-height);
+    /* bottom: var(--header-height); */
     width: var(--header-height) !important;
     max-width: var(--header-height);
     padding: var(--header-border-width);
@@ -845,9 +846,8 @@ button #account-button {
     flex-direction: column;
     text-align: center;
     align-items: center;
-    padding-top: var(--header-height);
-    background-image: linear-gradient(transparent, #00000099);
-    /* background: green; */
+    /* padding-top: var(--header-height); */
+    transform-origin: top;
   }
   #bingos-left-display small, #balls-left-display small  {
     font-family: var(--cute-font);;

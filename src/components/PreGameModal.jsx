@@ -27,15 +27,19 @@ function PreGameModal(props) {
   let stat1Value = '';
   let stat2Name = '';
   let stat2Value = '';
-  if (gameName === 'Limited Balls') {
+  if (gameName === 'Countdown') {
     opponentCount = 0;
-    modalClass += ' limited-balls';
+    modalClass += ' countdown';
     stat1Name = 'Number of balls'
     stat1Value = props.ballLimit;
   } else if (gameName === 'Ranked') {
     modalClass += ' ranked';
     stat1Name = 'Places awarded'
     stat1Value = props.winnerLimit;
+  } else if (gameName === 'Bonanza') {
+    modalClass += ' bonanza';
+    stat1Name = ''
+    stat1Value = '';
   } else if (gameName === 'Bonanza') {
     modalClass += ' ranked';
     stat1Name = 'Places awarded'
@@ -89,7 +93,7 @@ function PreGameModal(props) {
               );
             })}
             {!props.loggedIn &&
-              <div id='log-in-nagger'><a onClick={props.onClickLoginButton}>Log In</a> to save your stats and progress!</div>
+              <div id='log-in-nagger'><a style={{textDecoration: 'underline', fontSize: 'var(--font-size)'}}onClick={props.onClickLoginButton}>LOG IN</a><br />to save your stats and progress!</div>
             }
           </div>
           <div id='pre-game-buttons'>

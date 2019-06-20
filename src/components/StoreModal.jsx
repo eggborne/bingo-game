@@ -1,15 +1,17 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import '../css/StoreScreen.css';
 import '../css/StoreModal.css';
 
 function StoreModal(props) {
   console.info('storemodal props', props);
   const slotRef = useRef();
-  const [slotSelected, setSlotSelected] = useState(props.itemSlots.indexOf(props.itemSlots.filter(slot => !slot.item)[0]));
+  const [slotSelected, setSlotSelected] = useState(undefined);
   let agreeLabel = 'BUY';
   let cancelLabel = 'NEVER MIND';
   let cost = props.selectedItem ? props.selectedItem.cost : undefined;
-
+  useEffect(() => {
+    setSlotSelected(undefined);
+  }, [props.selectedItem])
   const flashSlotSelect = useCallback(() => {
     console.log(slotRef)
     slotRef.current.style.transform = 'scale(1.05)';
