@@ -8,18 +8,9 @@ let winPatterns = {
   'Letter X': [[0,4],[1,3],[],[1,3],[0,4]]
 }
 
-
 const instantWin = false;
 
-
-
 function Card(props) {
-  if (!props.opponent) {
-    // // console.warn('Card ------> ', props)
-  } else {
-    // // console.count('opp card ' + props.index)
-  }
-  const [hidden, setHidden] = useState(props.ready);
   const [numbers, setNumbers] = useState(undefined);
   const [blockedNumbers, setBlockedNumbers] = useState([]);
   const [markedNumbers, setMarked] = useState([]);
@@ -27,7 +18,7 @@ function Card(props) {
   const [tintedNumbers, setTintedNumbers] = useState([]);
   const [madeFree, setMadeFree] = useState([]);
   const [active, setActive] = useState(false);
-  const [bingos, setBingos] = useState({});
+  const [bingos, setBingos] = useState([]);
   const [won, setWon] = useState(false);
   const [touchedNumber, setTouchedNumber] = useState(false);
 
@@ -68,22 +59,16 @@ function Card(props) {
             }
           });
           setNumbers(newNumbers);
-          console.big('reset opponent random numbers');
         }
       } else {
         if (props.cardData) {
-          console.log(props.username, 'Card setting from cardData', props.cardData)
           setNumbers(props.cardData.numbers);
         }
       }
-      // if (won) {
-      //   setWon(false);
-      // }
       setMarked([]);
       setHighlighted([]);
       setMadeFree([]);
       setBlockedNumbers([]);
-      setHidden(false);
     }
   }, [props.gameStarted, props.username, props.calledBalls, props.ready, props.cardData, won]);
   useEffect(() => {
@@ -91,84 +76,66 @@ function Card(props) {
       // game just started
       if (active) {
         setActive(true);
+        if (props.opponent) {
+          simulateGame();
+        }
       }
       if (props.autoFreeSpace || props.opponent) {
         autoDaub(99);
-        if (props.opponent) {
-          props.reportStatus(props.index, markedNumbers.length - 1, active);
-          console.pink('OPP DAUB FREE -------------' + props.index)
-        }
       }
     } else {
       if (props.opponent && active) {
-        let daub = autoDaub(props.calledBalls[props.calledBalls.length - 1]);
-        if (daub) {
-          setTimeout(() => {
-            props.reportStatus(props.index, markedNumbers.length - 1, active);
-          }, 800 + (props.index*100));
-        }
+        autoDaub(props.calledBalls[props.calledBalls.length - 1]);
       }
     }
-  }, [active, props.calledBalls, props.opponent, props.gameInProgress]);
+  }, [numbers, props.calledBalls, props.opponent, props.gameInProgress, props.gameStarted]);
+
+
+
   useEffect(() => {
-    if (markedNumbers.length === 0) {
-      if (highlightedNumbers.length > 0) {
-        setHighlighted([]);
-      }
-    } else if (props.calledBalls.length > 3) {
+    if (props.opponent && active && props.calledBalls.length > 3) {
       checkForBingo();
     }
   }, [props.calledBalls]);
-  useEffect(() => {
-    // if (!props.opponent) {
-    if (props.gameStarted && active !== props.gameStarted) {
-        setActive(props.gameStarted)
-    }
-    // }
-  }, [props.gameStarted]);
 
-  // useEffect(() => {
-  //   if (props.gameStarted) {
-  //     checkForBingo();
-  //   }
-  // }, [props.gameStarted]);
+  useEffect(() => {
+    if (active !== props.gameStarted) {
+      setActive(props.gameStarted)
+      if (props.opponent) {
+        props.reportActive(props.index, true);
+      }
+    }
+  }, [props.gameStarted]);
 
   useEffect(() => {
     if (!props.opponent) {
-      console.pink('RUNNING freespace card effect!')
       let latestFreeSpace = props.freeSpaces[props.freeSpaces.length - 1];
-      console.orange('CARD INDEX ------------------- ' + props.index)
-      if (latestFreeSpace) {
-        console.orange('FREE TYPE ------------------- ' + latestFreeSpace.type)
-        console.info(latestFreeSpace)
-        console.orange('INDEX ------------------- ' + latestFreeSpace.cardIndex)
-      }
       if (latestFreeSpace && latestFreeSpace.cardIndex === props.index) {
         if (latestFreeSpace.type === 'FREE') {
-          console.orange('last waas free!')
           setMadeFree([...madeFree, latestFreeSpace.num]);
           if (props.autoFreeSpace) {
-            console.orange('marking!')
             setMarked([...markedNumbers, latestFreeSpace.num, [...madeFree, latestFreeSpace.num]]);
-            // setMarked([...markedNumbers, latestFreeSpace.num]);
           }
         }
-        console.orange('BEE was last!')
         if (latestFreeSpace.type === 'BEE') {
-          console.log('BEE blocked', latestFreeSpace)
           setBlockedNumbers([...blockedNumbers, latestFreeSpace.num])
         }
       }
     }
   }, [props.freeSpaces.length, props.autoFreeSpace]);
 
-  // useEffect(() => {
-  //   if (props.ballLimitReached && !hidden) {
-  //     setHidden(true);
-  //   }
-  // }, [props.ballLimitReached, hidden])
+  useEffect(() => {
+    if (!props.opponent && markedNumbers.length > 0) {
+      checkForBingo();
+    }
+  }, [markedNumbers])
+
+  const findBingosInGame = () => {
+
+  }
 
   const checkForBingo = () => {
+    let checkStart = window.performance.now();
     let hasBingo = false;
     let fourCorners = [
       numbers[0][0],
@@ -182,10 +149,11 @@ function Card(props) {
     let verticalLines = [];
     let diagonalNWSE = [];
     let diagonalSWNE = [];
-    let cornerBingo = false;
+    let cornerBingo = 0;
     let numbersMarked = markedNumbers.filter(num => !blockedNumbers.includes(num));
     numbers.map((row, r) => {
-      if (row.filter(num => numbersMarked.includes(num)).length === row.length) {
+      let markedInRow = row.filter(num => numbersMarked.includes(num)).length;
+      if (markedInRow === row.length) {
         // row filled
         horizontalLines.push(row);
       }
@@ -233,7 +201,7 @@ function Card(props) {
 
     if (fourCorners.filter(num => numbersMarked.includes(num)).length === 4) {
       // has all four corners
-      cornerBingo = true;
+      cornerBingo = 1;
     }
 
     let foundBingos = {
@@ -277,50 +245,59 @@ function Card(props) {
       newHighlighted = [...newHighlighted, ...fourCorners];
     }
 
-    if (instantWin || hasBingo) {
-    // if (hasBingo) {
-      setHighlighted(newHighlighted);
-      if (props.opponent) {
-        if (active && props.gameMode.name === 'Ranked' ||  props.gameMode.name === 'Bonanza') {
-          props.onAchieveBingo(true, foundBingos);
-          if (props.gameMode.name === 'Ranked') {
-            setActive(false);
-          }
-        }
-      } else {
-        let bingoCount = 0;
-        let foundBingoCount = 0;
-        for (let type in bingos) {
-          if (type === 'verticalLines' || type === 'horizontalLines') {
-            bingoCount += bingos[type].length
-          } else if (type === 'diagonals') {
-            if (bingos[type].NWSE.length === 5) {
-              bingoCount++;
-            }
-            if (bingos[type].SWNE.length === 5) {
-              bingoCount++;
-            }
-          }
-        }
-        for (let type in foundBingos) {
-          if (type === 'verticalLines' || type === 'horizontalLines') {
-            foundBingoCount += foundBingos[type].length
-          } else if (type === 'diagonals') {
-            if (foundBingos[type].NWSE.length === 5) {
-              foundBingoCount++;
-            }
-            if (foundBingos[type].SWNE.length === 5) {
-              foundBingoCount++;
-            }
-          }
-        }
-        if (cornerBingo) {
-          foundBingoCount++;
-        }
+    setBingos(foundBingos);
 
-        if (instantWin || bingoCount < foundBingoCount) {
-        // if (bingoCount < foundBingoCount) {
-        setBingos(bingoCount);
+    if (instantWin || hasBingo) {
+      console.info('BINGOS! CARD', props.index, foundBingos);
+      setHighlighted(newHighlighted);
+
+      // count the bingos in state...
+
+      let bingoCount = 0;
+      let foundBingoCount = 0;
+      for (let type in bingos) {
+        if (type === 'verticalLines' || type === 'horizontalLines') {
+          bingoCount += bingos[type].length
+        } else if (type === 'diagonals') {
+          if (bingos[type].NWSE.length === 5) {
+            bingoCount++;
+          }
+          if (bingos[type].SWNE.length === 5) {
+            bingoCount++;
+          }
+
+        }
+      }
+      if (cornerBingo) {
+        bingoCount++;
+      }
+
+      // count the amount just found...
+
+      for (let type in foundBingos) {
+        if (type === 'verticalLines' || type === 'horizontalLines') {
+          foundBingoCount += foundBingos[type].length
+        } else if (type === 'diagonals') {
+          if (foundBingos[type].NWSE.length === 5) {
+            foundBingoCount++;
+          }
+          if (foundBingos[type].SWNE.length === 5) {
+            foundBingoCount++;
+          }
+        }
+      }
+      if (cornerBingo) {
+        foundBingoCount++;
+      }
+      console.info('BINGOS! bingos, foundBingos', bingos, foundBingos);
+      console.info('BINGOS! bingoCount, foundBingoCount', bingoCount, foundBingoCount);
+
+      // ...compare old to new
+
+      if (instantWin || bingoCount < foundBingoCount) {
+        // setBingos(foundBingos);
+
+        if (!props.opponent) {
           setWon(true)
           props.onAchieveBingo(false, foundBingos);
           if (props.gameMode.name === 'Ranked') {
@@ -329,25 +306,34 @@ function Card(props) {
               setBingos({});;
               setWon(false)
             }, 2000)
+          } else if (props.gameMode.name === 'Bonanza') {
+            setTimeout(() => {
+              setWon(false)
+            }, 400)
           } else if (props.gameMode.name === 'Countdown') {
             setTimeout(() => {
               setWon(false)
-            }, 1000)
+            }, 400)
+          }
+        } else {
+          if (active && props.gameMode.name === 'Ranked' ||  props.gameMode.name === 'Bonanza') {
+            if (props.gameMode.name === 'Ranked') {
+              props.onAchieveBingo(true, foundBingoCount);
+              setActive(false);
+              props.reportActive(props.index, false);
+            }
+            if (props.gameMode.name === 'Bonanza') {
+              props.onAchieveBingo(true, foundBingoCount);
+            }
           }
         }
       }
     }
+    // console.error('checked card', props.index, 'for bingo in', window.performance.now() - checkStart);
   };
-  // }, [markedNumbers, props.calledBalls.length]);
   const handleTouchSquare = (event, num) => {
-    // let numberTouched = event ? parseInt(event.target.innerText) : num;
     let numberTouched = parseInt(event.target.id.split('-')[1]);
-    console.log('touched ---------------------------------------------------------------- ', numberTouched)
     setTouchedNumber(numberTouched);
-    // if (isNaN(numberTouched)) {
-    //   numberTouched = 99;
-    // }
-    console.log('touched ---------------------------------------------------------------- ', numberTouched)
     if (props.powerupSelected && props.powerupSelected.displayName.indexOf('Spray') > -1 && blockedNumbers.includes(numberTouched)) {
       let newBlocked = [...blockedNumbers];
       let newMadeFree = [...madeFree];
@@ -357,63 +343,30 @@ function Card(props) {
       setMadeFree(newMadeFree);
       props.onKillBee(props.index, numberTouched);
     } else if (!markedNumbers.includes(numberTouched)) {
-      console.log('----------------------------------------------------------------', numberTouched, 'not in markedNumbers')
       if (props.calledBalls.includes(numberTouched) || madeFree.includes(numberTouched) || (event && props.gameStarted && event.target.innerText === 'FREE')) {
-        console.log('----------------------------------------------------------------', numberTouched, 'MARKED????????????????????????????????????????')
         setMarked([...markedNumbers, numberTouched]);
         if (!props.opponent) {
           props.onDaubSquare(props.calledBalls[props.calledBalls.length - 1] === numberTouched && numberTouched !== 99);
         }
-      } else {
-
-        // let arrow = document.getElementById('hint-arrow');
-        // if (arrow && !bounceTimeout && !props.gameStarted && !props.calledBalls.length) {
-        //   arrow.classList.add('pointing');
-        //   document.getElementById('start-button').classList.remove('throbbing');
-        //   bounceTimeout = setTimeout(() => {
-        //     document.getElementById('start-button').classList.add('throbbing');
-        //     setTimeout(() => {
-        //       document.getElementById('start-button').classList.remove('throbbing');
-        //       arrow.classList.remove('pointing');
-        //       clearTimeout(bounceTimeout);
-        //       bounceTimeout = undefined;
-        //     }, 1000)
-        //   }, 400)
-        // } else {
-        // if (props.gameStarted) {
-        //   event.target.style.backgroundColor = '#99000022';
-        //   let num = event.target;
-        //   setTimeout(() => {
-        //     num.style.backgroundColor = 'initial';
-        //   }, 60);
-        //   setTimeout(() => {
-        //     num.style.backgroundColor = '#99000022';
-        //   }, 120);
-        //   setTimeout(() => {
-        //     num.style.backgroundColor = 'initial';
-        //   }, 180);
-        //   setTimeout(() => {
-        //     num.style.backgroundColor = '#99000022';
-        //   }, 240);
-        //   setTimeout(() => {
-        //     num.style.backgroundColor = 'initial';
-        //   }, 300);
-        // } else {
-        if (!active && !props.calledBalls.length) {
-            console.log("clickinavchaib??")
-            props.onClickInactiveCard();
-          }
-        // }
-
-
       }
     }
   };
-// }, [props.onClickInactiveCard, props.gameStarted, props.calledBalls.length, markedNumbers]);
-
   const handleTouchEndSquare = (event) => {
     setTouchedNumber(undefined);
   };
+
+  const simulateGame = () => {
+    let markedEachBall = [1];
+    let markedThisBall = 1;
+    props.fullBallSequence.map((calledBall) => {
+      if (allNumbers().includes(calledBall)) {
+        markedThisBall++
+      }
+      markedEachBall.push(markedThisBall);
+    })
+    props.reportFullGame(props.index, markedEachBall)
+  }
+
   let cardClass = 'card';
   if (props.opponent) {
     cardClass += ' opponent';
@@ -423,6 +376,9 @@ function Card(props) {
   }
   if (props.type === 'custom') {
     cardClass += ' custom';
+  }
+  if (props.hidden) {
+    cardClass += ' hidden';
   }
   if (won) {
     cardClass += ' won';
@@ -448,7 +404,7 @@ function Card(props) {
         let tinted = tintedNumbers.includes(num);
         let canBeMarked = (props.calledBalls.includes(num) || free || num === 99);
         return (isOpponent ?
-          props.ready && <NumberSquare
+          props.ready && !props.hidden && <NumberSquare
             key={'opponent-' + c + '-' + n}
             isOpponent={true}
             queueLength={props.calledBalls.length}
@@ -493,6 +449,7 @@ function areEqual(prevProps, nextProps) {
     prevProps.powerupSelected === nextProps.powerupSelected &&
     prevProps.freeSpaces.length === nextProps.freeSpaces.length &&
     prevProps.bonusOffered === nextProps.bonusOffered &&
+    prevProps.fullBallSequence === nextProps.fullBallSequence &&
     prevProps.cardData.numbers === nextProps.cardData.numbers &&
     prevProps.username === nextProps.username;
   ;

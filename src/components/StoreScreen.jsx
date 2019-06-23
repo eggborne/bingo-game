@@ -24,7 +24,7 @@ export const permanentItems = {
   'Item Slots': [
     { id: 4, cost: 500, category: 'Item Slots', displayName: 'First Item Slot', description: 'First Item Slot', type: 'first', class: 'item-row' },
     { id: 5, cost: 2500, category: 'Item Slots', displayName: 'Second Item Slot', description: 'Second Item Slot', type: 'second', class: 'item-row' },
-    { id: 6, cost: 7500, category: 'Item Slots', displayName: 'Third Item Slot', description: 'Third Item Slot', type: 'third', class: 'item-row' },
+    // { id: 6, cost: 7500, category: 'Item Slots', displayName: 'Third Item Slot', description: 'Third Item Slot', type: 'third', class: 'item-row' },
   ],
   'Card Slots': [
     { id: 7, cost: 200, category: 'Card Slots', displayName: 'Third Card Slot', description: '+1 Card Slot 1', type: '1', class: 'item-row' },

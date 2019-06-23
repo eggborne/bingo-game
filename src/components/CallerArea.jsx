@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import Ball from './Ball';
 import '../css/CallerArea.css';
+import { arrayExpression } from '@babel/types';
 
 const getBingoLetter = num => {
   if (num > 60) {
@@ -24,27 +25,34 @@ const bounce = (event) => {
     ball.classList.add('bouncing');
     setTimeout(() => {
       ball.classList.remove('bouncing');
-    }, 500);
+    }, 250);
   }
 }
 
 const CallerArea = React.forwardRef((props, ref) => {
   console.count('CallerArea');
   const callerRef = ref;
+  const [eggsWide, setEggsWide] = useState(0);
   useEffect(() => {
-    console.log('cock', ref.current)
-    if (!callerRef.current.onTransitionStart) {
-      callerRef.current.addEventListener('transitionstart', (event) => {
+    if (!eggsWide && props.calledBalls.length) {
+      setEggsWide(Math.floor(document.querySelector('#caller-area').offsetWidth / document.querySelectorAll('.ball')[0].offsetWidth) - 1);
+    }
+  }, [props.calledBalls])
+  useEffect(() => {
+    if (!callerRef.current.onTransitionEnd) {
+      callerRef.current.addEventListener('transitionend', (event) => {
         bounce(event);
       });
     }
   }, [ref]);
   return (
-    <div id='caller-area'>
+    <div id='caller-area' className={!props.gameStarted ? 'game-paused' : undefined}>
       <div ref={ref} id='ball-row'>
-        {props.calledBalls.map((ball, i) => {
+        {props.calledBalls.map((ball, i, arr) => {
           let letter = getBingoLetter(ball);
-          return <Ball letter={letter} number={ball} key={letter + ball} />
+          return (
+            <Ball index={i} obscured={i < props.calledBalls.length - eggsWide} calledCount={props.calledBalls.length} letter={letter} number={ball} key={letter + ball} />
+          );
         })}
         <div id='ball-space'></div>
       </div>

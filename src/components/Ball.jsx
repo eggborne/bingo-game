@@ -3,12 +3,16 @@ import '../css/Ball.css';
 
 function Ball(props) {
   const [showing, changeShowing] = useState(false);
+
   useEffect(() => {
     changeShowing(true);
   }, []);
   let ballClass = `ball ${props.letter.toLowerCase()}`;
   if (!showing) {
     ballClass += ' hidden'
+  }
+  if (props.obscured) {
+    ballClass += ' obscured';
   }
   return (
     <div className={ballClass}>
@@ -19,7 +23,10 @@ function Ball(props) {
 }
 
 function areEqual(prevProps, nextProps) {
-  return prevProps.letter === nextProps.letter;
+  return (
+    prevProps.number === nextProps.number
+    && prevProps.obscured === nextProps.obscured
+  );
 }
 
 export default React.memo(Ball, areEqual);

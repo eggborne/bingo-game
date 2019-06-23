@@ -11,8 +11,8 @@ function ButtonBar(props) {
   let chickenCount = props.chickenCount;
   // let chickenCount = 'RESET';
   let startClass = 'status-button';
-  let stopClass = 'status-button';
-  let mapClass = 'status-button';
+  let stopClass = 'status-button floating-button';
+  let mapClass = 'status-button floating-button';
   let chickensClass = '';
   if (props.gameStarted) {
     startClass += ' game-started';
@@ -28,7 +28,7 @@ function ButtonBar(props) {
   if (!props.voiceOn) {
     voiceClass += ' inactive';
   }
-  let storeClass = 'status-button';
+  let storeClass = 'status-button floating-button';
   if (!props.storeOpen) {
     storeClass += ' inactive';
   } else {
@@ -55,15 +55,20 @@ function ButtonBar(props) {
       barClass += ' game-paused';
     }
   }
-  let unavailableItemSlots = 3 - props.itemSlots.length;
-  let emptyItemSlots = 3 - props.itemSlots.filter(slot => slot.item).length;
+  let unavailableItemSlots = 2 - props.itemSlots.length;
+  let emptyItemSlots = 2 - props.itemSlots.filter(slot => slot.item).length;
   console.log('empty?', emptyItemSlots)
   console.log('unavailable?', unavailableItemSlots)
+  console.log('itemsFullCount?', props.itemsFullCount)
   return (
     // <div id='button-bar' className={props.gameStarted || props.gameInProgress ? 'game-started' : ''}>
+    <>
     <div id='button-bar' className={barClass}>
-      <div><div id='start-button' onPointerDown={props.onClickStartButton} className={startClass}><i className='material-icons'>
-      {props.gameStarted ? 'pause' : 'play_arrow'}</i></div></div>
+      <div>
+        <div id='start-button' onPointerDown={props.onClickStartButton} className={startClass}><i className='material-icons'>
+          {props.gameStarted ? 'pause' : 'play_arrow'}</i>
+        </div>
+      </div>
       <div id='items-area' onPointerDown={!props.gameInProgress ? props.onClickStoreButton : undefined} className={props.gameStarted ? 'powerup-area' : 'powerup-area game-paused'}>
         <div id='item-slots' className='slot-area'>
           <div className='item-slot-label'>ITEMS</div>
@@ -145,18 +150,21 @@ function ButtonBar(props) {
           })} */}
         </div>
       </div>
-      {!props.gameInProgress &&
-        <>
-          {/* <div id='chickens-container' className={chickensClass}>
-            <div id='chickens-button' onPointerDown={props.onClickChickensButton} className={'status-button'}><img alt='' src={chickenPng} />CHICKENS</div>
-            <div id='chicken-count'>{chickenCount}</div>
-          </div> */}
-          <div><div id='store-button' onPointerDown={props.onClickStoreButton} className={storeClass}><i className='material-icons'>attach_money</i></div></div>
-          <div><div id='map-button' onPointerDown={props.onClickMapButton} className={mapClass}><img alt='' src={globeIconPng} /></div></div>
-        </>
-      }
-      {props.gameInProgress && <div><div id='stop-button' onClick={props.onClickStopButton} className={stopClass}><i className='material-icons'>stop</i></div></div>}
     </div>
+
+    {props.gameInProgress ?
+        <div id='stop-button' onClick={props.onClickStopButton} className={stopClass}><i className='material-icons'>stop</i></div>
+        :
+        <>
+        {/* <div id='chickens-container' className={chickensClass}>
+          <div id='chickens-button' onPointerDown={props.onClickChickensButton} className={'status-button'}><img alt='' src={chickenPng} />CHICKENS</div>
+          <div id='chicken-count'>{chickenCount}</div>
+        </div> */}
+        <div id='store-button' onPointerDown={props.onClickStoreButton} className={storeClass}><i className='material-icons'>attach_money</i></div>
+        <div id='map-button' onPointerDown={props.onClickMapButton} className={mapClass}><img alt='' src={globeIconPng} /></div>
+      </>
+    }
+    </>
   );
 }
 function areEqual(prevProps, nextProps) {

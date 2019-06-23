@@ -1,8 +1,8 @@
 #pre-game-modal {
   position: absolute;
   width: 100vw;
-  height: 70vh;
-  margin-top: 15vh;
+  /* height: calc(var(--view-height) - var(--header-height) - var(--button-bar-height)); */
+  margin-top: var(--header-height);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -62,30 +62,28 @@
 #pre-game-description, #pre-game-mode {
   display: flex;
   flex-direction: column;
-  /* align-items: stretch; */
   justify-content: space-between;
-  width: 45%;
+  width: 50%;
   background: #00000066;
   border-radius: 2vmin;
   margin: 2vmin;
   flex-grow: 1;
-  min-height: 40vh;
+  min-height: 50vw;
   padding: 4vmin;
-  text-shadow: -0.25vmin -0.35vmin 0 #000, 0.35vmin -0.35vmin 0 #000, -0.35vmin 0.35vmin 0 #000, 0.35vmin 0.35vmin 0 #000;
+  text-shadow: -0.35vmin -0.35vmin 0 #000, 0.35vmin -0.35vmin 0 #000, -0.35vmin 0.35vmin 0 #000, 0.35vmin 0.35vmin 0 #000;
+}
+#pre-game-description {
+  width: 40%;
 }
 #pre-game-mode {
-  font-size: calc(var(--font-size) / 1);
+  font-size: calc(var(--font-size) / 1.25);
   justify-content: space-between;
-}
-#pre-game-mode > small {
-  /* margin-bottom: 1vmin; */
 }
 #pre-game-mode > div:first-of-type {
   color: rgb(251, 251, 152);
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-grow: 1;
 }
 #pre-game-description > div:last-of-type {
   display: flex;
@@ -109,8 +107,8 @@
   font-family: 'Open Sans';
   align-items: center;
   height: 100%;
-  font-size: calc(var(--font-size) / 1.5);
-  width: 50%;
+  font-size: calc(var(--font-size) / 1.75);
+  width: 60%;
   text-align: right;
   padding: 4vmin;
 }
@@ -127,23 +125,22 @@
   display: flex;
   /* flex-direction: column; */
   justify-content: space-between;
-  align-items: flex-end !important;;
   width: 100%;
   height: 100%;
-  max-height: 35vh;
-  flex-grow: 1;
   transition: opacity 320ms ease, transform 320ms ease;
 }
 #pre-game-buttons {
   display: flex; flex-direction: column;
+  /* width: 100%; */
   height: 100%;
+  min-height: 20vh;
   flex-grow: 1;
+  padding-left: 5vmin;
 }
 #pre-game-modal .modal-button {
   font-size: calc(var(--header-height) / 2.5);
-  font-weight: bolder;
   border-radius: 1vmax;
-  margin: 1vh;
+  /* margin: 1vh; */
   font-family: var(--cute-font);;
   font-weight: normal;
   align-self: flex-end !important;
@@ -160,15 +157,17 @@
   transform: scale(1.1);
 }
 #pre-game-modal #begin-button.modal-button {
-  font-size: calc(var(--header-height) / 1.5);
+  font-size: 7vw;
   background: rgb(43, 85, 13);
-  width: 90%;
+  width: 40vw;
+  height: 10vh;
+  margin-bottom: 1vh;
 }
 #pre-game-modal #cancel-button.modal-button {
   background: rgb(102, 104, 13);
-  font-size: calc(var(--header-height) / 5.5);
-  width: 60%;
-  height: 40%;
+  font-size: 3vw;
+  width: 80%;
+  height: 6vh;
 }
 @media screen and (orientation: landscape) {
   #pre-game-modal {
@@ -177,5 +176,35 @@
     margin-left: 15vw;
     /* margin-top: calc((100vh - 95vmin) / 2); */
     margin-top: 0;
+  }
+  #pre-game-stats {
+    font-size: calc(var(--font-size) / 1.5);
+  }
+  #pre-game-modal .modal-button {
+    font-size: calc(var(--header-height) / 2.5);
+    border-radius: 1vmax;
+    margin: 2vh;
+    font-family: var(--cute-font);;
+    font-weight: normal;
+    align-self: flex-end !important;
+    text-shadow: -0.25vmin -0.35vmin 0 #000, 0.35vmin -0.35vmin 0 #000, -0.35vmin 0.35vmin 0 #000, 0.35vmin 0.35vmin 0 #000;
+  }
+  #pre-game-modal #begin-button.modal-button {
+    font-size: calc(var(--header-height) / 1.5);
+    background: rgb(43, 85, 13);
+    width: 100%;
+    height: 100%;
+  }
+  #pre-game-modal #cancel-button.modal-button {
+    background: rgb(102, 104, 13);
+    font-size: calc(var(--header-height) / 4.5);
+    width: 70%;
+    height: 60%;
+  }
+  #pre-game-description, #pre-game-mode {
+    min-height: 40vh;
+  }
+  #pre-game-mode {
+    font-size: var(--font-size);
   }
 }

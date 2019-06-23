@@ -13,8 +13,7 @@ function MapScreen(props) {
           <img alt='' src={require('../assets/worldmap.png')} />
         </div>
       <div id='info-footer'>
-        <div>Money:</div>
-        <div> ${cash}</div>
+        <div>Money: <span>${cash}</span></div>
       </div>
     </div>
   );

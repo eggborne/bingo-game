@@ -13,14 +13,14 @@ function ClickBonusIndicator(props) {
     }
   }, [props.message])
   let bonusClass = props.showing ? 'click-bonus-indicator showing' : 'click-bonus-indicator'
-  let bgColor = 'green';
-  if (message === 'SPEED BONUS') {
-    bgColor = 'yellowgreen';
-  } else if (message === 'STREAK ENDED :(') {
-    bgColor = 'brown';
+  if (message === 'SPEED BONUS!') {
+    bonusClass += ' flashing';
+  }
+  if (message === 'SUPER SPEED BONUS!') {
+    bonusClass += ' special';
   }
   return (
-    <div style={{backgroundColor: bgColor}} className={bonusClass}>
+    <div className={bonusClass}>
       {message}
     </div>
   );

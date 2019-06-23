@@ -9,13 +9,12 @@
   color: white;
   font-size: calc(var(--font-size) * 0.6);
   display: grid;
-  grid-template-rows: var(--header-height) var(--header-height) 1fr;
+  grid-template-rows: calc(var(--header-height) / 1.25) var(--header-height) 1fr;
   border: 1.5vmin solid rgb(173, 255, 173);
   opacity: 0;
-  transform: scale(0.95);
   pointer-events: none;
-  transition: transform 210ms ease, opacity 210ms ease;
-  z-index: 6;
+  transition: opacity 210ms ease;
+  z-index: 2;
   padding-bottom: 20vh;
   overflow: hidden;
 }
@@ -31,8 +30,7 @@
   font-family: var(--cute-font);
   font-weight: normal !important;
   background: #081a00;
-  font-size: calc(var(--font-size) * 2);
-  font-weight: bolder;
+  font-size: calc(var(--font-size) * 1.75);
   text-align: center;
   display: flex;
   justify-content: center;
@@ -54,13 +52,14 @@
 #store-screen > #tab-area {
   font-family: var(--cute-font);;
   font-weight: normal !important;
-  background: #7ea36c88;
+  /* background: #618151; */
   font-size: 5vw;
   font-weight: bolder;
   display: flex;
   justify-content: space-between;
   align-items: center;
   text-shadow: -0.25vmin -0.35vmin 0 #000, 0.35vmin -0.35vmin 0 #000, -0.35vmin 0.35vmin 0 #000, 0.35vmin 0.35vmin 0 #000;
+  z-index: 4;
 }
 #store-screen > #tab-area > div {
   align-self: stretch;
@@ -70,13 +69,17 @@
   align-items: center;
   flex-grow: 1;
   color: #ccc;
-  border: 1vmin solid transparent;
-  border-radius: 2vmin;
-  transition: background-color 500ms ease;
+  border: 1vmin solid rgb(26, 37, 26);
+  border-top: 0;
+  border-radius: 0 0 2vmin 2vmin;
+  transform-origin: top center;
+  transition: transform 210ms ease, background-color 500ms ease;
 }
 #store-screen > #tab-area > div.selected {
   background-color: #1a3b0c;
-  border: 1vmin solid green;
+  border: 1vmin solid rgb(173, 255, 173);
+  border-top: 0;
+  transform: scaleY(1.1);
   color: rgb(255, 255, 88);
 }
 #store-section-container {
@@ -339,7 +342,6 @@
 }
 #store-screen > #info-footer span {
   color: rgb(128, 238, 128);
-  font-weight: bolder;
   font-size: 150%;
 }
 
@@ -349,6 +351,8 @@
     height: 100%;
     top: 0;
     left: 0;
+    /* grid-template-rows: calc(var(--header-height) / 1.25) var(--header-height) 1fr; */
+
   }
   #store-screen header {
     font-size: 6vw;
@@ -362,7 +366,7 @@
     position: absolute;
     right: 0;
     width: 60vw;
-    height: var(--header-height);
+    height: calc(var(--header-height) / 1.25);
     font-size: 2.5vw;
     z-index: 0;
   }

@@ -1,18 +1,25 @@
 .card {
   background: var(--card-backing-color);
   width: 100%;
-  height: 100%;
-  /* box-shadow: 0 0 1vmin 0.5vmin #00000066; */
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: 0.05fr 1fr;
-  border: 1px solid rgba(0, 0, 0, 0.315);
-  border-radius: calc(2vw / var(--user-cards-wide));
+  /* border: 2px solid rgba(0, 0, 0, 0.315); */
+  border-radius: calc(2.5vw / var(--user-cards-wide));
   transform: scale(var(--card-size));
   padding: var(--card-padding);
 }
+.card:not(.opponent) {
+  transition: transform 100ms ease, filter 210ms ease;
+}
+.card:not(.opponent) > div > .number-square {
+  text-shadow: -0.25vmin -0.25vmin 0 #000, 0.25vmin -0.25vmin 0 #000, -0.25vmin 0.25vmin 0 #000, 0.25vmin 0.25vmin 0 #000;
+}
 .card.inactive {
   filter: grayscale(80%);
+}
+.card.hidden {
+  opacity: 0;
   /* pointer-events: none; */
 }
 .letter-row {
@@ -25,48 +32,39 @@
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   grid-template-rows: repeat(5, 1fr);
-  transition: transform 320ms ease, opacity 400ms ease, background-color 10s ease;
+  /* transition: transform 320ms ease, opacity 400ms ease, background-color 10s ease; */
 }
 .card.won {
-  animation: flash;
-  animation-duration: 320ms;
-  /* animation-direction: alternate; */
-  /* animation-fill-mode: forwards; */
+  animation: flash-card;
+  animation-duration: 400ms;
+  /* animation-direction: alternate;
+  animation-fill-mode: forwards; */
   animation-iteration-count: infinite;
   background-color: green;
   filter: none !important;
 }
-@keyframes flash {
+@keyframes flash-card {
   0%, 100% {
-    background-color: green !important;
-    transform: scale(0.95) rotate(-3deg)
+    background-color: green;
   }
   50% {
-    background-color: white !important;
-    transform: scale(0.95) rotate(3deg)
+    background-color: white;
+    transform: scale(0.9);
   }
 }
-.card.opponent > * {
-  border-radius: 0;
-}
 .card.opponent {
-  border-radius: 0;
-  /* --user-cards-wide: 6 !important; */
   padding: 0;
-  background-color: white;
-  border-radius: 0;
   pointer-events: none;
-  transition: none;
+  /* transition: none; */
 }
 .card.opponent > div > .number-square {
-  /* --user-cards-wide: 6 !important; */
-  border-width: 1px;
   border: 0;
-  border-color: #bbb;
-  transition: none !important;
 }
-.card.opponent > .letter-row >  .number-square {
-  transition: none !important;
+.letter-row {
+  background: rgb(180, 180, 180);
+  border-top-left-radius: calc(2vw / var(--user-cards-wide));
+  border-top-right-radius: calc(2vw / var(--user-cards-wide));
+  border: 0;
 }
 .letter-row > .card-head-letter {
   border: var(--card-grid-border-width) solid var(--card-grid-border-color);

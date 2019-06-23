@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import '../css/NumberSquare.css';
 
 function NumberSquare(props) {
-  if (!props.isOpponent && props.blocked) {
-    console.log('NumberSquare', props)
-  }
+  // if (!props.isOpponent && props.blocked) {
+  //   console.log('NumberSquare', props)
+  // }
   const [showing, setShowing] = useState(false);
   const [flashing, setFlashing] = useState(undefined);
 

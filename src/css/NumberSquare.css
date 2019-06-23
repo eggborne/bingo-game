@@ -4,21 +4,27 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: calc(10vw / var(--user-cards-wide));
-  font-weight: bolder;
+  font-size: calc(9vw / var(--user-cards-wide));
+  font-family: var(--cute-font);
+  color: rgb(255, 227, 191);
+  /* font-weight: bolder; */
   border: var(--card-grid-border-width) solid var(--card-grid-border-color);
   opacity: 0;
-  transition: opacity 720ms ease, background-color 720ms ease;
+  /* transition: opacity 720ms ease, background-color 720ms ease; */
+}
+.number-square > div:first-of-type {
+  transform: scaleX(0.85) scaleY(1.2);
+  /* color: red; */
 }
 .number-square.showing {
   opacity: 1;
   /* transform: none; */
 }
 .number-square {
-  transition: transform 420ms ease !important;
+  /* transition: transform 420ms ease !important; */
 }
 .number-square.free {
-  font-size: calc(6vw / var(--user-cards-wide));
+  font-size: calc(4.5vw / var(--user-cards-wide));
 }
 .number-square.tinted {
   background-color: rgb(219, 255, 219);
@@ -60,8 +66,8 @@
   background-image: url('../assets/bingochip.png');
   /* background-image: url('../assets/bingochip.webp'); */
   content: ' ';
-  width: 100%;
-  height: 100%;
+  width: 105%;
+  height: 105%;
   opacity: 0;
   display: none;
   /* transform: scale(1.35); */
@@ -77,16 +83,17 @@
 }
 
 .number-square.markable:not(.marked) {
-  background-color: rgb(68, 185, 214) !important;
+  /* background-color: rgb(68, 185, 214) !important; */
 }
 .number-square.blocked {
   /* background-color: rgba(146, 0, 0, 0.493) !important; */
   color: transparent;
+  text-shadow: none !important;
   z-index: 3;
 }
 .number-square.blocked > .chip {
-  image-rendering: pixelated;
-  background-image: url('../assets/shadowbee.png') !important;
+  /* image-rendering: pixelated; */
+  background-image: url('../assets/shadowbee.png');
   background-size: 100%;
   background-position: center;
   opacity: 1;
@@ -148,8 +155,8 @@
 .number-square > .mark {
   position: absolute;
   content: ' ';
-  width: 70%;
-  height: 70%;
+  width: 60%;
+  height: 60%;
   opacity: 0;
   background: rgba(255, 0, 0, 0.548);
 }
@@ -182,9 +189,12 @@
 
 @media screen and (orientation: landscape) {
   .number-square {
-    font-size: calc(9vw / var(--user-cards-wide));
+    font-size: calc(8vw / var(--user-cards-wide));
+  }
+  .number-square > div:first-of-type {
+    /* transform: scaleX(1.1) scaleY(1) */
   }
   .number-square.free {
-    font-size: calc(5vw / var(--user-cards-wide));
+    font-size: calc(3.5vw / var(--user-cards-wide));
   }
 }

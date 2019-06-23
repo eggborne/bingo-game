@@ -38,8 +38,8 @@ function PreGameModal(props) {
     stat1Value = props.winnerLimit;
   } else if (gameName === 'Bonanza') {
     modalClass += ' bonanza';
-    stat1Name = ''
-    stat1Value = '';
+    stat1Name = 'Total Bingo limit'
+    stat1Value = props.bingoLimit;
   } else if (gameName === 'Bonanza') {
     modalClass += ' ranked';
     stat1Name = 'Places awarded'

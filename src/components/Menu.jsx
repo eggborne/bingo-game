@@ -210,10 +210,6 @@ function Menu(props) {
               <div>Chicken Slots</div>
               <div>{props.chickenCount}</div>
             </div>
-            <div className='account-row'>
-              <div>Bonus Chance</div>
-            <div style={{fontSize: '120%'}}>{props.user.bonusChance}%</div>
-            </div>
           </div>
           <div className='menu-item full-panel'>
             <div className='button-row'>

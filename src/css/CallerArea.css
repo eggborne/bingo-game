@@ -6,12 +6,14 @@
   width: calc(100vw);
   left: 0;
   display: flex;
-  /* flex-direction: column; */
   justify-content: center;
   align-items: center;
   z-index: 1;
   background: #00000044;
   pointer-events: none;
+}
+#caller-area.game-paused {
+  pointer-events: all;
 }
 #ball-row {
   height: 100%;
@@ -20,13 +22,11 @@
   align-items: center;
   flex-direction: row-reverse;
   justify-content: flex-start;
-  overflow-y: hidden;
-  overflow-x: scroll;
+  overflow: hidden;
   scroll-behavior: smooth;
   /* flex-grow: 1; */
   padding-right: calc(var(--caller-height) + 1vw);
-  z-index: 0;
-
+  /* z-index: 0; */
 }
 #ball-space {
   min-width: var(--caller-height);
@@ -48,9 +48,6 @@
     top: 0;
     left: calc(var(--header-height));
     width: calc(100vw - var(--header-height) - var(--button-bar-height));
-    height: var(--header-height);
-    /* left: 0; */
-    /* width: var(--header-height);
-    height: calc(100vh - var(--header-height)); */
+    height: var(--caller-height);
   }
 }

@@ -7,7 +7,7 @@
   width: var(--caller-height);
   height: var(--caller-height);
   background-color: #8f8a61;
-  border: 1.25vmin solid var(--danger-color);
+  border: 1.25vmin solid rgb(102, 102, 59);
   border-radius: 2vmin;
   display: flex;
   align-items: center;
@@ -16,6 +16,75 @@
   transition: opacity 320ms ease;
   will-change: opacity, transform, background-color;
   z-index: 3;
+}
+#bonus-spot > #meter {
+  position: absolute;
+  border-radius: 0.5vmin;
+  width: calc(var(--caller-height) - 3vmin);
+  height: calc(var(--caller-height) - 3.5vmin);
+  background: rgba(7, 161, 7, 0.65);
+  transform-origin: bottom;
+  pointer-events: none;
+  align-self: flex-end;
+  transition: transform 1000ms ease;
+  z-index: 0;
+}
+#bonus-spot > #meter-ring {
+  position: absolute;
+  border: 1.5vmin double rgb(10, 243, 10);
+  border-radius: 2vmin;
+  width: var(--caller-height);
+  height: var(--caller-height);
+  pointer-events: none;
+  transition: opacity 320ms ease;
+  z-index: 4;
+}
+/* #bonus-spot > #meter.flashing {
+  animation: bonus-flash;
+  animation-duration: 180ms;
+  animation-iteration-count: infinite;
+  animation-play-state: running;
+  background:rgb(30, 221, 30);
+} */
+#bonus-spot.showing-giftbox > #meter {
+  opacity: 0;
+}
+#bonus-spot > #meter-ring.flashing {
+  animation: bonus-flash;
+  animation-duration: 180ms;
+  animation-iteration-count: infinite;
+  animation-play-state: running;
+}
+#bonus-spot > #meter-ring.flashing.special {
+  opacity: 1 !important;
+  transition: none;
+  animation: spin;
+  animation-duration: 440ms;
+  animation-iteration-count: 1;
+  animation-play-state: running;
+  animation-timing-function: linear;
+}
+@keyframes spin {
+  0% {
+    transform: rotate(0);
+    border-color: green;
+  }
+  25% {
+    transform: rotate(90deg);
+    border-color: rgb(92, 255, 92);;
+  }
+  50% {
+    transform: rotate(180deg);
+    border-color: green;
+  }
+  75% {
+    transform: rotate(270deg);
+    border-color: rgb(92, 255, 92);
+  }
+  100% {
+    transform: rotate(360deg);
+    border-color: green;
+  }
 }
 #bonus-spot.danger-0 {
   --danger-color: rgb(10, 243, 10);
@@ -37,6 +106,10 @@
   opacity: 0;
   pointer-events: none;
 }
+#bonus-spot.bee > #bonus-chicken {
+  animation: none;
+  content: url('../assets/shadowbee.png');
+}
 #bonus-spot.bust {
   /* background: rgb(158, 0, 0); */
 }
@@ -53,20 +126,28 @@
   animation-play-state: running;
 }
 #bonus-spot > #bonus-chicken {
-  image-rendering: pixelated;
+  /* image-rendering: pixelated; */
   width: 80%;
   height: 80%;
   animation: pulse;
   animation-duration: 1600ms;
   animation-iteration-count: infinite;
   animation-play-state: running;
+  /* transform-origin: 50% 30%; */
+}
+#bonus-spot > #bonus-chicken {
+  /* content: url('../assets/chickenstand.png'); */
+}
+#bonus-spot.showing-giftbox > #bonus-chicken {
+  content: url('../assets/giftbox.png');
 }
 #bonus-spot.hidden > #bonus-chicken {
   animation-play-state: paused;
 }
-#bonus-spot.showing-giftbox > #bonus-chicken {
+/* #bonus-spot.showing-giftbox > #bonus-chicken {
   animation-duration: 520ms;
-}
+  animation: none;
+} */
 #bonus-spot.showing-giftbox > #corner-chicken-overlay {
   opacity: 1;
 }
@@ -87,33 +168,45 @@
 }
 @keyframes pulse {
   0%, 100% {
-    transform: scale(1);
+    transform: scale(1.05);
   }
   50% {
-    transform: scale(0.9);
+    transform: scale(0.85);
+  }
+}
+@keyframes bonus-flash {
+  0%,
+  100% {
+    /* border-color: white; */
+    opacity: 1;
+  }
+  50% {
+    border-color: green;
+    opacity: 1;
+
   }
 }
 @keyframes glow {
   0% {
     background-color: var(--danger-color);
     border-color: rgb(0, 102, 128);
-    transform: rotate(0deg);
+    transform: scale(1.1) rotate(0deg);
   }
   25% {
-    transform: rotate(-5deg);
+    transform: scale(1) rotate(-5deg);
   }
   50% {
     background-color: white;
     border-color: rgb(0, 31, 172);
-    transform: rotate(0deg);
+    transform: scale(1.1) rotate(0deg);
   }
   75% {
-    transform: rotate(5deg);
+    transform: scale(1) rotate(5deg);
   }
   100% {
     background-color: var(--danger-color);
     border-color: rgb(0, 102, 128);
-    transform: rotate(0deg);
+    transform: scale(1.1) rotate(0deg);
   }
 }
 @keyframes peck {
