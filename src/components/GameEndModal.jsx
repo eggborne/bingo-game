@@ -73,7 +73,7 @@ function GameEndModal(props) {
   if (props.gameMode.name === 'Countdown') {
     modalClass += ' countdown';
     title = 'Round Over';
-    rank = `${props.currentBingos.length} BINGOS`;
+    rank = `${props.currentBingos} BINGOS`;
     message = `Prize: $${props.prizeMoney}`
   }
   return (

@@ -506,7 +506,7 @@ function App() {
           card.numbers = getRandomCardNumbers();
         }
       });
-      integrateModeRules(newOptions);
+      integrateModeRules(newOptions.preferredGameMode, newOptions);
       setGotData(true);
       setUser(newUser);
       setOptions(newOptions)
