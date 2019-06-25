@@ -21,7 +21,7 @@
   position: absolute;
   border-radius: 0.5vmin;
   width: calc(var(--caller-height) - 3vmin);
-  height: calc(var(--caller-height) - 3.5vmin);
+  height: calc(var(--caller-height) - 4vmin);
   background: rgba(7, 161, 7, 0.65);
   transform-origin: bottom;
   pointer-events: none;
@@ -59,7 +59,7 @@
   opacity: 1 !important;
   transition: none;
   animation: spin;
-  animation-duration: 440ms;
+  animation-duration: 360ms;
   animation-iteration-count: 1;
   animation-play-state: running;
   animation-timing-function: linear;
@@ -71,7 +71,7 @@
   }
   25% {
     transform: rotate(90deg);
-    border-color: rgb(92, 255, 92);;
+    border-color: rgb(92, 255, 92);
   }
   50% {
     transform: rotate(180deg);

@@ -3,12 +3,17 @@
   width: 100vw;
   /* height: calc(var(--view-height) - var(--header-height) - var(--button-bar-height)); */
   margin-top: var(--header-height);
-  display: flex;
+  /* display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  padding: 2vmin;
-  padding-bottom: 4vmin;
+  justify-content: space-between; */
+  display: grid;
+  grid-template-columns: 1fr 40%;
+  grid-template-rows: min-content 40vh 20vh;
+  align-items: stretch;
+  /* padding: 2vmin; */
+  /* padding-bottom: 4vmin; */
+  grid-gap: 2vmin;
   font-size: calc(var(--header-height) / 2.75);
   border: 1vmin solid #333;
   transition: transform 310ms ease, opacity 205ms ease, background-color 210ms ease;
@@ -17,100 +22,113 @@
   color: white;
   font-family: var(--cute-font);;
   text-align: center;
+  padding: 2vmin;
 }
-/* #pre-game-modal.countdown {
-  background-color: #0c142f;
+#pre-game-modal > * {
+  padding: 1vmin;
 }
-#pre-game-modal.ranked {
-  background-color: #0c2f2a;
-}
-#pre-game-modal.classic {
-  background-color: #1b1b1b;
-}
-#pre-game-modal.lightning {
-  background-color: #5a370f;
-}
-#pre-game-modal.standoff {
-  background-color: #464734;
-}
-#pre-game-modal.danger-zones {
-  background-color: #500e0e;
-} */
 #pre-game-modal > header {
   background: black;
   font-family: var(--cute-font);;
   font-size: calc(var(--header-height) / 2);
   color: white;
-  width: 100%;
   padding: 1vh;
+  grid-column-start: 1;
+  grid-column-end: span 2;
 }
 #pre-game-modal small {
-  font-size: calc(var(--header-height) / 4.5);
-  color: #aaa;
+  font-size: calc(var(--header-height) / 5);
+  color: yellow;
+}
+#pre-game-rules > small {
+  font-family: var(--cute-font);
+  color: rgb(255, 255, 213);
+  font-size: calc(var(--header-height) / 4);
+
 }
 #pre-game-modal.hidden {
   transform: scale(0.95);
   opacity: 0;
   pointer-events: none;
 }
-#pre-game-modal > #pre-game-body {
-  display: flex;
-  /* align-items: stretch; */
-  justify-content: center;
-  width: 100%;
-}
 #pre-game-description, #pre-game-mode {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  width: 50%;
+  justify-content: space-around;
+  /* width: 50%; */
   background: #00000066;
   border-radius: 2vmin;
-  margin: 2vmin;
-  flex-grow: 1;
-  min-height: 50vw;
-  padding: 4vmin;
-  text-shadow: -0.35vmin -0.35vmin 0 #000, 0.35vmin -0.35vmin 0 #000, -0.35vmin 0.35vmin 0 #000, 0.35vmin 0.35vmin 0 #000;
+  /* margin: 2vmin; */
+  padding: 3vmin;
+  text-shadow: -0.15vmin -0.15vmin 0 #000, 0.15vmin -0.15vmin 0 #000, -0.15vmin 0.15vmin 0 #000, 0.15vmin 0.15vmin 0 #000;
 }
-#pre-game-description {
-  width: 40%;
-}
-#pre-game-mode {
-  font-size: calc(var(--font-size) / 1.25);
-  justify-content: space-between;
-}
-#pre-game-mode > div:first-of-type {
-  color: rgb(251, 251, 152);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-#pre-game-description > div:last-of-type {
+#pre-game-mode > #pre-game-rules {
+  font-family: 'Open Sans', sans-serif;
+  font-size: calc(var(--font-size) / 1.5);
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  align-items: flex-start;
+  justify-content: flex-end;
+  flex-grow: 1;
+  /* margin-top: 2vh; */
 }
-#pre-game-mode > div:last-of-type {
-  font-size: var(--header-height);
-  padding-left: 15%;
-  padding-right: 15%;
+#pre-game-mode #mode-name {
+  color: rgb(172, 255, 172);
+  /* background: rgba(0, 0, 0, 0.5); */
+  /* border: 1vmin solid rgba(0, 0, 0, 0.301); */
+  padding: 1vh 0;
+  /* margin: 1vh 0; */
+}
+#pre-game-rules > div {
+  margin: 1vmax;
+  text-align: left;
+}
+#pre-game-mode > #mode-arrows {
+  font-size: calc(var(--font-size) * 4) !important;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  justify-self: flex-start;
 }
-#pre-game-modal.classic #pre-game-description > div:last-of-type > div {
-  font-size: calc(var(--font-size) / 1.5);
-  padding: 1vmin;
+.pattern-display {
+  font-size: calc(var(--font-size) / 1.25);
+}
+#mode-arrows > .mode-arrow {
+  font-size: calc(var(--header-height) / 1.5);
+  color: white;
+}
+#mode-arrows > small {
+  font-size: calc(var(--header-height) / 3);
+}
+#pre-game-mode {
+  font-size: calc(var(--font-size) / 1);
+  justify-content: flex-start;
+}
+#pre-game-description {
+  justify-content: flex-start;
+}
+#pre-game-description small {
+  /* font-family: 'Open Sans', sans-serif; */
+  /* font-weight: bolder; */
+  font-size: calc(var(--font-size) / 1.35);
+  color: yellow;
+
+}
+#pre-game-description div {
+  /* font-family: 'Open Sans', sans-serif; */
+  /* font-weight: bolder; */
+ margin-top: 1vh;
+
 }
 #pre-game-stats {
   display: grid;
   font-family: 'Open Sans';
   align-items: center;
-  height: 100%;
   font-size: calc(var(--font-size) / 1.75);
-  width: 60%;
   text-align: right;
-  padding: 4vmin;
+  padding: 3vmin;
+  background: black;
+  border: var(--header-border-width) inset rgba(128, 128, 128, 0.582);
 }
 #log-in-nagger {
   font-family: var(--cute-font);
@@ -121,21 +139,18 @@
   display: flex;
   justify-content: space-between;
 }
-#pre-game-modal > #button-area {
+/* #pre-game-modal > #button-area {
   display: flex;
-  /* flex-direction: column; */
+  flex-direction: column;
   justify-content: space-between;
   width: 100%;
   height: 100%;
   transition: opacity 320ms ease, transform 320ms ease;
-}
+} */
 #pre-game-buttons {
-  display: flex; flex-direction: column;
-  /* width: 100%; */
-  height: 100%;
-  min-height: 20vh;
-  flex-grow: 1;
-  padding-left: 5vmin;
+  display: flex;
+  flex-direction: column;
+  padding: 0 !important;
 }
 #pre-game-modal .modal-button {
   font-size: calc(var(--header-height) / 2.5);
@@ -144,7 +159,7 @@
   font-family: var(--cute-font);;
   font-weight: normal;
   align-self: flex-end !important;
-  text-shadow: -0.25vmin -0.35vmin 0 #000, 0.35vmin -0.35vmin 0 #000, -0.35vmin 0.35vmin 0 #000, 0.35vmin 0.35vmin 0 #000;
+  text-shadow: -0.15vmin -0.15vmin 0 #000, 0.15vmin -0.15vmin 0 #000, -0.15vmin 0.15vmin 0 #000, 0.15vmin 0.15vmin 0 #000;
 }
 #pre-game-modal .modal-button.disabled {
   pointer-events: none !important;
@@ -159,52 +174,50 @@
 #pre-game-modal #begin-button.modal-button {
   font-size: 7vw;
   background: rgb(43, 85, 13);
-  width: 40vw;
-  height: 10vh;
-  margin-bottom: 1vh;
+  width: 100%;
+  /* width: 40vw; */
+  /* height: 10vh; */
+  /* margin-bottom: 1vh; */
 }
 #pre-game-modal #cancel-button.modal-button {
   background: rgb(102, 104, 13);
   font-size: 3vw;
-  width: 80%;
-  height: 6vh;
+  width: 100%;
+  /* height: 6vh; */
 }
+
 @media screen and (orientation: landscape) {
   #pre-game-modal {
     width: 70vw;
     height: 100vh;
     margin-left: 15vw;
-    /* margin-top: calc((100vh - 95vmin) / 2); */
     margin-top: 0;
+    grid-template-rows: 1.5fr 1fr;
+    grid-template-columns: min-content 1fr 30%;
+  }
+  #pre-game-modal > header {
+    padding: 1vh;
+    grid-column-start: 1;
+    grid-column-end: 1;
+    grid-row-start: 1;
+    grid-row-end: 3;
+    writing-mode: vertical-lr;
+    transform: rotate(180deg);
+
+;  }
+  #pre-game-modal > div {
+    outline: 1px solid red;
+  }
+  #pre-game-modal > * {
+    padding: 2vmin 5vmin;
   }
   #pre-game-stats {
     font-size: calc(var(--font-size) / 1.5);
   }
-  #pre-game-modal .modal-button {
-    font-size: calc(var(--header-height) / 2.5);
-    border-radius: 1vmax;
-    margin: 2vh;
-    font-family: var(--cute-font);;
-    font-weight: normal;
-    align-self: flex-end !important;
-    text-shadow: -0.25vmin -0.35vmin 0 #000, 0.35vmin -0.35vmin 0 #000, -0.35vmin 0.35vmin 0 #000, 0.35vmin 0.35vmin 0 #000;
-  }
   #pre-game-modal #begin-button.modal-button {
-    font-size: calc(var(--header-height) / 1.5);
-    background: rgb(43, 85, 13);
-    width: 100%;
-    height: 100%;
+    font-size: calc(var(--header-height) / 2.5);
   }
   #pre-game-modal #cancel-button.modal-button {
-    background: rgb(102, 104, 13);
-    font-size: calc(var(--header-height) / 4.5);
-    width: 70%;
-    height: 60%;
-  }
-  #pre-game-description, #pre-game-mode {
-    min-height: 40vh;
-  }
-  #pre-game-mode {
-    font-size: var(--font-size);
+    font-size: calc(var(--header-height) / 5);
   }
 }

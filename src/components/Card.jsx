@@ -4,9 +4,6 @@ import NumberSquare from './NumberSquare';
 import '../css/Card.css';
 
 let bounceTimeout = undefined;
-let winPatterns = {
-  'Letter X': [[0,4],[1,3],[],[1,3],[0,4]]
-}
 
 const instantWin = false;
 
@@ -61,16 +58,31 @@ function Card(props) {
           setNumbers(newNumbers);
         }
       } else {
+        let newTinted = [];
+        console.log('trying for tionted when game mode', props.gameMode)
         if (props.cardData) {
           setNumbers(props.cardData.numbers);
+          props.cardData.numbers.map((row, r) => {
+            console.log('RO!', row);
+            row.map((num, c) => {
+              console.warn('checkign pattern row', props.gameMode.winPattern[r], 'for', c)
+              console.warn('?', props.gameMode.winPattern[r].includes(c))
+              if (props.gameMode.winPattern[r].includes(c)) {
+                console.error('pushing', num)
+                newTinted.push(num);
+              }
+            })
+          })
         }
+        console.log('setting newTinted', newTinted)
+        setTintedNumbers(newTinted);
       }
       setMarked([]);
       setHighlighted([]);
       setMadeFree([]);
       setBlockedNumbers([]);
     }
-  }, [props.gameStarted, props.username, props.calledBalls, props.ready, props.cardData, won]);
+  }, [props.gameStarted, props.gameMode, props.username, props.calledBalls, props.ready, props.cardData, won]);
   useEffect(() => {
     if (props.gameStarted && numbers && props.calledBalls.length === 0) {
       // game just started
@@ -137,6 +149,9 @@ function Card(props) {
   const checkForBingo = () => {
     let checkStart = window.performance.now();
     let hasBingo = false;
+    if (allNumbers(tintedNumbers).length === 0) {
+      console.log('no tinted numbers!')
+    }
     let fourCorners = [
       numbers[0][0],
       numbers[0][numbers.length - 1],
@@ -268,7 +283,7 @@ function Card(props) {
 
         }
       }
-      if (cornerBingo) {
+      if (bingos.corners) {
         bingoCount++;
       }
 
@@ -290,7 +305,7 @@ function Card(props) {
         foundBingoCount++;
       }
       console.info('BINGOS! bingos, foundBingos', bingos, foundBingos);
-      console.info('BINGOS! bingoCount, foundBingoCount', bingoCount, foundBingoCount);
+      console.info('BINGOCOUNTS! bingoCount, foundBingoCount', bingoCount, foundBingoCount);
 
       // ...compare old to new
 
@@ -383,6 +398,7 @@ function Card(props) {
   if (won) {
     cardClass += ' won';
   }
+  let gridClass = `number-grid ${props.gameMode.className}`
   let isOpponent = props.opponent;
   return (
     <div className={cardClass}>
@@ -393,16 +409,24 @@ function Card(props) {
         <div className='card-head-letter g' />
         <div className='card-head-letter o' />
       </div>
-      <div className='number-grid'>{numbers && numbers.map((column, c) => column.map((num, n) => {
+      <div className={gridClass}>{numbers && numbers.map((column, c) => column.map((num, n) => {
         // let free = madeFree.includes(num) || props.freeSpaces.filter(space => space.cardIndex === props.type === 'FREE' && props.index && space.num === num).length > 0;
         let free = madeFree.includes(num) || props.freeSpaces.filter(space => space.cardIndex === props.index && space.num === num).length > 0;
         let marked = markedNumbers.includes(num);
-        let blocked = blockedNumbers.includes(num) || props.freeSpaces.filter(space => space.type === 'BEE' && space.cardIndex === props.index && space.num === num).length > 0;
-        let endangered = (blocked && props.powerupSelected && props.powerupSelected.displayName.indexOf('Bee Spray') > -1);
-
-        let highlighted = highlightedNumbers.includes(num);
-        let tinted = tintedNumbers.includes(num);
         let canBeMarked = (props.calledBalls.includes(num) || free || num === 99);
+        let blocked = false;
+        let endangered = false;
+        let highlighted = false;
+        let tinted = false;
+        if (!props.opponent) {
+          blocked = blockedNumbers.includes(num) || props.freeSpaces.filter(space => space.type === 'BEE' && space.cardIndex === props.index && space.num === num).length > 0;
+          endangered = (blocked && props.powerupSelected && props.powerupSelected.displayName.indexOf('Bee Spray') !== -1);
+          highlighted = highlightedNumbers.includes(num);
+          if (props.gameInProgress) {
+            tinted = tintedNumbers.includes(num);
+
+          }
+        }
         return (isOpponent ?
           props.ready && !props.hidden && <NumberSquare
             key={'opponent-' + c + '-' + n}
@@ -413,7 +437,7 @@ function Card(props) {
             number={num}
           />
           :
-          props.ready && <NumberSquare
+          props.ready && !props.hidden && <NumberSquare
             key={c + '-' + n}
             isOpponent={false}
             number={num}
@@ -444,6 +468,7 @@ function areEqual(prevProps, nextProps) {
     prevProps.chipImage === nextProps.chipImage &&
     prevProps.ready === nextProps.ready &&
     prevProps.calledBalls.length === nextProps.calledBalls.length &&
+    prevProps.gameMode === nextProps.gameMode &&
     prevProps.gameStarted === nextProps.gameStarted &&
     prevProps.gameInProgress === nextProps.gameInProgress &&
     prevProps.powerupSelected === nextProps.powerupSelected &&

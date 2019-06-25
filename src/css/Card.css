@@ -13,7 +13,8 @@
   transition: transform 100ms ease, filter 210ms ease;
 }
 .card:not(.opponent) > div > .number-square {
-  text-shadow: -0.25vmin -0.25vmin 0 #000, 0.25vmin -0.25vmin 0 #000, -0.25vmin 0.25vmin 0 #000, 0.25vmin 0.25vmin 0 #000;
+  /* text-shadow: -0.25vmin -0.25vmin 0 #000, 0.25vmin -0.25vmin 0 #000, -0.25vmin 0.25vmin 0 #000, 0.25vmin 0.25vmin 0 #000; */
+  text-shadow: -0.15vmin -0.15vmin 0 #000, 0.15vmin -0.15vmin 0 #000, -0.15vmin 0.15vmin 0 #000, 0.15vmin 0.15vmin 0 #000;
 }
 .card.inactive {
   filter: grayscale(80%);
@@ -28,11 +29,19 @@
   grid-template-rows: 1fr;
 }
 .number-grid {
-  background: var(--card-face-color);
+  /* background: var(--card-face-color); */
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   grid-template-rows: repeat(5, 1fr);
   /* transition: transform 320ms ease, opacity 400ms ease, background-color 10s ease; */
+}
+.card:not(.opponent) .number-square > div:first-of-type {
+  transform: scaleX(0.85) scaleY(1.2);
+  /* color: red; */
+}
+.opponent .number-grid {
+  background: var(--card-face-color);
+
 }
 .card.won {
   animation: flash-card;

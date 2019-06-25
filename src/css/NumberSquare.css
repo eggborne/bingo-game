@@ -12,10 +12,7 @@
   opacity: 0;
   /* transition: opacity 720ms ease, background-color 720ms ease; */
 }
-.number-square > div:first-of-type {
-  transform: scaleX(0.85) scaleY(1.2);
-  /* color: red; */
-}
+
 .number-square.showing {
   opacity: 1;
   /* transform: none; */
@@ -27,7 +24,8 @@
   font-size: calc(4.5vw / var(--user-cards-wide));
 }
 .number-square.tinted {
-  background-color: rgb(219, 255, 219);
+  background-color: rgba(64, 179, 89, 0.527);
+  color: #ffff55;
 }
 .number-square.flashing.green {
   background-color: rgb(24, 184, 24) !important;
@@ -66,8 +64,8 @@
   background-image: url('../assets/bingochip.png');
   /* background-image: url('../assets/bingochip.webp'); */
   content: ' ';
-  width: 105%;
-  height: 105%;
+  width: 100%;
+  height: 100%;
   opacity: 0;
   display: none;
   /* transform: scale(1.35); */
@@ -78,12 +76,6 @@
   will-change: transform, opacity;
   /* opacity: 0.5; */
   transform: scale(1.35);
-}
-.number-square:not(.blocked) > .chip {
-}
-
-.number-square.markable:not(.marked) {
-  /* background-color: rgb(68, 185, 214) !important; */
 }
 .number-square.blocked {
   /* background-color: rgba(146, 0, 0, 0.493) !important; */
@@ -144,7 +136,7 @@
 }
 .number-square.tomato > .chip {
   background-image: url('../assets/tomato.png');
-  background-image: url('../assets/tomato.webp');
+  /* background-image: url('../assets/tomato.webp'); */
   filter: contrast(150%) brightness(80%);
   z-index: 1;
   transform: scale(1);
@@ -190,9 +182,6 @@
 @media screen and (orientation: landscape) {
   .number-square {
     font-size: calc(8vw / var(--user-cards-wide));
-  }
-  .number-square > div:first-of-type {
-    /* transform: scaleX(1.1) scaleY(1) */
   }
   .number-square.free {
     font-size: calc(3.5vw / var(--user-cards-wide));

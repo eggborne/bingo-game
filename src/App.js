@@ -396,15 +396,24 @@ const defaultOptions = {
   preferredGameMode: 'Ranked'
 };
 
+// describes index from each row to be tinted
+export const winPatterns = {
+  'Line / 4 Corners': [[], [], [], [], []], // none tinted
+  '4 Corners': [[0, 4], [], [], [], [0, 4]],
+  'Letter X': [[0, 4], [1, 3], [2], [1, 3], [0, 4]],
+  'Postage Stamp': [[0, 1, 3, 4], [0, 1, 3, 4], [], [0, 1, 3, 4], [0, 1, 3, 4]],
+  'Coverall': [[0, 1, 2, 3, 4], [0, 1, 2, 3, 4], [0, 1, 2, 3, 4], [0, 1, 2, 3, 4], [0, 1, 2, 3, 4]]
+}
+
 const bonuses = ['FREE', 'BEE'];
 const gameModes = {
-  'Classic': { unlocked: false, name: 'Classic', winPattern: 'Line / 4 Corners' },
-  'Ranked': { unlocked: true, name: 'Ranked', winnerLimit: 5 },
-  'Bonanza': { unlocked: true, name: 'Bonanza', bingoLimit: 24},
-  'Countdown': { unlocked: false, name: 'Countdown', ballLimit: 35 },
-  // 'Standoff': { unlocked: false, name: 'Standoff', winnerLimit: 4 },
-  // 'Danger Zones': { unlocked: false, name: 'Danger Zones' },
-  // 'Lightning': { unlocked: false, name: 'Lightning', timeLimit: 30 }
+  'Classic': { unlocked: true, name: 'Classic', winPattern: winPatterns['Letter X'], className: 'classic', description: {object: 'Score a Letter X as fast as possible', gameEnds: 'when one player has scored a Letter X'} },
+  'Ranked': { unlocked: true, name: 'Ranked', winnerLimit: 5, winPattern: winPatterns['Line / 4 Corners'], className: 'ranked', description: {object: 'Score a Bingo as fast as possible', gameEnds: 'when 5 players have scored a Bingo'} },
+  'Bonanza': { unlocked: true, name: 'Bonanza', bingoLimit: 24, winPattern: winPatterns['Line / 4 Corners'], className: 'bonanza', description: {object: 'Score as many Bingos as possible', gameEnds: 'when 24 Bingos have been scored'} },
+  'Countdown': { unlocked: true, name: 'Countdown', ballLimit: 35, winPattern: winPatterns['Line / 4 Corners'], className: 'countdown', description: {object: 'Score as many Bingos as possible', gameEnds: 'when 35 balls have been drawn'} },
+  // 'Standoff': { unlocked: false, name: 'Standoff', winnerLimit: 4, winPattern: 'Line / 4 Corners', className='' },
+  // 'Danger Zones': { unlocked: false, name: 'Danger Zones', winPattern: 'Line / 4 Corners', className='' },
+  // 'Lightning': { unlocked: false, name: 'Lightning', timeLimit: 30, winPattern: 'Line / 4 Corners', className='' }
 };
 
 const applyOptionsCSS = (newOptions) => {
@@ -461,7 +470,7 @@ function App() {
   const [daubSpeedHistory, setDaubSpeedHistory] = useState([]);
   const [currentBeeChance, setCurrentBeeChance] = useState(5);
   const [bonusMeter, setBonusMeter] = useState(0);
-  const [bonusRechargeRate, setBonusRechargeRate] = useState(100);
+  const [bonusRechargeRate, setBonusRechargeRate] = useState(25);
   const [pausedWithMenu, setPausedWithMenu] = useState(false);
   const [powerupSelected, setPowerupSelected] = useState(undefined);
   const [showingBonusText, setShowingBonusText] = useState(false);
@@ -874,6 +883,7 @@ function App() {
     if (preGameOn) {
       setPreGameOn(false);
     }
+    setPlayersLeft([options.opponentCards.length]);
     setGameInProgress(true);
     setGameStarted(true);
   };
@@ -1217,8 +1227,9 @@ function App() {
       if (opponent) {
         console.log('remove a player from playersLeft!')
         let newPlayers = playersLeft - 1;
-        setPlayersLeft(newPlayers);
-        if (newPlayers === (options.opponentCards.length - winnerLimit) && gameStarted) {
+        setPlayersLeft((oldPlayers) => oldPlayers - 1);
+        // setRoundBingos((oldBingos) => oldBingos + 1)
+        if (newPlayers - (options.opponentCards.length - winnerLimit) <= 0) {
           playSound(roundLoseSound);
           let newUser = { ...user };
           newUser.stats.totalGames++;
@@ -1230,13 +1241,12 @@ function App() {
           setGameStarted(false);
           setGameInProgress(false);
           setGameEnded(true);
-          } else if (newPlayers > options.opponentCards.length - winnerLimit + 3) {
+        } else if (newPlayers > options.opponentCards.length - winnerLimit + 3) {
         // } else if (newPlayers < 3) {
           if (options.soundOn) {
             opponentBingoSound.stop();
           }
           playSound(opponentBingoSound);
-          setRoundBingos(roundBingos + 1)
           meterRef.current.classList.add('alert');
           setTimeout(() => {
             if (meterRef.current) {
@@ -1559,12 +1569,12 @@ function App() {
         // newHistory = [...daubSpeedHistory, daubSpeed];
         // setDaubSpeedHistory(newHistory);
         setLastDaubed(Date.now());
-        if (daubSpeed < 2800) {
-          let bonusAmount = Math.round((2800 - daubSpeed) / 2.5);
+        if (daubSpeed < 2500) {
+          let bonusAmount = Math.round((2500 - daubSpeed) / 2.5);
           if (bonusAmount > 400) {
             playSound(freeSpaceSound2);
             bonusAmount *= 1.3;
-            setBonusRechargeRate(bonusRechargeRate * 1.5);
+            setBonusRechargeRate(bonusRechargeRate * 2);
             setShowingBonusText('SUPER SPEED BONUS!');
           } else {
             playSound(freeSpaceSound);
@@ -1572,7 +1582,7 @@ function App() {
           }
           setBonusMeter(bonusMeter + bonusAmount);
         } else {
-          setBonusMeter(bonusMeter + 100);
+          setBonusMeter(bonusMeter + 50);
           // setShowingBonusText('SPEED: ' + daubSpeed);
         }
 
@@ -1669,7 +1679,6 @@ function App() {
         setGameStarted(true);
       }
     } else {
-      console.log('callced', calledBalls.length, gameInProgress)
       if (gameInProgress) {
         playSound(pauseSound);
         setGameStarted(false);
@@ -1701,7 +1710,7 @@ function App() {
       }
     }
     setOfferingBonus(undefined);
-    setBonusRechargeRate(100);
+    setBonusRechargeRate(25);
     setTimeout(() => {
       setOpeningBonus(false);
     }, 800);
@@ -1785,20 +1794,21 @@ function App() {
     setTemporaryBonuses({
       freeSpaces: []
     });
-    setPlayersLeft(options.opponentCards.length);
+    // setPlayersLeft([options.opponentCards.length]);
     setCalledBalls([]);
     setRoundBingos(0);
     setCurrentBingos(0);
+    setBonusMeter(0);
+    setBonusRechargeRate(25);
     if (currentBallSet.length) {
       setCurrentBallSet([]);
     }
     if (offeringBonus) {
       setOfferingBonus(undefined);
     }
-    setOpponentCardProgress(options.opponentCards);
-    let newOptions = { ...options };
-
-    setOptions(newOptions);
+    setOpponentCardProgress([...options.opponentCards]);
+    // let newOptions = { ...options };
+    // setOptions(newOptions);
   };
   const updateOpponentCardProgress = () => {
     let startTime = window.performance.now();
@@ -1877,6 +1887,7 @@ function App() {
   }
 
   // RENDER //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
   let itemsFullCount = gotData ? [...user.itemSlots].filter(slot => slot.item && slot.item.uses === slot.item.totalUses).length : undefined;
   let isFull = isFullScreen();
   let fitWide = window.innerWidth > window.innerHeight ? options.fitWideLandscape : options.fitWide;
@@ -1885,30 +1896,13 @@ function App() {
     playerAreaClass += ' hidden';
   }
   let opponentAreaClass = options.showOpponentCards ? 'card-area' : 'card-area hidden';
-  let playerCardCount = user.cardSlots.filter(slot => slot.cardId > -1).length;
+  let playerCardCount = user.cardSlots.filter(slot => slot.cardId !== -1).length;
   let opponentCardCount = options.opponentCards.length;
-  let remainingPlayers = new Array(playersLeft);
-  remainingPlayers.fill(null, 0, playersLeft);
   let dangerClass = 'danger-bar';
   let barListClass = '';
   if (gameMode.name === 'Countdown') {
     barListClass += ' ball-counter';
   }
-  // if (remainingPlayers.length === options.opponentCards.length) {
-  //   dangerClass += ' green';
-  // } else if (remainingPlayers.length > options.opponentCards.length * 0.75) {
-  //   dangerClass += ' yellow';
-  // } else if (remainingPlayers.length > options.opponentCards.length * 0.5) {
-  //   dangerClass += ' orange';
-  // } else if (remainingPlayers.length > options.opponentCards.length * 0.3) {
-  //   dangerClass += ' red';
-  // } else if (remainingPlayers.length < options.opponentCards.length * 0.3) {
-  //   dangerClass += ' dark-red';
-  // }
-  // let fsClass = 'status-button';
-  // if (isFull) {
-  //   fsClass += ' full';
-  // }
   let menuButtonClass = 'status-button';
   let gameBoardClass = '';
   if (menuOn) {
@@ -1924,7 +1918,7 @@ function App() {
     displayName = [displayName];
   }
   let currentCardMargin = window.innerWidth > window.innerHeight ? options.cardMarginLandscape : options.cardMargin;
-  let bingosLeft = winnerLimit - roundBingos;
+  let winnersLeft = playersLeft - (options.opponentCards.length - winnerLimit);
   let ballsRemaining = ballLimit - calledBalls.length;
   let prizeMoney = 0;
   if (gameMode.name === 'Ranked') {
@@ -1935,15 +1929,19 @@ function App() {
     let volumeBonus = roundBingos * roundBingos * 10;
     prizeMoney = basePrize + volumeBonus;
   }
+  let meterClass = gameStarted ? '' : 'blurred';
+  if (gameMode.name === 'Countdown') {
+    meterClass += ' ball-counter';
+  }
   return (
     <div id="app" className={!loaded ? 'zoomed' : ''}>
-
       <div id="app-background" />
+      {gotData && <div id='mode-display' className={gameStarted ? '' : 'hidden'}>{gameMode.name} - {Object.keys(winPatterns)[Object.values(winPatterns).indexOf(gameMode.winPattern)]}</div>}
       <header id="main-header">
         {!menuOn &&
           (gameInProgress || calledBalls.length ? (
             <>
-              <div id="danger-meter" ref={meterRef} className={gameStarted ? '' : 'blurred'}>
+              <div id="danger-meter" ref={meterRef} className={meterClass}>
 
                 {/* {gameMode.name === 'Countdown' &&
                 <div id='balls-left-display'>
@@ -1989,7 +1987,7 @@ function App() {
                     <div>
                       <small>Winners left:</small>
                     </div>
-                    <div id="bingos-left-count">{bingosLeft}</div>
+                  <div id="bingos-left-count">{winnersLeft}</div>
                   </div>
                 )}
                 {(gameMode.name === 'Ranked') && (
@@ -2149,7 +2147,7 @@ function App() {
               <Card
                 index={c}
                 ready={gotData}
-                hidden={!card.active}
+                hidden={!options.showOpponentCards}
                 type={card.type}
                 fullBallSequence={currentBallSet}
                 reportActive={getStatusFromCard}

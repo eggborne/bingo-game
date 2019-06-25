@@ -12,8 +12,7 @@ const CornerChicken = React.forwardRef((props, ref) => {
   let ringClass = '';
   if (props.showingBonusText) {
     ringClass += ' flashing';
-    console.error(props.showingBonusText)
-    if (props.showingBonusText > 500) {
+    if (props.showingBonusText === 'SUPER SPEED BONUS!') {
       ringClass += ' special';
     }
   }

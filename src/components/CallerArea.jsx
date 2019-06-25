@@ -44,7 +44,7 @@ const CallerArea = React.forwardRef((props, ref) => {
         bounce(event);
       });
     }
-  }, [ref]);
+  }, []);
   return (
     <div id='caller-area' className={!props.gameStarted ? 'game-paused' : undefined}>
       <div ref={ref} id='ball-row'>
