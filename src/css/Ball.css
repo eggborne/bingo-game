@@ -18,7 +18,7 @@
   background-image: url('../assets/bingoball.webp');
   background-size: 100% 100%;
   background-repeat: no-repeat;
-  transition: transform 250ms ease, opacity 180ms ease;
+  transition: transform 250ms ease, opacity 300ms ease;
   will-change: transform, opacity;
   /* z-index: 5; */
   color: white;
@@ -26,6 +26,8 @@
   animation-iteration-count: 1;
   animation-duration: 250ms;
   animation-play-state: running;
+  animation-direction: normal;
+  /* animation-fill-mode: forwards; */
   animation-delay: 250ms;
   text-shadow: -0.25vmin -0.25vmin 0 #000, 0.25vmin -0.25vmin 0 #000, -0.25vmin 0.25vmin 0 #000, 0.25vmin 0.25vmin 0 #000;
 }
@@ -48,7 +50,7 @@
 }
 .ball.hidden {
   transform: translateY(calc(var(--caller-height) * -1));
-  /* opacity: 0; */
+  opacity: 0;
   /* transition: transform 200ms ease; */
   /* transform: scale(0.4); */
 }
@@ -59,17 +61,15 @@
   display: none;
 }
 .ball:before {
-  box-sizing: border-box;
   content: ' ';
   position: absolute;
-  margin-left: 0;
   width: var(--ball-width);
   height: var(--ball-height);
   top: 0;
   /* border: calc(var(--ball-height) / 7) solid #00000077; */
   border-radius: 50%;
-  will-change: transform;
-  opacity: 0.25;
+  /* will-change: transform; */
+  opacity: 0.35;
 }
 .ball.b:before {
   background-color: var(--b-color);

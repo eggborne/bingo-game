@@ -8,6 +8,13 @@ let bounceTimeout = undefined;
 
 const instantWin = false;
 
+const bingoRankings = [
+  undefined,
+  'FIRST',
+  'SECOND',
+  'THIRD'
+];
+
 function Card(props) {
   const [numbers, setNumbers] = useState(undefined);
   const [blockedNumbers, setBlockedNumbers] = useState([]);
@@ -477,9 +484,40 @@ function Card(props) {
   }
   let gridClass = `number-grid ${props.gameMode.className}`
   let isOpponent = props.opponent;
+  let bingoRank = undefined;
+  let rankBonus = undefined;
+  let prefix = undefined;
+  let suffix = undefined;
+  let indicatorShowing = won;
+  // indicatorShowing = true;
+  if (indicatorShowing) {
+    if (props.gameMode.name === 'Bonanza') {
+      bingoRank = (props.gameMode.bingoLimit - props.remainingBingos + 1);
+      rankBonus = (props.remainingBingos / props.gameMode.bingoLimit) * 1000;
+    } else if (props.gameMode.name === 'Ranked') {
+      bingoRank = (props.opponentCardCount - props.remainingPlayers + 1);
+      rankBonus = (props.remainingPlayers / props.opponentCardCount) * 1000;
+    }
+    // console.log('bingoRankings', bingoRankings, bingoRankings[2])
+    prefix = bingoRankings[bingoRank] || `${bingoRank}th`;
+    rankBonus = (props.opponentCardCount / bingoRank) * 15;
+    if (rankBonus < 50) {
+      rankBonus = 0;
+    }
+    suffix = bingoRank <= 4 ? `+$${rankBonus}` : '';
+  }
   return (
     <div className={cardClass}>
-      <BingoIndicator showing={won} bingoCount={bingoCount} />
+      <BingoIndicator
+        showing={indicatorShowing}
+        remainingPlayers={props.remainingPlayers}
+        remainingWinners={props.remainingWinners}
+        remainingBingos={props.remainingBingos}
+        opponentCardCount={props.opponentCardCount}
+        bingoCount={bingoCount}
+        prefix={prefix}
+        suffix={suffix}
+      />
       <div className='letter-row'>
         <div className='card-head-letter b' />
         <div className='card-head-letter i' />

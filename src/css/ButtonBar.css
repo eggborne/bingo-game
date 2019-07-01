@@ -163,6 +163,7 @@
 #map-button.map-on,
 #store-button.store-open,
 #chickens-button.chickens-on,
+#card-options-button.card-options-on,
 #aviary-button.aviary-on {
   outline: 1vmin solid rgb(116, 148, 255);
   background-color: rgb(75, 13, 11);
@@ -288,7 +289,7 @@
 #button-bar > div > #start-button.game-started {
   background-color: rgb(22, 124, 22);
 }
-#map-button, #store-button, #aviary-button {
+#map-button, #store-button, #aviary-button, #card-options-button {
   position: absolute;
   bottom: 0;
   right: 0;
@@ -359,6 +360,9 @@
 #aviary-icon {
   image-rendering: pixelated;
   height: 60%;
+}
+#card-options-icon {
+  height: 80%;
 }
 #voice-button {
   background-color: rgb(156, 126, 70);
@@ -584,7 +588,7 @@
     justify-content: space-between;
     align-items: center;
   }
-  #map-button, #store-button, #aviary-button {
+  #map-button, #store-button, #aviary-button, #card-options-button {
     position: absolute;
     bottom: 0;
     right: 0;
@@ -599,7 +603,15 @@
     font-size: calc(var(--button-bar-height) / 7) !important;
     transform: translateX(calc((var(--button-bar-height) + calc((var(--header-height)) - (var(--header-border-width) * 2))) * -1));
   }
+  #card-options-button {
+    background-color: rgb(16, 71, 107);
+    font-size: calc(var(--button-bar-height) / 7) !important;
+    transform: translateX(calc((var(--button-bar-height) + calc((var(--header-height)) - (var(--header-border-width) * 2))) * -1));
+  }
   #map-button {
+    transform: translateX(calc((var(--button-bar-height) + calc((var(--header-height) * 3) - (var(--header-border-width) * 6))) * -1));
+  }
+  #card-options-button {
     transform: translateX(calc((var(--button-bar-height) + calc((var(--header-height) * 2) - (var(--header-border-width) * 4))) * -1));
   }
   .powerup-area > .slot-area {

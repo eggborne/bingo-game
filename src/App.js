@@ -473,6 +473,7 @@ function App() {
   const [loginError, setLoginError] = useState('');
   const [storeOpen, setStoreOpen] = useState(false);
   const [aviaryOn, setAviaryOn] = useState(false);
+  const [cardOptionsOn, setCardOptionsOn] = useState(false);
   const [winnerLimit, setWinnerLimit] = useState(4);
   const [ballLimit, setBallLimit] = useState(35);
   const [timeLimit, setTimeLimit] = useState(30);
@@ -1082,7 +1083,8 @@ function App() {
     let filledSlots = 0;
     switch (type) {
       case 'player-cards-minus':
-        filledSlots = newUser.cardSlots.filter(slot => slot.cardId > -1);
+        filledSlots = [...newUser.cardSlots].filter(slot => slot.cardId !== -1);
+        console.log('pressed minus with filledSlots', filledSlots)
         if (filledSlots.length > 1) {
           newUser.cardSlots[filledSlots.length - 1].cardId = -1;;
           setUser(newUser);
@@ -1092,7 +1094,8 @@ function App() {
         }
         break;
       case 'player-cards-plus':
-        filledSlots = newUser.cardSlots.filter(slot => slot.cardId > -1);
+        filledSlots = [...newUser.cardSlots].filter(slot => slot.cardId !== -1);
+        console.log('pressed plus with filledSlots', filledSlots)
         if (filledSlots.length < user.cardSlots.length) {
           newUser.cardSlots[filledSlots.length].cardId = filledSlots.length;
           setUser(newUser);
@@ -1610,6 +1613,9 @@ function App() {
     }
     setAviaryOn(aviaryOn => !aviaryOn);
   };
+  const handleClickCardOptionsButton = () => {
+    setCardOptionsOn(cardOptionsOn => !cardOptionsOn);
+  };
   const handleClickBuyButton = (itemData, slot) => {
     console.warn('buying slot itemData', slot, itemData)
     playSound(refillSound);
@@ -1748,7 +1754,8 @@ function App() {
 
   const handleClickStartButton = () => {
     console.log('handle calledBalls', gameStarted);
-    if (gameEnded) {
+    setCardOptionsOn(false);
+    if(gameEnded) {
       handleClickOkayButton();
     }
     if (!gameStarted) {
@@ -1768,6 +1775,10 @@ function App() {
         if (menuOn) {
           setMenuOn(false);
         }
+        if (aviaryOn) {
+          setAviaryOn(false);
+        }
+
         if (!preGameShowing) {
           if (gameEnded) {
             console.error('clicked play when endedQ!!')
@@ -2046,7 +2057,8 @@ function App() {
     let invSlot = newUser.itemSlots.filter((slot) => slot.item.id === powerupSelected.id)[0];
     invSlot.item.uses--;
     if (invSlot.item.uses === 0) {
-      invSlot.item = false;
+      // invSlot.item = false;
+      invSlot.item = {id:-1};
     }
     setUser(newUser);
     let newTempBonuses = { ...temporaryBonuses };
@@ -2074,7 +2086,8 @@ function App() {
     let invSlot = newUser.itemSlots.filter((slot) => slot.item.id === powerupSelected.id)[0];
     invSlot.item.uses--;
     if (invSlot.item.uses === 0) {
-      invSlot.item = false;
+      // invSlot.item = false;
+      invSlot.item = {id:-1};
     }
     setUser(newUser);
     let newTempBonuses = { ...temporaryBonuses };
@@ -2161,6 +2174,8 @@ function App() {
   let playerAreaClass = modalOn ? 'card-area dimmed' : 'card-area';
   if (!gotData) {
     playerAreaClass += ' hidden';
+  } else if (cardOptionsOn) {
+    playerAreaClass += ' card-options-on'
   }
   let opponentAreaClass = options.showOpponentCards ? 'card-area' : 'card-area hidden';
   let playerCardCount = user.cardSlots.filter(slot => slot.cardId !== -1).length;
@@ -2226,6 +2241,10 @@ function App() {
   }
   if (user.itemSlots[1].item && user.itemSlots[1].item.uses !== undefined) {
     itemQuantities += ' ' + user.itemSlots[1].item.uses
+  }
+  let playerCardList = [...user.cardSlots].filter((slot, i) => slot.cardId > -1);
+  if (cardOptionsOn) {
+    playerCardList = [...user.cardSlots];
   }
   return (
     <div id="app" className={!loaded ? 'zoomed' : ''}>
@@ -2393,8 +2412,17 @@ function App() {
       >
       {loaded && <CallerArea ref={ref} calledBalls={calledBalls} gameStarted={gameStarted} />}
         <div id="player-card-area" className={playerAreaClass}>
-          {user.cardSlots.filter((slot, i) => slot.cardId > -1).map((card, c) => {
-            card = user.cards[card.cardId];
+          {playerCardList.map((card, c) => {
+            card = user.cards[c];
+            let cardInUse = true;
+            let cardControlsClass = 'card-controls';
+            if (cardOptionsOn) {
+              console.log('card is', card);
+              cardInUse = [...user.cardSlots].filter(slot => slot.cardId === c).length;
+              if (!cardInUse) {
+                cardControlsClass += ' not-in-use';
+              }
+            }
             return (
             <div key={c} className="card-space">
               <Card
@@ -2403,28 +2431,38 @@ function App() {
                 username={user.username}
                 index={c}
                 type={card.type}
+                remainingPlayers={playersLeft}
+                remainingWinners={winnersLeft}
+                remainingBingos={bingosLeft}
+                opponentCardCount={opponentCardCount}
                 bonusOffered={offeringBonus}
                 ballLimitReached={calledBalls.length > ballLimit}
                 freeSpaces={temporaryBonuses.freeSpaces || []}
                 chipImage={options.chipImage}
                 autoFreeSpace={options.autoFreeSpace}
-                // cardData={user.cards[c] ? user.cards[c] : ''}
                 cardData={card}
                 gameInProgress={gameInProgress}
                 gameStarted={gameStarted}
                 calledBalls={calledBalls}
                 onDaubSquare={handleDaubSquare}
-                // playersLeft={playersLeft}
                 onAchieveBingo={handleAchieveBingo}
-                // onClickInactiveCard={handleClickInactiveCard}
                 gameMode={gameMode}
                 powerupSelected={powerupSelected}
                 onKillBee={handleKillBee}
                 onSetFree={handleSetFree}
                 patternName={patternName}
-              />
-            </div>
-          )})}
+                />
+                {cardOptionsOn &&
+                  <div className={cardControlsClass}>
+                    <div className='card-control-header'>
+                      Card {c+1}
+                    </div>
+                  <div>Type: {card.type.toUpperCase()}</div>
+                    <div>{cardInUse ? 'IN USE' : 'NOT IN USE'}</div>
+                  </div>
+                }
+            </div>)
+          })}
         </div>
 
         {<ClickBonusIndicator showing={showingBonusText} message={showingBonusText} />}
@@ -2467,6 +2505,7 @@ function App() {
             itemQuantities={itemQuantities}
             storeOpen={storeOpen}
             aviaryOn={aviaryOn}
+            cardOptionsOn={cardOptionsOn}
             mapOn={mapOn}
             itemsEquippedCount={user.itemSlots.filter(slot => slot.item).length}
             itemsFullCount={itemsFullCount}
@@ -2481,6 +2520,7 @@ function App() {
             onClickStopButton={handleClickStopButton}
             onClickStoreButton={handleClickStoreButton}
             onClickAviaryButton={handleClickAviaryButton}
+            onClickCardOptionsButton={handleClickCardOptionsButton}
             onClickMapButton={handleClickMapButton}
             onClickResetButton={handleClickCloseButton}
             onClickChickensButton={resetPage}

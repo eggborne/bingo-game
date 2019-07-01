@@ -39,6 +39,8 @@
   --ball-height: calc(var(--caller-height) * 0.95);
 
   --balls-per-width: calc(100vw / var(--ball-width));
+
+  --money-green: rgb(58, 185, 58);
 }
 * {
   box-sizing: border-box;
@@ -156,7 +158,7 @@ input[type='checkbox'] {
   position: absolute;
   width: 100vw;
   height: var(--view-height);
-  background-image: url('../assets/bluehills.jpg');
+  /* background-image: url('../assets/bluehills.jpg'); */
   background-image: url('../assets/bluehills.webp');
   background-repeat: no-repeat;
   background-size: cover;
@@ -341,7 +343,7 @@ header .status-button.on:not(#menu-button) {
   border-style: inset;
 }
 #cards-button {
-  background-image: url('../assets/cardicon.png');
+  background-image: url('../assets/cardsicon.png');
   background-size: 80%;
 }
 #caller-button {
@@ -690,6 +692,9 @@ button #account-button {
   flex-wrap: wrap;
   transition: transform 1000ms ease, opacity 1000ms ease;
 }
+.card-area.card-options-on {
+  padding-bottom: var(--header-height);
+}
 .card-area.dimmed {
   pointer-events: none;
 }
@@ -714,12 +719,44 @@ button #account-button {
   display: none;
 }
 .card-space {
+  position: relative;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: stretch;
   width: calc((100vw / var(--user-cards-wide)) - (var(--board-padding)));
-  height: calc((100vw / var(--user-cards-wide) - (var(--board-padding))) * 1.05);
+  /* height: calc((100vw / var(--user-cards-wide) - (var(--board-padding))) * 1.05); */
   overflow: hidden;
+}
+.card-space > .card {
+  height: 100%;
+}
+.card-controls {
+  position: absolute;
+  top: calc(var(--card-padding) / 2);
+  left: calc(var(--card-padding) / 2);
+  background: #0d770d8d;
+  width: calc(100% - var(--card-padding));
+  height: calc(100% - var(--card-padding));
+  border-radius: calc(2.5vw / var(--user-cards-wide));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--card-padding);
+  font-family: var(--cute-font);
+  font-size: calc(var(--font-size) / 1.25);
+
+  color: white;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}
+.card-controls > .card-control-header {
+  font-family: var(--cute-font);
+  color: yellow;
+  font-size: var(--font-size);
+}
+.card-controls.not-in-use {
+  background: #776c0d8d;
 
 }
 #opponent-card-area > .card-space {

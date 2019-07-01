@@ -1,5 +1,4 @@
 #game-end-modal {
-  --money-green: rgb(58, 185, 58);
   position: absolute;
   font-family: var(--cute-font);
   /* background: rgb(5, 80, 15); */

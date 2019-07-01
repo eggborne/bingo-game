@@ -28,7 +28,8 @@ const CallerArea = React.forwardRef((props, ref) => {
   //     setEggsWide(Math.floor(document.querySelector('#caller-area').offsetWidth / document.querySelectorAll('.ball')[0].offsetWidth) - 1);
   //   }
   // }, [props.calledBalls])
-  let eggsWide = window.innerWidth > window.innerHeight ? 8 : 6;
+  // let eggsWide = window.innerWidth > window.innerHeight ? 8 : 6;
+  let eggsWide = 8;
   return (
     <div id='caller-area' className={!props.gameStarted ? 'game-paused' : undefined}>
       <div ref={ref} id='ball-row'>
@@ -36,6 +37,7 @@ const CallerArea = React.forwardRef((props, ref) => {
           let letter = getBingoLetter(ball);
           return (
             <Ball index={i} obscured={i < props.calledBalls.length - eggsWide} calledCount={props.calledBalls.length} letter={letter} number={ball} key={letter + ball} />
+            // <Ball index={i} obscured={false} calledCount={props.calledBalls.length} letter={letter} number={ball} key={letter + ball} />
           );
         })}
         <div id='ball-space'></div>

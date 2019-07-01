@@ -3,6 +3,7 @@ import '../css/ButtonBar.css';
 import { permanentItems } from './StoreScreen';
 let chickenPng = require('../assets/chickenstand.png');
 let chickenIconPng = require('../assets/aviaryicon.png');
+let cardOptionsIconPng = require('../assets/cardsicon.png');
 let blueChickenPng = require('../assets/chickenstandblue.png');
 let globeIconPng = require('../assets/globeicon.png');
 
@@ -29,6 +30,7 @@ function ButtonBar(props) {
     voiceClass += ' inactive';
   }
   let aviaryClass = 'status-button floating-button';
+  let cardOptionsClass = 'status-button floating-button';
   let storeClass = 'status-button floating-button';
   let mapClass = 'status-button floating-button';
   if (!props.aviaryOn) {
@@ -37,6 +39,7 @@ function ButtonBar(props) {
     aviaryClass += ' aviary-on';
     storeClass += ' obscured';
     mapClass += ' obscured';
+    cardOptionsClass += ' obscured';
   }
   if (!props.storeOpen) {
     storeClass += ' inactive';
@@ -44,6 +47,7 @@ function ButtonBar(props) {
     storeClass += ' store-open';
     mapClass += ' obscured';
     aviaryClass += ' obscured';
+    cardOptionsClass += ' obscured';
   }
   if (props.gameStarted || props.gameInProgress) {
     // storeClass += ' unavailable';
@@ -54,6 +58,7 @@ function ButtonBar(props) {
     mapClass += ' map-on';
     aviaryClass += ' obscured';
     storeClass += ' obscured';
+    cardOptionsClass += ' obscured';
   }
   if (props.gameInProgress) {
     voiceClass += ' hidden';
@@ -68,8 +73,11 @@ function ButtonBar(props) {
       barClass += ' game-paused';
     }
   }
+  if (props.cardOptionsOn) {
+    cardOptionsClass += ' card-options-on';
+  }
   let unavailableItemSlots = 2 -props.itemSlots.filter(slot => slot.item).length;
-  let emptyItemSlots = props.itemSlots.filter(slot => slot.item && slot.item.hasOwnProperty('id')).length;
+  let emptyItemSlots = props.itemSlots.filter(slot => slot.item && slot.item.hasOwnProperty('id') && slot.item.id === -1).length;
   console.log('unavailable?', unavailableItemSlots)
   console.log('empty?', emptyItemSlots)
   // console.log('itemsFullCount?', props.itemsFullCount)
@@ -142,7 +150,7 @@ function ButtonBar(props) {
           })} */}
         </div>
       </div>
-      <div id='chickens-area' onPointerDown={!props.gameInProgress ? props.onClickStoreButton : undefined} className={props.gameStarted ? 'powerup-area' : 'powerup-area game-paused'}>
+      <div id='chickens-area' onPointerDown={!props.gameInProgress ? props.onClickAviaryButton : undefined} className={props.gameStarted ? 'powerup-area' : 'powerup-area game-paused'}>
         <div id='chicken-slots' className='slot-area'>
           <div className='item-slot-label'>CHICKENS</div>
           {props.chickenSlots.map((slot, i) => {
@@ -182,7 +190,8 @@ function ButtonBar(props) {
       :
       <>
         <div id='store-button' onPointerDown={props.onClickStoreButton} className={storeClass}><i className='material-icons'>attach_money</i></div>
-          <div id='aviary-button' onPointerDown={props.onClickAviaryButton} className={aviaryClass}><img id='aviary-icon' src={chickenIconPng} /></div>
+        <div id='aviary-button' onPointerDown={props.onClickAviaryButton} className={aviaryClass}><img id='aviary-icon' src={chickenIconPng} /></div>
+        <div id='card-options-button' onPointerDown={props.onClickCardOptionsButton} className={cardOptionsClass}><img id='card-options-icon' src={cardOptionsIconPng} /></div>
         <div id='map-button' onPointerDown={props.onClickMapButton} className={mapClass}><img alt='' src={globeIconPng} /></div>
       </>
     }

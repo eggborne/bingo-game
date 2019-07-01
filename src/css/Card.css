@@ -71,10 +71,10 @@
 }
 @keyframes flash-bingo {
   0%, 100% {
-    transform: translateX(-50%) translateY(-50%) scale(1);
+    transform: translateX(-50%) translateY(-50%) scale(1.2);
   }
   50% {
-    transform: translateX(-50%) translateY(-50%) scale(1.3);
+    transform: translateX(-50%) translateY(-50%) scale(1.5);
   }
 }
 .card.opponent {
