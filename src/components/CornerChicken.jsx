@@ -40,14 +40,14 @@ const CornerChicken = React.forwardRef((props, ref) => {
   if (!props.showingGiftbox) {}
   let clickEffect = props.showingGift ? props.onClickGift : () => null;
   let meterHeight = props.bonusMeter / 1000;
-  if (meterHeight > 1000) {
-    meterHeight = 1000;
+  if (meterHeight > 1) {
+    meterHeight = 1;
   }
   return (
     <>
       <div id='bonus-spot' onPointerDown={props.onClickCorner} className={spotClass}>
       <div className={ringClass} style={{opacity: (meterHeight)}} id='meter-ring'></div>
-        <div className={ringClass} style={{transform: `scaleY(${meterHeight})`}} id='meter'></div>
+        <div className={ringClass} style={{ transform: `scaleY(${meterHeight})` }} id='meter'></div>
         <img ref={cornerChickenRef} onPointerDown={clickEffect} alt='' id='bonus-chicken' src={chickenPng}/>
         {/* <div id='corner-chicken-overlay'>{props.bonusMeter/1000}</div> */}
         {props.showingGiftbox && <div id='corner-chicken-overlay'>{100 - (props.currentBeeChance * 10)}</div>}
@@ -59,6 +59,7 @@ function areEqual(prevProps, nextProps) {
   return (
     prevProps.showing === nextProps.showing &&
     prevProps.showingGift === nextProps.showingGift &&
+    prevProps.showingGiftbox === nextProps.showingGiftbox &&
     prevProps.bonusMeter === nextProps.bonusMeter &&
     prevProps.showingBonusText === nextProps.showingBonusText &&
     prevProps.openingBonus === nextProps.openingBonus

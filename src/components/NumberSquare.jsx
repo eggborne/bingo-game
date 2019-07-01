@@ -101,9 +101,10 @@ function NumberSquare(props) {
 
 function areEqual(prevProps, nextProps) {
   let equalTest = (
-    // !(nextProps.canBeMarked && !nextProps.marked) &&
-    !(nextProps.canBeMarked && !nextProps.touched) &&
+    // nextProps.marked &&
+    // !(prevProps.canBeMarked && !nextProps.touched) &&
     prevProps.highlighted === nextProps.highlighted &&
+    prevProps.powerupId === nextProps.powerupId &&
     prevProps.madeFree === nextProps.madeFree &&
     prevProps.touched === nextProps.touched &&
     prevProps.blocked === nextProps.blocked &&

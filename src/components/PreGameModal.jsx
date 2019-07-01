@@ -28,7 +28,7 @@ function PreGameModal(props) {
   let stat1Value = '';
   let stat2Name = '';
   let stat2Value = '';
-  let patternName = Object.keys(winPatterns)[Object.values(winPatterns).indexOf(props.winPattern)];
+  let patternName = props.winPattern.name;
   if (gameName === 'Countdown') {
     opponentCount = 0;
     modalClass += ' countdown';
@@ -62,10 +62,10 @@ function PreGameModal(props) {
   } else if (gameName === 'Danger Zones') {
     modalClass += ' danger-zones';
   }
-  let modeFontSize = '6vmin';
+  let modeFontSize = '5vmin';
   let portrait = (window.innerWidth < window.innerHeight);
-  if (portrait) {
-    modeFontSize = '5.5vmin';
+  if (!portrait && gameName === 'Countdown') {
+    modeFontSize = '4vmin';
   }
   return (
     <div id='pre-game-modal' className={modalClass}>
@@ -81,36 +81,49 @@ function PreGameModal(props) {
                 :
                 <div id='mode-name' style={{ fontSize: modeFontSize }}>{gameName}</div>
               }
-                <div  className='mode-arrow' onPointerDown={() => props.onClickChangeMode('next')}>{'>'}</div>
+                <div className='mode-arrow' onPointerDown={() => props.onClickChangeMode('next')}>{'>'}</div>
               </div>
                 {portrait && <div id='mode-name' style={{ fontSize: modeFontSize }}>{gameName}</div>}
               <div id='pre-game-rules'>
-                <small>Object:</small><div>{props.gameMode.description.object}</div>
-                <small>Game Ends:</small><div>{props.gameMode.description.gameEnds}</div>
+                <small>Object:</small><div>{props.gameMode.description.object()}</div>
+                <small>Game Ends:</small><div>{props.gameMode.description.gameEnds()}</div>
               </div>
             </div>
           {props.gameMode.name === 'Countdown' ?
             <div id='pre-game-description'>
               <div>
                 <small>{stat1Name}</small>
-                <div>{stat1Value}</div>
+                <div className='pattern-arrows'>
+                  <div className='mode-arrow' onPointerDown={() => props.onClickChangeBallLimit('previous')}>{'<'}</div>
+                    <div style={{fontSize: '7vh'}}>{stat1Value}</div>
+                  <div className='mode-arrow' onPointerDown={() => props.onClickChangeBallLimit('next')}>{'>'}</div>
+                </div>
               </div>
-              <div>
+              {/* <div>
                 <small>Pattern</small>
                 <div className='pattern-display'>{patternName}</div>
               </div>
+              <div className='pattern-arrows'>
+                <div className='mode-arrow' onPointerDown={() => props.onClickChangeWinPattern('previous')}>{'<'}</div>
+                <div className='mode-arrow' onPointerDown={() => props.onClickChangeWinPattern('next')}>{'>'}</div>
+              </div> */}
             </div>
             :
-          <div id='pre-game-description'>
-            <div>
-              <small>Opponents</small>
-              <div>{opponentCount}</div>
-            </div>
-            <div>
-              <small>{stat1Name}</small>
+            <div id='pre-game-description'>
+              <div>
+                <small>Opponents</small>
+                <div>{opponentCount}</div>
+              </div>
+              <div>
+                <small>{stat1Name}</small>
               <div className={gameName === 'Classic' ? 'pattern-display' : ''}>{stat1Value}</div>
+                {gameName === 'Classic' && <div className='pattern-arrows'>
+                  <div className='mode-arrow' onPointerDown={() => props.onClickChangeWinPattern('previous')}>{'<'}</div>
+                    <div className='mode-arrow' onPointerDown={() => props.onClickChangeWinPattern('next')}>{'>'}</div>
+                  </div>
+                }
+              </div>
             </div>
-          </div>
           }
           {/* </div> */}
           {/* <div id='button-area' className={buttonsClass}> */}
@@ -125,7 +138,7 @@ function PreGameModal(props) {
                 );
               })}
               {!props.loggedIn &&
-                <div id='log-in-nagger'><a style={{textDecoration: 'underline', fontSize: 'var(--font-size)'}}onClick={props.onClickLoginButton}>LOG IN</a><br />to save your stats and progress!</div>
+                <div id='log-in-nagger'><a style={{textDecoration: 'underline', fontSize: 'var(--font-size)'}} onClick={props.onClickLoginButton}>LOG IN</a><br />to save your stats and progress!</div>
               }
             </div>
             <div id='pre-game-buttons'>
@@ -141,9 +154,11 @@ function PreGameModal(props) {
 function areEqual(prevProps, nextProps) {
   return (
     prevProps.winnerLimit === nextProps.winnerLimit &&
+    prevProps.bingoLimit === nextProps.bingoLimit &&
     prevProps.ballLimit === nextProps.ballLimit &&
     prevProps.showing === nextProps.showing &&
-    prevProps.gameMode.name === nextProps.gameMode.name &&
+    prevProps.gameMode === nextProps.gameMode &&
+    prevProps.winPattern.name === nextProps.winPattern.name &&
     prevProps.opponentCount === nextProps.opponentCount
   );
 }

@@ -74,6 +74,7 @@
 }
 #pre-game-mode #mode-name {
   color: rgb(172, 255, 172);
+
   /* background: rgba(0, 0, 0, 0.5); */
   /* border: 1vmin solid rgba(0, 0, 0, 0.301); */
   padding: 1vh 0;
@@ -83,19 +84,34 @@
   margin: 1vmax;
   text-align: left;
 }
-#pre-game-mode > #mode-arrows {
+#pre-game-mode > #mode-arrows, #pre-game-description .pattern-arrows {
   font-size: calc(var(--font-size) * 4) !important;
   display: flex;
   align-items: center;
   justify-content: space-between;
   justify-self: flex-start;
 }
+#pre-game-description .pattern-arrows {
+  width: 100%;
+  padding: 0 2vmin;
+
+}
 .pattern-display {
-  font-size: calc(var(--font-size) / 1.25);
+  font-size: calc(var(--font-size) / 1.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(var(--font-size));
 }
 #mode-arrows > .mode-arrow {
   font-size: calc(var(--header-height) / 1.5);
   color: white;
+}
+.pattern-arrows > .mode-arrow {
+  font-size: calc(var(--header-height) / 1.5);
+  color: white;
+  margin: 0;
+  /* width: min-content; */
 }
 #mode-arrows > small {
   font-size: calc(var(--header-height) / 3);
@@ -112,6 +128,7 @@
   /* font-weight: bolder; */
   font-size: calc(var(--font-size) / 1.35);
   color: yellow;
+  line-height:  calc(var(--font-size) / 1.35);
 
 }
 #pre-game-description div {
@@ -193,10 +210,9 @@
     margin-left: 15vw;
     margin-top: 0;
     grid-template-rows: 1.5fr 1fr;
-    grid-template-columns: min-content 1fr 30%;
+    grid-template-columns: min-content 1fr 25vw;
   }
   #pre-game-modal > header {
-    padding: 1vh;
     grid-column-start: 1;
     grid-column-end: 1;
     grid-row-start: 1;

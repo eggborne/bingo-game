@@ -8,10 +8,10 @@
 
   $passwordMatches = password_verify($pass, $hashedPass);
 
-  $cookieMatch = mysqli_query($link,"SELECT id, username, currency, chickens, options, menuMode, cards, prizes, consumables, cardSlots, itemSlots, chickenSlots, bonusChance, stats, token FROM `players` WHERE username='$username' AND token='$token'");
+  $cookieMatch = mysqli_query($link,"SELECT id, username, currency, chickens, options, menuMode, cards, prizes, cardSlots, itemSlots, chickenSlots, bonusChance, stats, token FROM `players` WHERE username='$username' AND token='$token'");
 
   if ($passwordMatches) {
-    $userResult = mysqli_query($link,"SELECT id, username, currency, chickens, options, menuMode, cards, prizes, consumables, cardSlots, itemSlots, chickenSlots, bonusChance, stats, token FROM `players` WHERE username='$username' AND pass='$hashedPass'");
+    $userResult = mysqli_query($link,"SELECT id, username, currency, chickens, options, menuMode, cards, prizes, cardSlots, itemSlots, chickenSlots, bonusChance, stats, token FROM `players` WHERE username='$username' AND pass='$hashedPass'");
   } else if (strlen($token) > 0 && $cookieMatch) {
     $userResult = $cookieMatch;
   }

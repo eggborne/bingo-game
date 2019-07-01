@@ -21,7 +21,7 @@
   position: absolute;
   border-radius: 0.5vmin;
   width: calc(var(--caller-height) - 3vmin);
-  height: calc(var(--caller-height) - 4vmin);
+  height: calc(var(--caller-height) - 3.15vmin);
   background: rgba(7, 161, 7, 0.65);
   transform-origin: bottom;
   pointer-events: none;

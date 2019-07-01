@@ -28,6 +28,16 @@
 img {
   cursor: pointer;
 }
+button#reload-button {
+  height: 12vmin;
+  border-radius: 2vmin;
+  pointer-events: all;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: bolder;
+  background-color: gray;
+  border: 1vmin outset #999;
+  z-index: 12;
+}
 .menu-item {
   display: relative;
   background: #050505;

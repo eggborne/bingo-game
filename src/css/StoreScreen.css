@@ -37,7 +37,7 @@
   align-items: center;
   padding-left: 3vmin;
   padding-right: 3vmin;
-  text-shadow: -0.25vmin -0.35vmin 0 #000, 0.35vmin -0.35vmin 0 #000, -0.35vmin 0.35vmin 0 #000, 0.35vmin 0.35vmin 0 #000;
+  text-shadow: -0.15vmin -0.15vmin 0 #000, 0.15vmin -0.15vmin 0 #000, -0.15vmin 0.15vmin 0 #000, 0.15vmin 0.15vmin 0 #000;
 }
 #store-screen > header > img {
   image-rendering: pixelated;
@@ -50,16 +50,19 @@
   transform: scaleX(-1) rotate(10deg);
 }
 #store-screen > #tab-area {
-  font-family: var(--cute-font);;
-  font-weight: normal !important;
+  font-family: var(--cute-font);
   /* background: #618151; */
-  font-size: 5vw;
-  font-weight: bolder;
+  font-size: 6vw;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  text-shadow: -0.25vmin -0.35vmin 0 #000, 0.35vmin -0.35vmin 0 #000, -0.35vmin 0.35vmin 0 #000, 0.35vmin 0.35vmin 0 #000;
-  z-index: 4;
+  /* justify-content: space-between; */
+  /* align-items: center; */
+  text-shadow: -0.15vmin -0.15vmin 0 #000, 0.15vmin -0.15vmin 0 #000, -0.15vmin 0.15vmin 0 #000, 0.15vmin 0.15vmin 0 #000;
+  /* z-index: 4; */
+  background: #081a00;
+
+}
+#store-screen > #tab-area > div > span {
+  transform: scaleX(0.8);
 }
 #store-screen > #tab-area > div {
   align-self: stretch;
@@ -67,19 +70,20 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-grow: 1;
+  /* flex-grow: 1; */
   color: #ccc;
   border: 1vmin solid rgb(26, 37, 26);
-  border-top: 0;
-  border-radius: 0 0 2vmin 2vmin;
-  transform-origin: top center;
+  border-bottom: 0;
+  border-radius: 2vmin 2vmin 0 0;
+  background: #081a00;
+  transform: scaleY(0.9);
+  transform-origin: bottom left;
   transition: transform 210ms ease, background-color 500ms ease;
 }
 #store-screen > #tab-area > div.selected {
   background-color: #1a3b0c;
-  border: 1vmin solid rgb(173, 255, 173);
-  border-top: 0;
-  transform: scaleY(1.1);
+  border-color: transparent;
+  /* transform: scaleY(1.05); */
   color: rgb(255, 255, 88);
 }
 #store-section-container {
@@ -179,6 +183,9 @@
   padding: 2vh;
   text-shadow: 1px 1px 2px black;
 }
+.consumable-title {
+  min-height: 12vh;
+}
 .permanent-title {
   font-family: 'Open Sans';
   flex-grow: 1;
@@ -258,7 +265,7 @@
   opacity: 0 !important;
 }
 
-.item-name {
+.item-description {
   margin: 1vh 0;
 }
 .store-body .item-container:first-child {
@@ -369,6 +376,10 @@
     height: calc(var(--header-height) / 1.25);
     font-size: 2.5vw;
     z-index: 0;
+  }
+  #store-screen > #tab-area > div {
+    border: 1vmin solid rgb(26, 37, 26);
+    border-bottom: 0;
   }
   #store-section-container {
     /* grid-template-columns: calc(100% - var(--button-bar-height) - 3vmin) calc(100vw - var(--button-bar-height) - 3vmin); */

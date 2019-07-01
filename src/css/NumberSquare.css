@@ -62,29 +62,26 @@
 .number-square > .chip {
   position: absolute;
   background-image: url('../assets/bingochip.png');
-  /* background-image: url('../assets/bingochip.webp'); */
   content: ' ';
   width: 100%;
   height: 100%;
   opacity: 0;
   display: none;
-  /* transform: scale(1.35); */
+  transform: scale(1.35);
   pointer-events: none;
   background-size: 100% 100%;
   background-repeat: no-repeat;
   transition: opacity 280ms ease, transform 280ms ease;
   will-change: transform, opacity;
-  /* opacity: 0.5; */
   transform: scale(1.35);
 }
 .number-square.blocked {
-  /* background-color: rgba(146, 0, 0, 0.493) !important; */
   color: transparent;
   text-shadow: none !important;
   z-index: 3;
 }
 .number-square.blocked > .chip {
-  /* image-rendering: pixelated; */
+  image-rendering: pixelated;
   background-image: url('../assets/shadowbee.png');
   background-size: 100%;
   background-position: center;
@@ -95,14 +92,14 @@
   animation-iteration-count: infinite;
   animation-delay: 1200ms;
   pointer-events: none;
-  transition: transform 300ms ease, opacity 300ms ease;
+  transition: transform 300ms ease, opacity 210ms ease;
 }
 .number-square.blocked.flashing > .chip {
   /* opacity: 0; */
   transform: scale(1.25);
 }
 .number-square.blocked > .chip.dead {
-  /* transform: rotate(720deg) scale(0); */
+  transform: rotate(720deg) scale(0);
 }
 @keyframes wobble {
   0%, 100% {
@@ -128,21 +125,15 @@
 .number-square.orange > .chip {
   background-image: url('../assets/bingochiporange.png');
 }
-.number-square.pepper > .chip {
-  background-image: url('../assets/pepper.png');
-  filter: contrast(150%) brightness(80%);
-  z-index: 1;
-  transform: scale(1);
+.number-square.conan > .chip {
+  background-image: url('../assets/conanchip.png');
+  /* transform: scale(1); */
 }
 .number-square.tomato > .chip {
   background-image: url('../assets/tomato.png');
-  /* background-image: url('../assets/tomato.webp'); */
-  filter: contrast(150%) brightness(80%);
-  z-index: 1;
-  transform: scale(1);
 }
 .number-square.tomato.marked > .chip {
-  transform: scaleX(1.2) scaleY(1.25);
+  /* transform: scaleX(1.2) scaleY(1.25); */
 }
 .number-square > .mark {
   position: absolute;
@@ -168,8 +159,8 @@
 }
 .number-square.endangered {
   transform: scale(1.25) !important;
-  border: 0.5vmin solid red;
-  background: white;
+  outline: 0.5vmin solid red;
+  background: transparent;
 }
 .number-square.endangered > .chip {
   /* opacity: 0.7; */

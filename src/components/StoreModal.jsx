@@ -28,6 +28,7 @@ function StoreModal(props) {
   const selectSlot = (newSlot) => {
     setSlotSelected(newSlot);
     props.onSelectSlot(newSlot);
+
   }
   console.info('storemodal slotSelected', slotSelected)
   return (
@@ -45,10 +46,10 @@ function StoreModal(props) {
               <div>
               {props.itemSlots.map((slot, i) => {
                 console.info(slot, i, 'slot');
-                if (slot.item) {
+                if (slot.item && slot.item.hasOwnProperty('id') && slot.item.id > -1) {
                   return (
                     <div key={slot.item.description} id={`item-slot-${i + 1}`} onPointerDown={() => selectSlot(i)} className={i !== slotSelected ? 'item-slot' : 'item-slot selected'}>
-                      <img src={slot.item.imgSrc} />
+                      <img src={require(`../assets/${slot.item.imgSrc}`)} />
                       <div className='quantity-label'>{slot.item.uses}</div>
                     </div>
                   );
@@ -65,12 +66,12 @@ function StoreModal(props) {
           }
         {props.selectedItem.consumable ?
           <div className='button-area'>
-            <button id='agree-button' onPointerDown={slotSelected > -1 ? props.onClickBuyButton : flashSlotSelect} className={`modal-button${slotSelected > -1 ? '' : ' unavailable'}`}>{agreeLabel}</button>
+            {/* <button id='agree-button' onClick={slotSelected > -1 ? props.onClickBuyButton : flashSlotSelect} className={`modal-button${slotSelected > -1 ? '' : ' unavailable'}`}>{agreeLabel}</button> */}
             <button id='cancel-button' onPointerDown={props.onClickCancelButton} className='modal-button'>{cancelLabel}</button>
           </div>
           :
           <div className='button-area'>
-            <button id='agree-button' onPointerDown={props.onClickBuyButton} className={`modal-button`}>{agreeLabel}</button>
+            <button id='agree-button' onClick={props.onClickBuyButton} className={`modal-button`}>{agreeLabel}</button>
             <button id='cancel-button' onPointerDown={props.onClickCancelButton} className='modal-button'>{cancelLabel}</button>
           </div>
         }

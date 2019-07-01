@@ -14,14 +14,19 @@
   font-family: var(--cute-font);;
   font-size: calc(var(--caller-height) * 0.4);
   /* font-weight: bolder; */
-  background-image: url('../assets/bingoball.png');
+  /* background-image: url('../assets/bingoball.png'); */
   background-image: url('../assets/bingoball.webp');
   background-size: 100% 100%;
   background-repeat: no-repeat;
-  transition: transform 180ms ease, opacity 180ms ease;
+  transition: transform 250ms ease, opacity 180ms ease;
   will-change: transform, opacity;
   /* z-index: 5; */
   color: white;
+  animation: bounce;
+  animation-iteration-count: 1;
+  animation-duration: 250ms;
+  animation-play-state: running;
+  animation-delay: 250ms;
   text-shadow: -0.25vmin -0.25vmin 0 #000, 0.25vmin -0.25vmin 0 #000, -0.25vmin 0.25vmin 0 #000, 0.25vmin 0.25vmin 0 #000;
 }
 .ball > div {

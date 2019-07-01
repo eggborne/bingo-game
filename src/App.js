@@ -8,6 +8,7 @@ import LogInScreen from './components/LogInScreen';
 import GameEndModal from './components/GameEndModal';
 import BonusIndicator from './components/BonusIndicator';
 import StoreScreen from './components/StoreScreen';
+import AviaryScreen from './components/AviaryScreen';
 import MapScreen from './components/MapScreen';
 import Menu from './components/Menu';
 import PreGameModal from './components/PreGameModal';
@@ -33,6 +34,10 @@ let simStart = 0;
 
 document.documentElement.style.setProperty('--view-height', window.innerHeight + 'px');
 
+const id = (expression) => {
+  console.log(expression.toString(), '--->', expression)
+}
+
 // export const saveUser = (username, options) => {
 //   return axios({
 //     method: 'post',
@@ -51,8 +56,8 @@ export const chipImages = {
   blue: require('./assets/bingochipblue.png'),
   green: require('./assets/bingochipgreen.png'),
   orange: require('./assets/bingochiporange.png'),
-  // pepper: require('./assets/pepper.png'),
-  tomato: require('./assets/tomato.webp') || require('./assets/tomato.png')
+  tomato: require('./assets/tomato.png'),
+  conan: require('./assets/conanchip.png'),
 };
 
 let daubSound = undefined;
@@ -229,6 +234,8 @@ export const attemptUserCreation = loginObj => {
   });
 };
 export const updateUserData = (username, token, attribute, newValue) => {
+  console.log('>>>>>>>>>>>>>>>>>>>>>> sending string', JSON.stringify(newValue))
+
   return axios({
     method: 'post',
     url: 'https://chicken.bingo/php/bingoupdateuser.php',
@@ -310,7 +317,7 @@ const defaultUser = {
   loggedIn: false,
   username: 'Guest',
   currency: {
-    cash: 100
+    cash: 10000
   },
   chickens: [],
   stats: {
@@ -345,10 +352,9 @@ const defaultUser = {
   },
   cards: [{ id: 0, type: 'random' }, { id: 1, type: 'random' }],
   prizes: [{ id: 0, cost: 10, category: 'Markers', displayName: 'Red Chips', description: 'Red Chips', type: 'red', imgSrc: 'bingochip.png', imgHeight: '10vmin', class: 'item-row item-selection' }],
-  consumables: [],
   bonusChance: 50,
   cardSlots: [{cardId: 0}, {cardId: 1}],
-  itemSlots: [{item: undefined}],
+  itemSlots: [{ item: undefined }, { item: undefined }],
   chickenSlots: [{chickenId: -1}, {chickenId: -1}],
   id: undefined,
   token: undefined
@@ -398,23 +404,34 @@ const defaultOptions = {
 
 // describes index from each row to be tinted
 export const winPatterns = {
-  'Line / 4 Corners': [[], [], [], [], []], // none tinted
-  '4 Corners': [[0, 4], [], [], [], [0, 4]],
-  'Letter X': [[0, 4], [1, 3], [2], [1, 3], [0, 4]],
-  'Postage Stamp': [[0, 1, 3, 4], [0, 1, 3, 4], [], [0, 1, 3, 4], [0, 1, 3, 4]],
-  'Coverall': [[0, 1, 2, 3, 4], [0, 1, 2, 3, 4], [0, 1, 2, 3, 4], [0, 1, 2, 3, 4], [0, 1, 2, 3, 4]]
+  'Line / 4 Corners': {name: 'Line / 4 Corners', pattern: [[], [], [], [], []]}, // none tinted
+  '4 Corners': {name: '4 Corners', pattern: [[0, 4], [], [], [], [0, 4]]},
+  'Letter X': {name: 'Letter X', pattern: [[0, 4], [1, 3], [2], [1, 3], [0, 4]]},
+  'Postage Stamp': {name: 'Postage Stamp', pattern: [[0, 1, 3, 4], [0, 1, 3, 4], [], [0, 1, 3, 4], [0, 1, 3, 4]]},
+  'Coverall': {name: 'Coverall', pattern: [[0, 1, 2, 3, 4], [0, 1, 2, 3, 4], [0, 1, 2, 3, 4], [0, 1, 2, 3, 4], [0, 1, 2, 3, 4]]}
 }
 
 const bonuses = ['FREE', 'BEE'];
 const gameModes = {
-  'Classic': { unlocked: true, name: 'Classic', winPattern: winPatterns['Letter X'], className: 'classic', description: {object: 'Score a Letter X as fast as possible', gameEnds: 'when one player has scored a Letter X'} },
-  'Ranked': { unlocked: true, name: 'Ranked', winnerLimit: 5, winPattern: winPatterns['Line / 4 Corners'], className: 'ranked', description: {object: 'Score a Bingo as fast as possible', gameEnds: 'when 5 players have scored a Bingo'} },
-  'Bonanza': { unlocked: true, name: 'Bonanza', bingoLimit: 24, winPattern: winPatterns['Line / 4 Corners'], className: 'bonanza', description: {object: 'Score as many Bingos as possible', gameEnds: 'when 24 Bingos have been scored'} },
-  'Countdown': { unlocked: true, name: 'Countdown', ballLimit: 35, winPattern: winPatterns['Line / 4 Corners'], className: 'countdown', description: {object: 'Score as many Bingos as possible', gameEnds: 'when 35 balls have been drawn'} },
+  'Classic': { unlocked: true, name: 'Classic', winPattern: winPatterns['Letter X'], className: 'classic', description: {object: () => 'Score a '+gameModes['Classic'].winPattern.name+' as fast as possible', gameEnds: () => 'when one player has scored a '+gameModes['Classic'].winPattern.name} },
+  'Ranked': { unlocked: true, name: 'Ranked', winnerLimit: 5, winPattern: winPatterns['Line / 4 Corners'], className: 'ranked', description: {object: () => 'Score a Bingo as fast as possible', gameEnds: () => 'when '+gameModes['Ranked'].winnerLimit+' players have scored a Bingo'} },
+  'Bonanza': { unlocked: true, name: 'Bonanza', bingoLimit: 20, winPattern: winPatterns['Line / 4 Corners'], className: 'bonanza', description: {object: () => 'Score as many Bingos as possible', gameEnds: () => 'when '+gameModes['Bonanza'].bingoLimit+' Bingos have been scored'} },
+  'Countdown': { unlocked: true, name: 'Countdown', ballLimit: 35, winPattern: winPatterns['Line / 4 Corners'], className: 'countdown', description: {object: () => 'Score as many Bingos as possible', gameEnds: () => 'when '+gameModes['Countdown'].ballLimit+' balls have been drawn'} },
   // 'Standoff': { unlocked: false, name: 'Standoff', winnerLimit: 4, winPattern: 'Line / 4 Corners', className='' },
   // 'Danger Zones': { unlocked: false, name: 'Danger Zones', winPattern: 'Line / 4 Corners', className='' },
   // 'Lightning': { unlocked: false, name: 'Lightning', timeLimit: 30, winPattern: 'Line / 4 Corners', className='' }
 };
+
+export const chickenEffects = {
+  'bonusLuck': [
+    undefined,
+    {displayName: 'Corner bonus always gives a Free Space (no bees)'}
+  ]
+}
+
+export const experienceLevels = [
+  0, 500, 1000, 2500, 5000, 10000, 25000, 50000, 75000, 100000
+]
 
 const applyOptionsCSS = (newOptions) => {
   document.documentElement.style.setProperty('--opponent-cards', newOptions.opponentCards.length);
@@ -455,6 +472,7 @@ function App() {
   const [menuMode, setMenuMode] = useState('settings');
   const [loginError, setLoginError] = useState('');
   const [storeOpen, setStoreOpen] = useState(false);
+  const [aviaryOn, setAviaryOn] = useState(false);
   const [winnerLimit, setWinnerLimit] = useState(4);
   const [ballLimit, setBallLimit] = useState(35);
   const [timeLimit, setTimeLimit] = useState(30);
@@ -470,7 +488,8 @@ function App() {
   const [daubSpeedHistory, setDaubSpeedHistory] = useState([]);
   const [currentBeeChance, setCurrentBeeChance] = useState(5);
   const [bonusMeter, setBonusMeter] = useState(0);
-  const [bonusRechargeRate, setBonusRechargeRate] = useState(25);
+  const [bonusRechargeRate, setBonusRechargeRate] = useState(100);
+  const [currentSpeedBonus, setCurrentSpeedBonus] = useState(0);
   const [pausedWithMenu, setPausedWithMenu] = useState(false);
   const [powerupSelected, setPowerupSelected] = useState(undefined);
   const [showingBonusText, setShowingBonusText] = useState(false);
@@ -484,6 +503,12 @@ function App() {
   const chickenRef = useRef();
   const meterRef = useRef();
   const [opponentCardProgress, setOpponentCardProgress] = useState([...defaultOptions.opponentCards]);
+  const [roundResults, setRoundResults] = useState({
+    averageDaubSpeed: 3000,
+    speedBonus: 0,
+    totalPrize: 0,
+    cards: []
+  })
 
   // EFFECTS //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -522,7 +547,6 @@ function App() {
       applyOptionsCSS(newOptions);
       setOpponentCardProgress(newOptions.opponentCards)
     }
-    // setPreGameOn(true);
     setTimeout(() => {
       setLazy1(true);
     }, 1000);
@@ -530,28 +554,54 @@ function App() {
       setLocked(isFullScreen());
     });
   }, []);
+  useEffect(() => {
+    console.error('user.cardSlots.length changed -----------------------');
+    let newRoundResults = {...roundResults};
+    newRoundResults.cards = new Array([...user.cardSlots].filter(slot => slot.cardId !== -1).length).fill({});
+    newRoundResults.cards.map((card, i, arr) => {
+      console.log('card?', card)
+      arr[i] = {
+        cardIndex: i,
+        bingoCount: 0,
+        ballsAtBingo: new Array(75),
+        opponentsAtBingo: new Array(options.opponentCards.length),
+        bonuses: [],
+        currentPrize: 0
+      }
+    });
+    console.error('set newRuondResults.cards to', newRoundResults.cards)
+    setRoundResults(newRoundResults);
+  }, [user.cardSlots.length])
   useInterval(() => {
     if (gameStarted) {
       if (counter % 1 === 0) {
-        ref.current.scrollLeft = -ref.current.scrollWidth;
-        playSound(ballSound);
+        if (ref.current.scrollLeft !== -ref.current.scrollWidth) {
+          ref.current.scrollLeft = -ref.current.scrollWidth;
+        }
         setTimeout(() => {
+          playSound(ballSound);
           drawBall();
-        }, 450);
+        }, 300);
       }
       if (!gameEnded && !offeringBonus) {
+        // if (currentSpeedBonus) {
+        //   setBonusMeter((bonusMeter) => bonusMeter += currentSpeedBonus);
+        //   setCurrentSpeedBonus(0);
+        // } else {
+        //   setBonusMeter((bonusMeter) => bonusMeter += bonusRechargeRate);
+        // }
         if (bonusMeter >= 1000) {
           setOfferingBonus(getRandomBonus());
           playSound(orchestraHitSound);
           setBonusMeter(bonusMeter - 1000);
         } else {
-          setBonusMeter(bonusMeter + bonusRechargeRate);
+          setBonusMeter((bonusMeter) => bonusMeter + bonusRechargeRate);
         }
       }
       counter += 0.5;
     }
     return this;
-  }, Math.round(options.drawSpeed / 2));
+  }, options.drawSpeed / 2);
 
   const peck = async () => {
     let promise = new Promise((resolve) => {
@@ -628,6 +678,7 @@ function App() {
     }
   }
   function integrateLoggedInUser(data, remember) {
+    console.warn('raw db', data)
     for (let row in data) {
       if (typeof parseInt(data[row]) === 'number' && !isNaN(parseInt(data[row]))) {
         data[row] = parseInt(data[row]);
@@ -646,7 +697,6 @@ function App() {
     if (data.prizes) {
       newUser.prizes = JSON.parse(data.prizes);
     }
-    // newUser.consumables = JSON.parse(data.consumables);
     newUser.loggedIn = true;
     if (typeof data.cards === 'string') {
       data.cards = JSON.parse(data.cards);
@@ -689,9 +739,9 @@ function App() {
     } else {
       setWinnerLimit(newOptions.opponentCards.length);
     }
-    if (newMode.winPattern) {
-      setWinPattern(newMode.winPattern);
-    }
+    // if (newMode.winPattern) {
+    //   setWinPattern(newMode.winPattern);
+    // }
     if (newMode.timeLimit) {
       setTimeLimit(newMode.timeLimit);
     }
@@ -877,7 +927,11 @@ function App() {
   //   }
   // };
   const getRandomBonus = () => {
-    return randomInt(0, 10) > currentBeeChance ? 'FREE' : 'BEE';
+    let chanceOfBee = randomInt(0, 1);
+    // if (currentChickenEffect === '') {
+
+    // }
+    return chanceOfBee ? 'FREE' : 'BEE';
   };
   const startGame = () => {
     if (preGameOn) {
@@ -1170,12 +1224,16 @@ function App() {
     let wideOption = window.innerWidth > window.innerHeight ? 'fitWideLandscape' : 'fitWide';
     let cssVar = window.innerWidth > window.innerHeight ? '--user-cards-wide-landscape' : '--user-cards-wide';
     let allColors = Object.keys(chipImages);
+    console.warn('allcolors', allColors)
     let chipColors = [];
-    user.prizes
+    [...user.prizes]
       .filter(prize => allColors.includes(prize.type))
       .map(prize => {
-        chipColors.push(prize.type);
+        if (!chipColors.includes(prize.type)) {
+          chipColors.push(prize.type);
+        }
       });
+    console.warn('user chipcolors', chipColors)
     if (type === 'fit-plus') {
       if (newOptions[wideOption] < 24) {
         newOptions[wideOption]++;
@@ -1222,7 +1280,7 @@ function App() {
     }
   };
 
-  const handleAchieveBingo = opponent => {
+  const handleAchieveBingo = (opponent, numberOfBingos, totalCardBingos, cardId) => {
     if (gameMode.name === 'Ranked') {
       if (opponent) {
         console.log('remove a player from playersLeft!')
@@ -1270,10 +1328,19 @@ function App() {
           //
           newUser.stats.totalBingos += newBingos;
           let prizeMoney = playersLeft * prizePerCard;
+          let chickenExp = Math.round(prizeMoney / 20);
           let rank = options.opponentCards.length - playersLeft + 1;
           newUser.stats.totalBingos += newBingos;
           let winMusic = rank === 1 ? fanfare1 : fanfare2;
           playSound(winMusic);
+          let newChickens = newUser.chickens;
+          newUser.chickenSlots.map(slot => {
+            let chicken = newUser.chickens[slot.chickenId]
+            if (chicken) {
+              console.log('-------------- giving', chicken.name, chickenExp, 'exp!')
+              chicken.experience += chickenExp;
+            }
+          });
           newUser.currency.cash += prizeMoney;
           newUser.stats.totalGames++;
           newUser.stats[gameMode.name]['Games Played']++;
@@ -1292,66 +1359,130 @@ function App() {
           if (user.loggedIn) {
             updateUserData(user.username, user.token, 'stats', newUser.stats);
             updateUserData(user.username, user.token, 'currency', newUser.currency);
+            updateUserData(user.username, user.token, 'chickens', newChickens);
           }
           setGameStarted(false);
           setTimeout(() => {
             setGameEnded(true);
             setGameInProgress(false);
-            if (options.voiceOn) {
-              // synth.cancel();
-              // let endingQuip = quips.ending[rank][randomInt(0, quips.ending[rank].length - 1)];
-              // let spokenOutPhrase = new SpeechSynthesisUtterance(endingQuip);
-              // synth.speak(spokenOutPhrase);
-            }
           }, 2500);
         }
       }
     }
     if (gameMode.name === 'Bonanza') {
+      let newRoundResults = { ...roundResults };
       if (opponent) {
-        playSound(opponentBingoSound);
-        setRoundBingos(roundBingos + 1)
-      } else {
-        if (roundBingos < winnerLimit) {
-          playSound(fanfare2);
-          let newUser = { ...user };
-          newUser.stats.totalBingos++;
-          setUser(newUser);
-          if (user.loggedIn) {
-            updateUserData(user.username, user.token, 'stats', newUser.stats);
+        if (roundBingos >= gameMode.bingoLimit - 3) {
+          if (options.soundOn) {
+            opponentBingoSound.stop();
           }
-          setCurrentBingos(currentBingos + 1);
-          setRoundBingos(roundBingos + 1);
-        } else {
-          playSound(roundLoseSound);
-          let newUser = { ...user };
-          newUser.stats.totalGames++;
-          newUser.stats[gameMode.name]['Games Played']++;
-          if (user.loggedIn) {
-            updateUserData(user.username, user.token, 'stats', newUser.stats);
-          }
-          meterRef.current.classList.remove('critical');
-          setGameStarted(false);
-          setGameInProgress(false);
-          setGameEnded(true);
+          playSound(opponentBingoSound);
         }
+        setRoundBingos(roundBingos => roundBingos + numberOfBingos)
+      } else {
+        console.error('BINGO! --------> numberOfBingos', numberOfBingos);
+        playSound(fanfare2);
+        let newUser = { ...user };
+        newUser.stats.totalBingos++;
+        setUser(newUser);
+        if (user.loggedIn) {
+          updateUserData(user.username, user.token, 'stats', newUser.stats);
+        }
+        let cardResult = newRoundResults.cards[cardId];
+        cardResult.bingoCount = totalCardBingos;
+        cardResult.ballsAtBingo[totalCardBingos] = calledBalls.length;
+        cardResult.opponentsAtBingo[totalCardBingos] = playersLeft;
+        cardResult.currentPrize = (totalCardBingos * (options.opponentCards.length * 100)) + (totalCardBingos * totalCardBingos * (options.opponentCards.length * 25));
+        console.log('cardId', cardId);
+        console.log('totalCardBingos', totalCardBingos)
+        console.log('newRoundResults', newRoundResults);
+        console.log('cardResult', cardResult);
+        setCurrentBingos(currentBingos => currentBingos + numberOfBingos);
+        setRoundBingos(roundBingos => roundBingos + numberOfBingos);
+      }
+      if (roundBingos + numberOfBingos >= gameMode.bingoLimit) {
+        playSound(roundOverSound);
+        let newUser = { ...user };
+        newUser.stats.totalGames++;
+        newUser.stats[gameMode.name]['Games Played']++;
+        let speedBonus = (3000 - newRoundResults.averageDaubSpeed) * 7;
+        newRoundResults.speedBonus = speedBonus;
+        let totalMoney = 0;
+        newRoundResults.cards.map(card => {
+          totalMoney += card.currentPrize;
+        });
+        totalMoney += speedBonus;
+        newUser.currency.cash += totalMoney;
+        if (user.loggedIn) {
+          updateUserData(user.username, user.token, 'stats', newUser.stats);
+          updateUserData(user.username, user.token, 'currency', newUser.currency);
+        }
+        meterRef.current.classList.remove('critical');
+        setRoundResults(newRoundResults);
+        setGameStarted(false);
+        setGameInProgress(false);
+        setGameEnded(true);
+      } else {
+        setRoundResults(newRoundResults);
+      }
+    }
+    if (gameMode.name === 'Classic') {
+      if (opponent) {
+        playSound(roundLoseSound);
+        let newUser = { ...user };
+        newUser.stats.totalGames++;
+        newUser.stats[gameMode.name]['Games Played']++;
+        if (user.loggedIn) {
+          updateUserData(user.username, user.token, 'stats', newUser.stats);
+        }
+        setGameStarted(false);
+        setGameInProgress(false);
+        setGameEnded(true);
+      } else {
+        let newUser = { ...user };
+        // need to determine new bingos?
+        let newBingos = 1;
+        newUser.stats.totalBingos += newBingos;
+        let prizeMoney = playersLeft * prizePerCard;
+        newUser.stats.totalBingos += newBingos;
+        playSound(fanfare1);
+        newUser.currency.cash += prizeMoney;
+        newUser.stats.totalGames++;
+        newUser.stats[gameMode.name]['Games Played']++;
+        newUser.stats[gameMode.name]['Games Won']++;
+        if (user.loggedIn && calledBalls.length < newUser.stats[gameMode.name]['Quickest Bingo']) {
+          // if (user.loggedIn && calledBalls.length < newUser.stats[gameMode.name]['Quickest Bingo']) {
+          console.big('NEW QUICKEST BINGO RECORD');
+          newUser.stats[gameMode.name]['Quickest Bingo'] = calledBalls.length;
+          setRecordsBroken({ type: 'Quickest Bingo', value: calledBalls.length + ' balls' });
+        }
+        setUser(newUser);
+        if (user.loggedIn) {
+          updateUserData(user.username, user.token, 'stats', newUser.stats);
+          updateUserData(user.username, user.token, 'currency', newUser.currency);
+        }
+        setGameStarted(false);
+        setTimeout(() => {
+          setGameEnded(true);
+          setGameInProgress(false);
+        }, 2500);
       }
     }
     if (gameMode.name === 'Countdown') {
-      // if (opponent) {
-      //   // playSound(opponentBingoSound)
-      // } else {
-      //   playSound(fanfare2);
-      //   let newUser = { ...user };
-      //   newUser.stats.totalBingos++;
-      //   setUser(newUser);
-      //   if (user.loggedIn) {
-      //     updateUserData(user.username, user.token, 'stats', newUser.stats);
-      //   }
-      //   let newBingos = [...currentBingos];
-      //   newBingos.push({});
-      //   setCurrentBingos(newBingos);
-      // }
+      if (opponent) {
+        // playSound(opponentBingoSound)
+      } else {
+        playSound(fanfare2);
+        let newUser = { ...user };
+        newUser.stats.totalBingos++;
+        setUser(newUser);
+        if (user.loggedIn) {
+          updateUserData(user.username, user.token, 'stats', newUser.stats);
+        }
+        let newBingos = [...currentBingos];
+        newBingos.push({});
+        setCurrentBingos(newBingos);
+      }
     }
   };
 
@@ -1456,6 +1587,9 @@ function App() {
     if (preGameOn) {
       setPreGameOn(false);
     }
+    if (aviaryOn) {
+      setAviaryOn(false);
+    }
     setStoreOpen(!storeOpen);
     if (options.soundOn && !soundsLoaded) {
       loadSounds().then((response) => {
@@ -1464,14 +1598,26 @@ function App() {
       });
     }
   };
+  const handleClickAviaryButton = () => {
+    if (mapOn) {
+      setMapOn(false);
+    }
+    if (preGameOn) {
+      setPreGameOn(false);
+    }
+    if (storeOpen) {
+      setStoreOpen(false);
+    }
+    setAviaryOn(aviaryOn => !aviaryOn);
+  };
   const handleClickBuyButton = (itemData, slot) => {
+    console.warn('buying slot itemData', slot, itemData)
     playSound(refillSound);
     let newUser = { ...user };
     if (itemData.consumable) {
-      console.big('CONS')
-      console.log('adding consumable to itemSlot', slot, itemData);
-      console.big('CONS')
+      itemData.uses = itemData.totalUses;
       newUser.itemSlots[slot].item = itemData;
+      console.log('>>>>>>>>>>>>>>>>>>>>>> sending', newUser.itemSlots)
       updateUserData(user.username, user.token, 'itemSlots', newUser.itemSlots).then(response => {
         console.log('updated itemSlots?', response, newUser.itemSlots)
       });
@@ -1479,7 +1625,12 @@ function App() {
       console.log('is permanent (prizes)');
       newUser.prizes = [...newUser.prizes, itemData];
       if (itemData.displayName.indexOf('Item Slot') > -1) {
-        newUser.itemSlots = [...newUser.itemSlots, { item: false }];
+        let alreadyOwned = newUser.itemSlots.filter(slot => slot.item).length;
+        console.warn('alrady opwned', alreadyOwned);
+        console.log('newUser.itemSlots', newUser.itemSlots);
+        console.log('newUser.itemSlots[alreadyOwned]', newUser.itemSlots[alreadyOwned]);
+
+        newUser.itemSlots[alreadyOwned].item = { id: -1 };
         updateUserData(user.username, user.token, 'itemSlots', newUser.itemSlots).then(response => {
           console.log('updated itemSlots?', response, newUser.itemSlots)
         });
@@ -1514,9 +1665,8 @@ function App() {
 
   const handleClickRefillItem = (itemData, refillCost) => {
     playSound(refillSound);
-    console.log('refilling', itemData, 'for', refillCost);
     let newUser = { ...user };
-    let invSlot = newUser.itemSlots.filter((slot) => slot.item.description === itemData.description)[0];
+    let invSlot = newUser.itemSlots.filter((slot) => slot.item.id === itemData.id)[0];
     invSlot.item.uses = invSlot.item.totalUses;
     newUser.currency.cash -= refillCost;
     setUser(newUser);
@@ -1525,40 +1675,11 @@ function App() {
       updateUserData(user.username, user.token, 'itemSlots', newUser.itemSlots)
     }
   }
-
-  const handleClickInactiveCard = () => {
-    console.log('power sel?', powerupSelected)
-    if (powerupSelected) {
-      setPowerupSelected(undefined);
-    }
-    // console.log('gameStarted?', gameStarted);
-    // console.log('calledBalls.length?', calledBalls.length);
-    // if (!gameStarted && !preGameOn) {
-    //   setPreGameOn(true);
-    //   if (options.soundOn && !soundsLoaded) {
-    //     loadSounds().then(() => {
-    //       console.pink('handleClickInactiveCard loaded sounds in ' + Math.round(window.performance.now() - loadStartTime));
-    //       // playSound(bonusAlertSound2)
-    //       setSoundsLoaded(true);
-    //     });
-    //   }
-    // }
-    // let newUser = { ...user };
-    // if (newUser.currency.cash) {
-    //   newUser.currency.cash--;
-    //   setUser(newUser);
-    //   requestAnimationFrame(() => {
-    //     updateUserData(user.username, user.token, 'currency', newUser.currency);
-    //   });
-    // }
-  };
   const handleDaubSquare = (mostRecentBall) => {
     playSound(daubSound);
     let newHistory = [];
     if (mostRecentBall) {
-      console.log('lastDrew', lastDrew, 'lastDaubed', lastDaubed)
       let lastTimer = lastDrew;
-      console.log('lastDaubed > lastDrew', lastDaubed > lastDrew)
       if (lastDaubed > lastDrew) {
         lastTimer = lastDaubed;
         console.log('chaining off last daub')
@@ -1566,72 +1687,70 @@ function App() {
       if (!offeringBonus && !openingBonus) {
         let daubSpeed = Date.now() - lastTimer;
         console.warn('speed:', daubSpeed);
-        // newHistory = [...daubSpeedHistory, daubSpeed];
-        // setDaubSpeedHistory(newHistory);
+        if (daubSpeed > 3000) {
+          daubSpeed = 3000;
+        }
         setLastDaubed(Date.now());
+        newHistory = [...daubSpeedHistory, daubSpeed];
+        setDaubSpeedHistory(newHistory);
         if (daubSpeed < 2500) {
-          let bonusAmount = Math.round((2500 - daubSpeed) / 2.5);
-          if (bonusAmount > 400) {
+          let bonusAmount = Math.round((2500 - daubSpeed) / 1.5);
+          if (daubSpeed < 1850) {
             playSound(freeSpaceSound2);
-            bonusAmount *= 1.3;
-            setBonusRechargeRate(bonusRechargeRate * 2);
+            bonusAmount *= 1.5;
+            console.big('super bonus ' + bonusAmount)
+            setBonusRechargeRate((bonusRechargeRate) => bonusRechargeRate * 2);
             setShowingBonusText('SUPER SPEED BONUS!');
           } else {
             playSound(freeSpaceSound);
             setShowingBonusText('SPEED BONUS!');
           }
-          setBonusMeter(bonusMeter + bonusAmount);
+          if (bonusAmount < 200) {
+            bonusAmount = 200;
+          }
+          setBonusMeter(bonusMeter => bonusMeter + bonusAmount);
+          let bonusTime = bonusAmount >= 1000 ? bonusAmount : 1000;
+          setTimeout(() => {
+            setShowingBonusText(false);
+          }, bonusTime)
         } else {
-          setBonusMeter(bonusMeter + 50);
-          // setShowingBonusText('SPEED: ' + daubSpeed);
+          setBonusMeter((bonusMeter) => bonusMeter + bonusRechargeRate);
         }
-
-        setTimeout(() => {
-          setShowingBonusText(false);
-        }, 800)
       }
     } else {
-      // newHistory = [...daubSpeedHistory, 2000];
-      // setDaubSpeedHistory(newHistory);
+      setBonusMeter((bonusMeter) => bonusMeter + (bonusRechargeRate / 2));
     }
-    // let total = 0;
-    // newHistory.map(speed => {
-    //   total += speed;
-    // });
-    // if (total && newHistory.length) {
-    //   let averageSpeed = Math.round(total / newHistory.length);
-    //   console.log('average speed!', averageSpeed);
-    //   let newBeeChance = Math.round(averageSpeed / 300) - 2;
-    //   if (newBeeChance > 5) {
-    //     newBeeChance = 5;
-    //   }
-    //   if (newBeeChance < 0) {
-    //     newBeeChance = 0;
-    //   }
-    //   console.warn('NEW BEE CHANCE ------------>', newBeeChance, ' / 10');
-    //   // if (newBeeChance < 5) {
-    //   //   playSound(bonusAlertSound2);
-    //   // }
-    //   setCurrentBeeChance(newBeeChance)
-    // }
-    if (powerupSelected) {
-      setPowerupSelected(false)
+    let total = 0;
+    newHistory.map(speed => {
+      total += speed;
+    });
+    if (total && newHistory.length) {
+      let averageSpeed = Math.round(total / newHistory.length);
+      let newRoundResults = { ...roundResults };
+      newRoundResults.averageDaubSpeed = averageSpeed;
+      setRoundResults(newRoundResults);
+
     }
   };
 
   const isFreeSpace = (cardIndex, num) => {
     let isFree = false;
-    temporaryBonuses.freeSpaces.map(space => {
-      if (space.num === num && space.cardIndex === cardIndex) {
-        isFree = true;
-      } else if (space.num === num) {
-      }
-    });
+    if (temporaryBonuses.freeSpaces) {
+      temporaryBonuses.freeSpaces.map(space => {
+        if (space.num === num && space.cardIndex === cardIndex) {
+          isFree = true;
+        } else if (space.num === num) {
+        }
+      });
+    }
     return isFree;
   };
 
   const handleClickStartButton = () => {
     console.log('handle calledBalls', gameStarted);
+    if (gameEnded) {
+      handleClickOkayButton();
+    }
     if (!gameStarted) {
       let preGameShowing = !document.getElementById('pre-game-modal').classList.contains('hidden');
       console.green('pregameshowing ' + preGameShowing)
@@ -1650,6 +1769,32 @@ function App() {
           setMenuOn(false);
         }
         if (!preGameShowing) {
+          if (gameEnded) {
+            console.error('clicked play when endedQ!!')
+            console.error('clicked play when endedQ!!')
+            console.error('clicked play when endedQ!!')
+            console.error('clicked play when endedQ!!')
+            console.error('clicked play when endedQ!!')
+            console.error('clicked play when endedQ!!')
+            console.error('clicked play when endedQ!!')
+            console.error('clicked play when endedQ!!')
+            console.error('clicked play when endedQ!!')
+            console.error('clicked play when endedQ!!')
+            console.error('clicked play when endedQ!!')
+            console.error('clicked play when endedQ!!')
+            console.error('clicked play when endedQ!!')
+            console.error('clicked play when endedQ!!')
+            console.error('clicked play when endedQ!!')
+            console.error('clicked play when endedQ!!')
+            console.error('clicked play when endedQ!!')
+            console.error('clicked play when endedQ!!')
+            console.error('clicked play when endedQ!!')
+            console.error('clicked play when endedQ!!')
+            console.error('clicked play when endedQ!!')
+            console.error('clicked play when endedQ!!')
+            console.error('clicked play when endedQ!!')
+            handleClickAgreeButton();
+          }
           setPreGameOn(true);
           if (options.soundOn && !soundsLoaded) {
             loadSounds().then(() => {
@@ -1659,6 +1804,7 @@ function App() {
             });
           }
         } else if (gameMode.unlocked) {
+
           let newUser = { ...user };
           newUser.cards.map((card, c) => {
             console.log('getrad card', card, 'slots', newUser.cardSlots)
@@ -1702,6 +1848,7 @@ function App() {
       // let unfilteredNumbers = randomCard.numbers.flat(2).filter(num => !calledBalls.includes(num) && num !== 99);
       // let uncalledNumbers = randomCard.numbers.flat(2).filter(num => !calledBalls.includes(num) && !isFreeSpace(cardIndex, num) && num !== 99);
       let randomNumber = uncalledNumbers[randomInt(0, uncalledNumbers.length - 1)];
+      console.error('sending', offeringBonus, 'to card', cardIndex, 'num', randomNumber)
       newBonuses.freeSpaces.push({ type: offeringBonus, cardIndex: cardIndex, num: randomNumber });
       setTemporaryBonuses(newBonuses);
       setOpeningBonus({ type: offeringBonus, value: randomNumber, cardIndex: cardIndex });
@@ -1710,7 +1857,7 @@ function App() {
       }
     }
     setOfferingBonus(undefined);
-    setBonusRechargeRate(25);
+    setBonusRechargeRate(100);
     setTimeout(() => {
       setOpeningBonus(false);
     }, 800);
@@ -1727,7 +1874,10 @@ function App() {
     if (preGameOn) {
       setPreGameOn(false);
     }
-    setMapOn(!mapOn);
+    if (aviaryOn) {
+      setAviaryOn(false);
+    }
+    setMapOn(mapOn => !mapOn);
   };
   const integrateModeRules = (newMode, newOptions) => {
     if (newMode.ballLimit) {
@@ -1739,9 +1889,9 @@ function App() {
     } else {
       setWinnerLimit(newOptions.opponentCards.length);
     }
-    if (newMode.winPattern) {
-      setWinPattern(newMode.winPattern);
-    }
+    // if (newMode.winPattern) {
+    //   setWinPattern(newMode.winPattern);
+    // }
     if (newMode.timeLimit) {
       setTimeLimit(newMode.timeLimit);
     }
@@ -1772,17 +1922,55 @@ function App() {
       updateUserData(user.username, user.token, 'options', newOptions);
     }
   };
+  const handleClickChangeWinPattern = direction => {
+    let patternNamesArray = Object.keys(winPatterns);
+    let currentIndex = patternNamesArray.indexOf(gameMode.winPattern.name);
+    console.log('currentInd', currentIndex);
+    let newIndex = undefined;
+    if (direction === 'previous') {
+      newIndex = currentIndex - 1;
+      if (newIndex < 0) {
+        newIndex = patternNamesArray.length - 1;
+      }
+    } else {
+      newIndex = currentIndex + 1;
+      if (newIndex > patternNamesArray.length - 1) {
+        newIndex = 0;
+      }
+    }
+    let newPattern = winPatterns[patternNamesArray[newIndex]];
+    gameModes[gameMode.name].winPattern = newPattern;
+    setGameMode(gameModes[gameMode.name]);
+    setWinPattern(newPattern)
+    console.warn('--------------SET to', gameModes[gameMode.name])
+  };
+  const handleClickChangeBallLimit = direction => {
+    let newLimit = undefined;
+    if (direction === 'previous') {
+      newLimit = ballLimit - 5;
+      if (newLimit < 10) {
+        newLimit = 10;
+      }
+    } else {
+      newLimit = ballLimit + 5;
+      if (newLimit > 75) {
+        newLimit = 75;
+      }
+    }
+    if (newLimit !== ballLimit) {
+      gameModes[gameMode.name].ballLimit = newLimit;
+      setGameMode(gameModes[gameMode.name]);
+      setBallLimit(newLimit)
+    }
+  };
 
   const resetGame = () => {
+    console.green('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
     console.green('RESET GAME !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
     console.green('RESET GAME !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
     console.green('RESET GAME !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
     console.green('RESET GAME !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-    console.green('RESET GAME !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-    console.green('RESET GAME !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-    console.green('RESET GAME !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-    console.green('RESET GAME !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-    console.green('RESET GAME !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+    console.green('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
     if (options.voiceOn) {
       synth.cancel();
     }
@@ -1794,21 +1982,24 @@ function App() {
     setTemporaryBonuses({
       freeSpaces: []
     });
-    // setPlayersLeft([options.opponentCards.length]);
+    setPlayersLeft(options.opponentCards.length);
     setCalledBalls([]);
     setRoundBingos(0);
     setCurrentBingos(0);
     setBonusMeter(0);
-    setBonusRechargeRate(25);
+    setBonusRechargeRate(100);
     if (currentBallSet.length) {
       setCurrentBallSet([]);
     }
     if (offeringBonus) {
       setOfferingBonus(undefined);
     }
-    setOpponentCardProgress([...options.opponentCards]);
-    // let newOptions = { ...options };
-    // setOptions(newOptions);
+    let newOptions = { ...options };
+    newOptions.opponentCards.map(card => {
+      card.fullGameStatus = {};
+    })
+    setOpponentCardProgress(newOptions.opponentCards);
+    setOptions(newOptions);
   };
   const updateOpponentCardProgress = () => {
     let startTime = window.performance.now();
@@ -1820,20 +2011,22 @@ function App() {
     console.warn('updateOpponentCardProgress took', window.performance.now() - startTime);
   }
   const getStatusFromCard = (index, active, markedCount) => {
-    console.warn('got card active', active, 'index', index)
+    // console.warn('got card active', active, 'index', index)
     let newProgress = { ...opponentCardProgress };
     // newProgress[index].markedCount = newProgress[index].fullGameStatus[calledBalls.length];
     newProgress[index].index = index;
     newProgress[index].active = active;
     setOpponentCardProgress(newProgress);
   }
-  const reportFullGame = (index, markedEachBall) => {
+  const reportFullGame = (index, markedEachBall, dangerEachBall) => {
+    console.warn('>>>>>>>>>>> full game report from card', index)
+    console.warn('>>>>>>>>>>> markedEachBall, dangerEachBall', markedEachBall, dangerEachBall)
     let newProgress = { ...opponentCardProgress };
     if (gameStarted && index === 0) {
       simStart = window.performance.now();
     }
     // newProgress[index].markedCount = markedCount;
-    newProgress[index].fullGameStatus = markedEachBall;
+    newProgress[index].fullGameStatus = {markedEachBall: markedEachBall, dangerEachBall: dangerEachBall};
     setOpponentCardProgress(newProgress);
     if (index === Object.values(newProgress).length - 1) {
       console.warn('simulated all games in ', window.performance.now() - simStart)
@@ -1850,7 +2043,7 @@ function App() {
     playSound(spraySound);
     let newUser = { ...user };
     newUser.stats.beesKilled++;
-    let invSlot = newUser.itemSlots.filter((slot) => slot.item.description === powerupSelected.description)[0];
+    let invSlot = newUser.itemSlots.filter((slot) => slot.item.id === powerupSelected.id)[0];
     invSlot.item.uses--;
     if (invSlot.item.uses === 0) {
       invSlot.item = false;
@@ -1860,17 +2053,37 @@ function App() {
     let doomedIndex = -1;
     newTempBonuses.freeSpaces.map((space, i) => {
       if (space.cardIndex === cardIndex && space.num === number) {
+        console.error('DOOMING newTempBonuses.freeSpaces[i]', i, space)
         doomedIndex = i;
       }
     });
-    updateUserData(user.username, user.token, 'itemSlots', newUser.itemSlots);
-    updateUserData(user.username, user.token, 'stats', newUser.stats);
-    console.log('killing', newTempBonuses.freeSpaces[doomedIndex]);
+    console.log('killing newTempBonuses.freeSpaces[doomedIndex]', newTempBonuses.freeSpaces[doomedIndex]);
     console.log('bonuses was', newTempBonuses)
-    newTempBonuses.freeSpaces.splice(doomedIndex, 1);
-    console.log('bonuses is', newTempBonuses)
+    newTempBonuses.freeSpaces.splice(doomedIndex, 1)
+    // console.log('bonuses is', newTempBonuses)
     setTemporaryBonuses(newTempBonuses);
     setPowerupSelected(undefined);
+    if (user.loggedIn) {
+      updateUserData(user.username, user.token, 'itemSlots', newUser.itemSlots);
+      updateUserData(user.username, user.token, 'stats', newUser.stats);
+    }
+  }
+  const handleSetFree = (cardIndex, number) => {
+    playSound(freeSpaceSound2);
+    let newUser = { ...user };
+    let invSlot = newUser.itemSlots.filter((slot) => slot.item.id === powerupSelected.id)[0];
+    invSlot.item.uses--;
+    if (invSlot.item.uses === 0) {
+      invSlot.item = false;
+    }
+    setUser(newUser);
+    let newTempBonuses = { ...temporaryBonuses };
+    newTempBonuses.freeSpaces.push({cardIndex: cardIndex, num: number});
+    setTemporaryBonuses(newTempBonuses);
+    setPowerupSelected(undefined);
+    if (user.loggedIn) {
+      updateUserData(user.username, user.token, 'itemSlots', newUser.itemSlots);
+    }
   }
   const handleClickCorner = () => {
     // let daubSpeed = Date.now() - options.drawSpeed - lastDrew;
@@ -1886,6 +2099,60 @@ function App() {
     })
   }
 
+  const byMarked = (a, b) => a.fullGameStatus.markedEachBall ? a.fullGameStatus.markedEachBall[calledBalls.length - 1] - b.fullGameStatus.markedEachBall[calledBalls.length - 1] : 0;
+  const byDanger = (a, b) => a.fullGameStatus.dangerEachBall ? a.fullGameStatus.dangerEachBall[calledBalls.length - 1] - b.fullGameStatus.dangerEachBall[calledBalls.length - 1] : 0;
+
+  const getDangerColor = (criteria, value) => {
+    if (criteria === 'marked') {
+      let dangerClass =  'danger-bar green';
+      if (value > 12) {
+        dangerClass = 'danger-bar dark-red';
+      } else if (value > 11) {
+        dangerClass = 'danger-bar red';
+      } else if (value > 9) {
+        dangerClass = 'danger-bar orange';
+      } else if (value > 7) {
+        dangerClass = 'danger-bar yellow';
+      } else if (value > 5) {
+        dangerClass = 'danger-bar yellowgreen';
+      } else if (value > 3) {
+        dangerClass = 'danger-bar subgreen';
+      }
+      return dangerClass;
+    } else if (criteria === 'danger') {
+      let dangerClass =  'danger-bar green';
+      if (value > 0.85) {
+        dangerClass = 'danger-bar dark-red';
+      } else if (value > 0.75) {
+        dangerClass = 'danger-bar red';
+      } else if (value > 0.65) {
+        dangerClass = 'danger-bar orange';
+      } else if (value > 0.5) {
+        dangerClass = 'danger-bar yellow';
+      } else if (value > 0.35) {
+        dangerClass = 'danger-bar yellowgreen';
+      } else if (value > 0.2) {
+        dangerClass = 'danger-bar subgreen';
+      }
+      return dangerClass;
+    }
+  }
+
+  const handleClickEquipChicken = (chickenId, slot) => {
+    let newUser = { ...user };
+    newUser.chickenSlots[slot].chickenId = chickenId
+    setUser(newUser);
+  }
+  const handleClickUnequipChicken = (chickenId) => {
+    let newUser = { ...user };
+    newUser.chickenSlots.map((slot, i, arr) => {
+      if (slot.chickenId === chickenId) {
+        arr[i].chickenId = -1;
+      }
+    });
+    setUser(newUser);
+  }
+
   // RENDER //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   let itemsFullCount = gotData ? [...user.itemSlots].filter(slot => slot.item && slot.item.uses === slot.item.totalUses).length : undefined;
@@ -1898,7 +2165,7 @@ function App() {
   let opponentAreaClass = options.showOpponentCards ? 'card-area' : 'card-area hidden';
   let playerCardCount = user.cardSlots.filter(slot => slot.cardId !== -1).length;
   let opponentCardCount = options.opponentCards.length;
-  let dangerClass = 'danger-bar';
+
   let barListClass = '';
   if (gameMode.name === 'Countdown') {
     barListClass += ' ball-counter';
@@ -1919,27 +2186,57 @@ function App() {
   }
   let currentCardMargin = window.innerWidth > window.innerHeight ? options.cardMarginLandscape : options.cardMargin;
   let winnersLeft = playersLeft - (options.opponentCards.length - winnerLimit);
+  let bingosLeft = gameMode.bingoLimit - roundBingos;
+  if (winnersLeft < 0) {
+    winnersLeft = 0;
+  }
+  if (bingosLeft < 0) {
+    bingosLeft = 0;
+  }
   let ballsRemaining = ballLimit - calledBalls.length;
   let prizeMoney = 0;
   if (gameMode.name === 'Ranked') {
     prizeMoney = (playersLeft * prizePerCard);
   }
+  if (gameMode.name === 'Bonanza') {
+    // prizeMoney = (currentBingos * (options.opponentCards.length * 100)) + (currentBingos * currentBingos * (options.opponentCards.length * 10));
+    // let speedBonus = (3000 - roundResults.averageDaubSpeed) * 100;
+    // prizeMoney += speedBonus;
+  }
   if (gameMode.name === 'Countdown') {
     let basePrize = roundBingos * (75 - ballLimit) * 25;
     let volumeBonus = roundBingos * roundBingos * 10;
+    barListClass += ' countdown';
     prizeMoney = basePrize + volumeBonus;
   }
+  let chickenExp = Math.round(prizeMoney / 20);
   let meterClass = gameStarted ? '' : 'blurred';
   if (gameMode.name === 'Countdown') {
     meterClass += ' ball-counter';
   }
+  let patternName = gameMode.winPattern.name;
+  // console.log('------------- App says winPatterns', winPatterns)
+  // console.log('------------- App says gameMode', gameMode)
+  // console.log('------------- App says patternName', patternName)
+  let dangerClass = 'danger-bar';
+  let itemQuantities = '';
+
+  if (user.itemSlots[0].item && user.itemSlots[0].item.uses !== undefined) {
+    itemQuantities += user.itemSlots[0].item.uses
+  }
+  if (user.itemSlots[1].item && user.itemSlots[1].item.uses !== undefined) {
+    itemQuantities += ' ' + user.itemSlots[1].item.uses
+  }
   return (
     <div id="app" className={!loaded ? 'zoomed' : ''}>
       <div id="app-background" />
-      {gotData && <div id='mode-display' className={gameStarted ? '' : 'hidden'}>{gameMode.name} - {Object.keys(winPatterns)[Object.values(winPatterns).indexOf(gameMode.winPattern)]}</div>}
+      {gotData && <div id='mode-display' className={gameStarted ? '' : 'hidden'}>
+        <div>Avg. daub speed: {roundResults.averageDaubSpeed}</div>
+        <div>{gameMode.name} - {patternName}</div>
+      </div>}
       <header id="main-header">
         {!menuOn &&
-          (gameInProgress || calledBalls.length ? (
+          (gameInProgress && calledBalls.length ? (
             <>
               <div id="danger-meter" ref={meterRef} className={meterClass}>
 
@@ -1950,31 +2247,20 @@ function App() {
                 </div>
               } */}
                 <div id="danger-bar-list" className={barListClass}>
-                  {(gameMode.name === 'Ranked'  || gameMode.name === 'Bonanza')
-                  ? Object.values({ ...opponentCardProgress }).filter(entry => entry.active && entry.fullGameStatus).sort((a, b) => a.fullGameStatus[calledBalls.length - 1] - b.fullGameStatus[calledBalls.length - 1]).map((entry, i, arr) => {
-                    let markedCount = entry.fullGameStatus ? entry.fullGameStatus[calledBalls.length - 1] : 0;
-                    if (markedCount > 12) {
-                      dangerClass = 'danger-bar dark-red';
-                    } else if (markedCount > 11) {
-                      dangerClass = 'danger-bar red';
-                    } else if (markedCount > 9) {
-                      dangerClass = 'danger-bar orange';
-                    } else if (markedCount > 7) {
-                      dangerClass = 'danger-bar yellow';
-                    } else if (markedCount > 5) {
-                      dangerClass = 'danger-bar yellowgreen';
-                    } else if (markedCount > 3) {
-                      dangerClass = 'danger-bar subgreen';
-                    } else {
-                      dangerClass = 'danger-bar green';
-                    }
+                  {(gameMode.name === 'Ranked'  || gameMode.name === 'Bonanza' || gameMode.name === 'Classic')
+                  // ? Object.values({ ...opponentCardProgress }).filter(entry => entry.active && entry.fullGameStatus).sort(gameMode.winPattern.name === 'Line / 4 Corners' ? byMarked : byDanger).map((entry, i, arr) => {
+                  ? Object.values({ ...opponentCardProgress }).sort(gameMode.winPattern.name === 'Line / 4 Corners' ? byMarked : byDanger).map((entry, i, arr) => {
+                    // let markedCount = entry.fullGameStatus ? entry.fullGameStatus[calledBalls.length - 1] : 0;
+                    let markedCount = entry.fullGameStatus.markedEachBall ? entry.fullGameStatus.markedEachBall[calledBalls.length - 1] : 0;
+                    let dangerLevel = entry.fullGameStatus.dangerEachBall ? entry.fullGameStatus.dangerEachBall[calledBalls.length - 1] : 0;
+                    dangerClass = gameMode.winPattern.name === 'Line / 4 Corners' ? getDangerColor('marked', markedCount) : getDangerColor('danger', dangerLevel);
                     if (markedCount && !entry.active) {
                       dangerClass = 'danger-bar out-of-game'
                     }
-                    // let barWidth = 1 - (markedCount / 20);
-                    // let barTransform = window.innerWidth > window.innerHeight ? `scaleY(1.2) scaleX(${barWidth})` : `scaleY(1) scaleY(${barWidth})`;
+                    let barWidth = gameMode.winPattern.name === 'Line / 4 Corners' ? 1 - (markedCount / 20) : 1 - dangerLevel;
+                    let barTransform = window.innerWidth > window.innerHeight ? `scaleX(${barWidth})` : `scaleY(${barWidth})`;
                     // return <div key={i} style={{ transform: barTransform }} className={dangerClass}/>
-                    return <div key={i} className={dangerClass}/>
+                    return <div key={i} style={{ transform: barTransform }} className={dangerClass}/>
                   })
                   : gameMode.name === 'Countdown'
                   ? Array(ballLimit)
@@ -1985,9 +2271,9 @@ function App() {
                 {(gameMode.name === 'Ranked'  || gameMode.name === 'Bonanza') && (
                   <div id="bingos-left-display">
                     <div>
-                      <small>Winners left:</small>
+                    <small>{gameMode.name === 'Ranked' ? 'Winners' : 'Bingos'} left:</small>
                     </div>
-                  <div id="bingos-left-count">{winnersLeft}</div>
+                  <div id="bingos-left-count">{gameMode.name === 'Ranked' ? winnersLeft : bingosLeft}</div>
                   </div>
                 )}
                 {(gameMode.name === 'Ranked') && (
@@ -2134,6 +2420,8 @@ function App() {
                 gameMode={gameMode}
                 powerupSelected={powerupSelected}
                 onKillBee={handleKillBee}
+                onSetFree={handleSetFree}
+                patternName={patternName}
               />
             </div>
           )})}
@@ -2162,6 +2450,7 @@ function App() {
                 calledBalls={calledBalls}
                 onAchieveBingo={handleAchieveBingo}
                 gameMode={gameMode}
+                patternName={patternName}
               />
             </div>
           ))}
@@ -2169,18 +2458,15 @@ function App() {
       </div>
       {gotData && (
         <>
-          {/* {!gameStarted && !gameInProgress && (
-            <div id="hint-arrow" className={'hint-arrow-container pointing-at-start'}>
-              <i className="material-icons hint-arrow">arrow_downward</i>
-            </div>
-          )} */}
           <ButtonBar
             gameStarted={gameStarted}
             gameInProgress={gameInProgress}
             gameEnded={gameEnded}
             powerupSelected={powerupSelected}
             itemSlots={user.itemSlots}
+            itemQuantities={itemQuantities}
             storeOpen={storeOpen}
+            aviaryOn={aviaryOn}
             mapOn={mapOn}
             itemsEquippedCount={user.itemSlots.filter(slot => slot.item).length}
             itemsFullCount={itemsFullCount}
@@ -2188,10 +2474,13 @@ function App() {
             chickenCount={user.chickens.length}
             chickens={user.chickens}
             chickenSlots={user.chickenSlots}
+            chickensEquippedCount = {user.chickenSlots.filter(slot => slot.chickenId !== -1).length}
+            chickenSlotIndexes={user.chickenSlots[0].chickenId + ' ' + user.chickenSlots[1].chickenId}
             showOpponentCards={options.showOpponentCards}
             onClickStartButton={handleClickStartButton}
             onClickStopButton={handleClickStopButton}
             onClickStoreButton={handleClickStoreButton}
+            onClickAviaryButton={handleClickAviaryButton}
             onClickMapButton={handleClickMapButton}
             onClickResetButton={handleClickCloseButton}
             onClickChickensButton={resetPage}
@@ -2199,10 +2488,23 @@ function App() {
           />
           {!user.loggedIn && <LogInScreen showing={loggingIn} loginError={loginError} onClickLogInButton={handleClickLogInButton} onClickRegisterButton={handleClickRegisterButton} onClickCancelButton={handleClickCancelButton} />}
           <ConfirmModal showing={modalOn} message={modalMessage} loggingOut={loggingOut} onClickAgreeButton={handleClickAgreeButton} onClickCancelButton={handleClickCancelButton} />
-          {/* {gameInProgress && */}
-
-          <GameEndModal gameMode={gameMode} showing={gameEnded} recordsBroken={recordsBroken} roundBingos={roundBingos} prizeMoney={prizeMoney} winnerLimit={winnerLimit} ballLimit={ballLimit} totalOpponents={options.opponentCards.length} rank={options.opponentCards.length - playersLeft + 1} lost={options.opponentCards.length - playersLeft + 1 > winnerLimit} onClickOkayButton={handleClickOkayButton} />
-          {/* } */}
+          <GameEndModal
+            gameMode={gameMode}
+            showing={gameEnded}
+            // showing={true}
+            roundResults={roundResults}
+            recordsBroken={recordsBroken}
+            roundBingos={roundBingos}
+            currentBingos={currentBingos}
+            chickenExp={chickenExp}
+            chickens={user.chickens.filter(chicken => user.chickenSlots[0].chickenId === chicken.chickenId || user.chickenSlots[1].chickenId === chicken.chickenId)}
+            winnerLimit={winnerLimit}
+            ballLimit={ballLimit}
+            totalOpponents={options.opponentCards.length}
+            rank={options.opponentCards.length - playersLeft + 1}
+            lost={gameMode.winnerLimit ? (options.opponentCards.length - playersLeft + 1 > winnerLimit) : (options.opponentCards.length !== playersLeft)}
+            onClickOkayButton={handleClickOkayButton}
+          />
           <Menu
             menuMode={menuMode}
             user={user}
@@ -2247,14 +2549,42 @@ function App() {
             onClickBuyButton={handleClickBuyButton}
             onClickRefillItem={handleClickRefillItem}
           />}
+          {!gameInProgress && <AviaryScreen
+            showing={aviaryOn}
+            itemSlots={user.itemSlots}
+            chickenSlots={user.chickenSlots}
+            chickens={user.chickens}
+            userPrizes={user.prizes}
+            userCash={user.currency.cash}
+            onClickEquipChicken={handleClickEquipChicken}
+            onClickUnequipChicken={handleClickUnequipChicken}
+            chickensEquippedCount={user.chickenSlots.filter(slot => slot.chickenId !== -1).length}
+            chickenSlotIndexes={user.chickenSlots[0].chickenId + ' ' + user.chickenSlots[1].chickenId}
+          />}
           <div id="save-icon" ref={saveRef}>
             <i className="material-icons">save</i>
             <small>Saved</small>
           </div>
         </>
       )}
-      <PreGameModal stats={user.stats} loggedIn={user.loggedIn} showing={preGameOn} gameMode={gameMode} winnerLimit={winnerLimit} bingoLimit={gameMode.bingoLimit} ballLimit={ballLimit} winPattern={winPattern} timeLimit={timeLimit} opponentCount={opponentCardCount} onClickChangeMode={handleClickChangeMode} onClickBeginGame={handleClickStartButton} onClickCancelButton={handleClickCancelButton} onClickLoginButton={handleClickLogIn}/>
-
+      <PreGameModal
+        stats={user.stats}
+        loggedIn={user.loggedIn}
+        showing={preGameOn}
+        gameMode={gameMode}
+        winnerLimit={winnerLimit}
+        bingoLimit={gameMode.bingoLimit}
+        ballLimit={ballLimit}
+        winPattern={gameModes[gameMode.name].winPattern}
+        timeLimit={timeLimit}
+        opponentCount={opponentCardCount}
+        onClickChangeMode={handleClickChangeMode}
+        onClickChangeWinPattern={handleClickChangeWinPattern}
+        onClickChangeBallLimit={handleClickChangeBallLimit}
+        onClickBeginGame={handleClickStartButton}
+        onClickCancelButton={handleClickCancelButton}
+        onClickLoginButton={handleClickLogIn}
+      />
     </div>
   );
 }

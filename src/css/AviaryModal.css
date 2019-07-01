@@ -1,4 +1,4 @@
-#store-modal {
+#aviary-modal {
   position: fixed;
   background-color: #160d02;
   width: 90vw;
@@ -10,7 +10,7 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  justify-content: space-between;
+  justify-content:center;
   font-size: calc(var(--header-height) / 2.75);
   border: 1vmin solid #333;
   border-radius: 3vmin;
@@ -18,47 +18,37 @@
   padding: 2vmin 5vmin;
   padding-top: 0;
   opacity: 0;
-  transform: translateX(-50%) translateY(-50%) scale(0.9);
+  transform: translateX(-50%) translateY(-50%) scale(1.1);
   pointer-events: none;
   z-index: 12;
-  transition: opacity 210ms ease, transform 210ms ease;
+  transition: opacity 320ms ease, transform 320ms ease;
 }
-#store-modal.showing {
-  transform: translateX(-50%) translateY(-50%) scale(1);
+#aviary-modal.showing {
+  transform: translateX(-50%) translateY(-50%);
   opacity: 1;
   pointer-events: all;
 }
-#store-modal > #slot-select {
-  background: #00000066;
-  border-radius: 2vmin;
+#aviary-modal > #slot-select {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-evenly;
-  flex-grow: 1;
-  width: auto;
+  flex-grow: 2;
   padding: 0 5vmin;
   align-self: center;
   font-size: calc(var(--header-height) / 4);
   transition: transform 200ms ease;
 }
-#store-modal > #slot-select > div {
+#aviary-modal > #slot-select > div {
   display: flex;
 }
-#store-modal > #slot-select > div > div {
+#aviary-modal > #slot-select > div > div {
   margin: 1vmin;
 }
-#store-modal > .button-area > #cancel-button {
+#aviary-modal > .button-area > #cancel-button {
   background: rgb(124, 118, 39);
 }
-#store-modal > .button-area > button.unavailable {
-  background-color: rgb(32, 20, 20);
-  /* pointer-events: none; */
-}
-#store-modal .item-slot img {
-  width: 80%;
-}
-#store-modal > .button-area > button {
+#aviary-modal > .button-area > button {
   flex-grow: 0.3;
   font-size: var(--font-size);
   font-weight: bolder;
@@ -68,27 +58,43 @@
   background: rgb(33, 131, 4);
   margin: 1vmin;
 }
-#store-modal-message {
-  text-align: center;
-  color: white;
+#aviary-modal .button-area {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   flex-grow: 1;
 }
-#store-modal .button-area {
+.item-slot {
+  position: relative;
+  background: rgb(100, 169, 235);
+  width: calc(var(--header-height) / 1.25);
+  height: calc(var(--header-height) / 1.25);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  flex-grow: 2;
+  /* border: 0.5vmin outset gray;
+  border-color: rgb(118, 147, 173) !important; */
+  transition: transform 140ms ease;
+}
+.item-slot img {
+  image-rendering: pixelated;
+  width: 60%;
+  transform: translateY(-15%);
+}
+#aviary-modal .chicken-label {
+  position: absolute;
+  color: white;
+  text-shadow: 1px 1px 1px black;
+  bottom: 0;
+  font-size: calc(var(--button-bar-border-width) * 2.75);
 }
 @media screen and (orientation: landscape) {
-  #store-modal {
+  #aviary-modal {
     width: calc(var(--view-height));
     height: calc(var(--view-height) * 0.9);
-    transform: translateX(-50%) translateY(-50%) scale(0.9);
+    transform: translateX(-50%) translateY(-50%);
     left: 50vw;
     top: 50%;
   }

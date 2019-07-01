@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { limits, randomInt } from '../scripts/util';
 import NumberSquare from './NumberSquare';
+import BingoIndicator from './BingoIndicator';
 import '../css/Card.css';
 
 let bounceTimeout = undefined;
@@ -16,6 +17,7 @@ function Card(props) {
   const [madeFree, setMadeFree] = useState([]);
   const [active, setActive] = useState(false);
   const [bingos, setBingos] = useState([]);
+  const [bingoCount, setBingoCount] = useState([]);
   const [won, setWon] = useState(false);
   const [touchedNumber, setTouchedNumber] = useState(false);
 
@@ -59,15 +61,12 @@ function Card(props) {
         }
       } else {
         let newTinted = [];
-        console.log('trying for tionted when game mode', props.gameMode)
         if (props.cardData) {
           setNumbers(props.cardData.numbers);
           props.cardData.numbers.map((row, r) => {
             console.log('RO!', row);
             row.map((num, c) => {
-              console.warn('checkign pattern row', props.gameMode.winPattern[r], 'for', c)
-              console.warn('?', props.gameMode.winPattern[r].includes(c))
-              if (props.gameMode.winPattern[r].includes(c)) {
+              if (props.gameMode.winPattern.pattern[r].includes(c)) {
                 console.error('pushing', num)
                 newTinted.push(num);
               }
@@ -77,18 +76,20 @@ function Card(props) {
         console.log('setting newTinted', newTinted)
         setTintedNumbers(newTinted);
       }
+      setBingoCount(0);
       setMarked([]);
       setHighlighted([]);
       setMadeFree([]);
       setBlockedNumbers([]);
     }
-  }, [props.gameStarted, props.gameMode, props.username, props.calledBalls, props.ready, props.cardData, won]);
+  }, [props.gameStarted, props.patternName, props.gameMode, props.username, props.calledBalls, props.ready, props.cardData, won]);
   useEffect(() => {
     if (props.gameStarted && numbers && props.calledBalls.length === 0) {
       // game just started
       if (active) {
-        setActive(true);
+        // setActive(true);
         if (props.opponent) {
+          console.error('SIMULATING GAME!', props.index)
           simulateGame();
         }
       }
@@ -101,8 +102,6 @@ function Card(props) {
       }
     }
   }, [numbers, props.calledBalls, props.opponent, props.gameInProgress, props.gameStarted]);
-
-
 
   useEffect(() => {
     if (props.opponent && active && props.calledBalls.length > 3) {
@@ -124,9 +123,9 @@ function Card(props) {
       let latestFreeSpace = props.freeSpaces[props.freeSpaces.length - 1];
       if (latestFreeSpace && latestFreeSpace.cardIndex === props.index) {
         if (latestFreeSpace.type === 'FREE') {
-          setMadeFree([...madeFree, latestFreeSpace.num]);
+          setMadeFree(madeFree => [...madeFree, latestFreeSpace.num]);
           if (props.autoFreeSpace) {
-            setMarked([...markedNumbers, latestFreeSpace.num, [...madeFree, latestFreeSpace.num]]);
+            setMarked(markedNumbers => [...markedNumbers, latestFreeSpace.num, [...madeFree, latestFreeSpace.num]]);
           }
         }
         if (latestFreeSpace.type === 'BEE') {
@@ -137,209 +136,262 @@ function Card(props) {
   }, [props.freeSpaces.length, props.autoFreeSpace]);
 
   useEffect(() => {
-    if (!props.opponent && markedNumbers.length > 0) {
+    if (props.gameInProgress && !props.opponent && markedNumbers.length > 0) {
       checkForBingo();
     }
-  }, [markedNumbers])
+  }, [markedNumbers, props.gameInProgress])
 
-  const findBingosInGame = () => {
-
+  const checkForWinPattern = () => {
+    console.pink('----------------------------------------------------------------------------');
+    console.pink((props.opponent ? 'Opponent card ' : 'Player card ') + props.index + ' being checked!')
+    let numbersMarked = markedNumbers.filter(num => !blockedNumbers.includes(num));
+    let indexesMarked = [[],[],[],[],[]];
+    numbersMarked.map((num, n) => {
+      numbers.map((row, r) => {
+        if (row.includes(num) && props.gameMode.winPattern.pattern[r].includes(row.indexOf(num)) && !indexesMarked[r].includes(row.indexOf(num))) {
+          indexesMarked[r].push(row.indexOf(num));
+          indexesMarked[r].sort();
+        }
+      })
+    });
+    let allIndex = [...indexesMarked[0], ...indexesMarked[1], ...indexesMarked[2], ...indexesMarked[3], ...indexesMarked[4]];
+    let allPatternBalls = [...props.gameMode.winPattern.pattern[0], ...props.gameMode.winPattern.pattern[1], ...props.gameMode.winPattern.pattern[2], ...props.gameMode.winPattern.pattern[3], ...props.gameMode.winPattern.pattern[4]];
+    if (allIndex.length && allIndex.length === allPatternBalls.length) {
+      console.error('OMG WINNER', props.index, 'has a', props.gameMode.name);
+      return true;
+    }
+    return false;
+    console.pink('----------------------------------------------------------------------------');
   }
 
   const checkForBingo = () => {
     let checkStart = window.performance.now();
     let hasBingo = false;
-    if (allNumbers(tintedNumbers).length === 0) {
-      console.log('no tinted numbers!')
-    }
-    let fourCorners = [
-      numbers[0][0],
-      numbers[0][numbers.length - 1],
-      numbers[numbers.length - 1][0],
-      numbers[numbers.length - 1][numbers.length - 1]
-    ];
     let dangerRating = 0;
-    let columnQuantities = [[], [], [], [], []];
-    let horizontalLines = [];
-    let verticalLines = [];
-    let diagonalNWSE = [];
-    let diagonalSWNE = [];
-    let cornerBingo = 0;
-    let numbersMarked = markedNumbers.filter(num => !blockedNumbers.includes(num));
-    numbers.map((row, r) => {
-      let markedInRow = row.filter(num => numbersMarked.includes(num)).length;
-      if (markedInRow === row.length) {
-        // row filled
-        horizontalLines.push(row);
-      }
-      row.map((num, n) => {
-        if (numbersMarked.includes(num)) {
-          columnQuantities[n].push(r);
+    // console.log('patternName?', props.opponent, props.patternName)
+    if (props.patternName === 'Line / 4 Corners') {
+      // if (allNumbers(tintedNumbers).length === 0) {
+      //   console.log('no tinted numbers!')
+      // }
+      let fourCorners = [
+        numbers[0][0],
+        numbers[0][numbers.length - 1],
+        numbers[numbers.length - 1][0],
+        numbers[numbers.length - 1][numbers.length - 1]
+      ];
+      let columnQuantities = [[], [], [], [], []];
+      let horizontalLines = [];
+      let verticalLines = [];
+      let diagonalNWSE = [];
+      let diagonalSWNE = [];
+      let cornerBingo = 0;
+      let numbersMarked = markedNumbers.filter(num => !blockedNumbers.includes(num));
+      numbers.map((row, r) => {
+        let markedInRow = row.filter(num => numbersMarked.includes(num)).length;
+        if (markedInRow === row.length) {
+          // row filled
+          horizontalLines.push(row);
+        }
+        row.map((num, n) => {
+          if (numbersMarked.includes(num)) {
+            columnQuantities[n].push(r);
+          }
+        });
+      });
+      columnQuantities.map((column, c) => {
+        if (column.length === columnQuantities.length) {
+          // column filled
+          let vertArray = [...column];
+          verticalLines.push({ column: c, numberIndexes: vertArray });
+        }
+        if (column.includes(c)) {
+          diagonalNWSE.push(c);
+        }
+        let crossIndex = columnQuantities.length - c - 1;
+        if (column.includes(crossIndex)) {
+          diagonalSWNE.push(numbers[c][crossIndex]);
         }
       });
-    });
-    columnQuantities.map((column, c) => {
-      if (column.length === columnQuantities.length) {
-        // column filled
-        let vertArray = [...column];
-        verticalLines.push({ column: c, numberIndexes: vertArray });
-      }
-      if (column.includes(c)) {
-        diagonalNWSE.push(c);
-      }
-      let crossIndex = columnQuantities.length - c - 1;
-      if (column.includes(crossIndex)) {
-        diagonalSWNE.push(numbers[c][crossIndex]);
-      }
-    });
-    if (diagonalNWSE.length === columnQuantities.length) {
-      diagonalNWSE.map(ind => {
-        diagonalNWSE[ind] = numbers[ind][ind];
-      });
-    }
-    if (diagonalSWNE === columnQuantities.length) {
-      diagonalSWNE.map(ind => {
-        diagonalSWNE[ind] = numbers[ind][5 - ind];
-      });
-    }
-    let verts = [];
-    verticalLines.map((line, l) => {
-      verts[l] = [];
-      if (line.numberIndexes) {
-        line.numberIndexes.map((ind, n) => {
-          let newNumber = numbers[n][line.column];
-          verts[l][n] = newNumber;
+      if (diagonalNWSE.length === columnQuantities.length) {
+        diagonalNWSE.map(ind => {
+          diagonalNWSE[ind] = numbers[ind][ind];
         });
       }
-    });
-    verticalLines = verts;
-
-    if (fourCorners.filter(num => numbersMarked.includes(num)).length === 4) {
-      // has all four corners
-      cornerBingo = 1;
-    }
-
-    let foundBingos = {
-      verticalLines: verticalLines,
-      horizontalLines: horizontalLines,
-      diagonals: { NWSE: diagonalNWSE, SWNE: diagonalSWNE },
-      corners: cornerBingo
-    };
-
-    let newHighlighted = [...highlightedNumbers];
-    for (let cat in foundBingos) {
-      if (foundBingos[cat].map) {
-        foundBingos[cat].map(arr => {
-          newHighlighted = [...newHighlighted, ...arr.filter(num => !highlightedNumbers.includes(num))];
+      if (diagonalSWNE === columnQuantities.length) {
+        diagonalSWNE.map(ind => {
+          diagonalSWNE[ind] = numbers[ind][5 - ind];
         });
-      } else if (cat === 'diagonals') {
-        let NWSE = foundBingos[cat].NWSE;
-        let SWNE = foundBingos[cat].SWNE;
-        if (NWSE.length === columnQuantities.length) {
-          newHighlighted = [...newHighlighted, ...NWSE];
-        }
-        if (SWNE.length === columnQuantities.length) {
-          newHighlighted = [...newHighlighted, ...SWNE];
-        }
       }
-    }
-    if (foundBingos.horizontalLines.length) {
-      hasBingo = true;
-    }
-    if (foundBingos.verticalLines.length) {
-      hasBingo = true;
-    }
-    if (foundBingos.diagonals.NWSE.length === 5) {
-      hasBingo = true;
-    }
-    if (foundBingos.diagonals.SWNE.length === 5) {
-      hasBingo = true;
-    }
-    if (cornerBingo) {
-      hasBingo = true;
-      newHighlighted = [...newHighlighted, ...fourCorners];
-    }
-
-    setBingos(foundBingos);
-
-    if (instantWin || hasBingo) {
-      console.info('BINGOS! CARD', props.index, foundBingos);
-      setHighlighted(newHighlighted);
-
-      // count the bingos in state...
-
-      let bingoCount = 0;
-      let foundBingoCount = 0;
-      for (let type in bingos) {
-        if (type === 'verticalLines' || type === 'horizontalLines') {
-          bingoCount += bingos[type].length
-        } else if (type === 'diagonals') {
-          if (bingos[type].NWSE.length === 5) {
-            bingoCount++;
-          }
-          if (bingos[type].SWNE.length === 5) {
-            bingoCount++;
-          }
-
+      let verts = [];
+      verticalLines.map((line, l) => {
+        verts[l] = [];
+        if (line.numberIndexes) {
+          line.numberIndexes.map((ind, n) => {
+            let newNumber = numbers[n][line.column];
+            verts[l][n] = newNumber;
+          });
         }
-      }
-      if (bingos.corners) {
-        bingoCount++;
+      });
+      verticalLines = verts;
+
+      if (fourCorners.filter(num => numbersMarked.includes(num)).length === 4) {
+        // has all four corners
+        cornerBingo = 1;
       }
 
-      // count the amount just found...
+      let foundBingos = {
+        verticalLines: verticalLines,
+        horizontalLines: horizontalLines,
+        diagonals: { NWSE: diagonalNWSE, SWNE: diagonalSWNE },
+        corners: cornerBingo
+      };
 
-      for (let type in foundBingos) {
-        if (type === 'verticalLines' || type === 'horizontalLines') {
-          foundBingoCount += foundBingos[type].length
-        } else if (type === 'diagonals') {
-          if (foundBingos[type].NWSE.length === 5) {
-            foundBingoCount++;
+      let newHighlighted = [...highlightedNumbers];
+      for (let cat in foundBingos) {
+        if (foundBingos[cat].map) {
+          foundBingos[cat].map(arr => {
+            newHighlighted = [...newHighlighted, ...arr.filter(num => !highlightedNumbers.includes(num))];
+          });
+        } else if (cat === 'diagonals') {
+          let NWSE = foundBingos[cat].NWSE;
+          let SWNE = foundBingos[cat].SWNE;
+          if (NWSE.length === columnQuantities.length) {
+            newHighlighted = [...newHighlighted, ...NWSE];
           }
-          if (foundBingos[type].SWNE.length === 5) {
-            foundBingoCount++;
+          if (SWNE.length === columnQuantities.length) {
+            newHighlighted = [...newHighlighted, ...SWNE];
           }
         }
+      }
+      if (foundBingos.horizontalLines.length) {
+        hasBingo = true;
+      }
+      if (foundBingos.verticalLines.length) {
+        hasBingo = true;
+      }
+      if (foundBingos.diagonals.NWSE.length === 5) {
+        hasBingo = true;
+      }
+      if (foundBingos.diagonals.SWNE.length === 5) {
+        hasBingo = true;
       }
       if (cornerBingo) {
-        foundBingoCount++;
+        hasBingo = true;
+        newHighlighted = [...newHighlighted, ...fourCorners];
       }
-      console.info('BINGOS! bingos, foundBingos', bingos, foundBingos);
-      console.info('BINGOCOUNTS! bingoCount, foundBingoCount', bingoCount, foundBingoCount);
 
-      // ...compare old to new
+      setBingos(foundBingos);
 
-      if (instantWin || bingoCount < foundBingoCount) {
-        // setBingos(foundBingos);
+      if (instantWin || hasBingo) {
+        console.info('BINGOS! CARD', props.index, foundBingos);
+        setHighlighted(newHighlighted);
 
-        if (!props.opponent) {
-          setWon(true)
-          props.onAchieveBingo(false, foundBingos);
-          if (props.gameMode.name === 'Ranked') {
+        // count the bingos in state...
+
+        let bingoCount = 0;
+        let foundBingoCount = 0;
+        for (let type in bingos) {
+          if (type === 'verticalLines' || type === 'horizontalLines') {
+            bingoCount += bingos[type].length
+          } else if (type === 'diagonals') {
+            if (bingos[type].NWSE.length === 5) {
+              bingoCount++;
+            }
+            if (bingos[type].SWNE.length === 5) {
+              bingoCount++;
+            }
+
+          }
+        }
+        if (bingos.corners) {
+          bingoCount++;
+        }
+
+        // count the amount just found...
+
+        for (let type in foundBingos) {
+          if (type === 'verticalLines' || type === 'horizontalLines') {
+            foundBingoCount += foundBingos[type].length
+          } else if (type === 'diagonals') {
+            if (foundBingos[type].NWSE.length === 5) {
+              foundBingoCount++;
+            }
+            if (foundBingos[type].SWNE.length === 5) {
+              foundBingoCount++;
+            }
+          }
+        }
+        if (cornerBingo) {
+          foundBingoCount++;
+        }
+        console.info('BINGOS! bingos, foundBingos', bingos, foundBingos);
+        console.info('BINGOCOUNTS! bingoCount, foundBingoCount', bingoCount, foundBingoCount);
+
+        // ...compare old to new
+
+        setBingoCount(foundBingoCount);
+
+        if (instantWin || bingoCount < foundBingoCount) {
+          // setBingos(foundBingos);
+          console.log('bingo < found', bingoCount, '<', foundBingoCount, ' so reporting ' + (foundBingoCount - bingoCount) + ' new bingos!!');
+          if (!props.opponent) {
+            setWon(true);
+            props.onAchieveBingo(false, (foundBingoCount-bingoCount), foundBingoCount, props.index);
+            if (props.gameMode.name === 'Ranked') {
+              setTimeout(() => {
+                setActive(false);
+                setBingos({});
+                setWon(false)
+              }, 2000)
+            } else if (props.gameMode.name === 'Bonanza') {
+              setTimeout(() => {
+                setWon(false)
+              }, 2000)
+            } else if (props.gameMode.name === 'Countdown') {
+              setTimeout(() => {
+                setWon(false)
+              }, 2000)
+            }
+          } else {
+            if (props.gameMode.name === 'Ranked') {
+              props.onAchieveBingo(true, (foundBingoCount - bingoCount), foundBingoCount, props.index);
+              console.error('opponent sending', (foundBingoCount - bingoCount), 'to handleAchieveBingo');
+              setActive(false);
+              props.reportActive(props.index, false);
+            } else if (props.gameMode.name === 'Bonanza') {
+              props.onAchieveBingo(true, (foundBingoCount-bingoCount), foundBingoCount, props.index);
+              console.error('opponent sending', (foundBingoCount-bingoCount), 'to handleAchieveBingo')
+            }
+          }
+        }
+      }
+    } else {
+      let won = checkForWinPattern();
+      if (won) {
+        if (props.opponent) {
+          if (props.gameMode.name === 'Classic' || props.gameMode.name === 'Ranked') {
+            props.onAchieveBingo(true, 1, 1, props.index);
+            setActive(false);
+            props.reportActive(props.index, false);
+          } else if (props.gameMode.name === 'Bonanza' || props.gameMode.name === 'Countdown') {
+            props.onAchieveBingo(true, 1, 1, props.index);
+            console.error('sending 1 to handleAchieveBingo')
+          }
+        } else {
+          if (props.gameMode.name === 'Ranked' || props.gameMode.name === 'Classic') {
+            props.onAchieveBingo(false, 1, 1, props.index);
+            console.error('sending 1 to handleAchieveBingo')
             setTimeout(() => {
               setActive(false);
               setBingos({});;
               setWon(false)
-            }, 2000)
-          } else if (props.gameMode.name === 'Bonanza') {
+            }, 2000);
+          } else if (props.gameMode.name === 'Bonanza' || props.gameMode.name === 'Countdown') {
+            props.onAchieveBingo(false, 1, 1, props.index);
+            console.error('sending 1 to handleAchieveBingo')
             setTimeout(() => {
               setWon(false)
-            }, 400)
-          } else if (props.gameMode.name === 'Countdown') {
-            setTimeout(() => {
-              setWon(false)
-            }, 400)
-          }
-        } else {
-          if (active && props.gameMode.name === 'Ranked' ||  props.gameMode.name === 'Bonanza') {
-            if (props.gameMode.name === 'Ranked') {
-              props.onAchieveBingo(true, foundBingoCount);
-              setActive(false);
-              props.reportActive(props.index, false);
-            }
-            if (props.gameMode.name === 'Bonanza') {
-              props.onAchieveBingo(true, foundBingoCount);
-            }
+            }, 1200)
           }
         }
       }
@@ -349,17 +401,27 @@ function Card(props) {
   const handleTouchSquare = (event, num) => {
     let numberTouched = parseInt(event.target.id.split('-')[1]);
     setTouchedNumber(numberTouched);
-    if (props.powerupSelected && props.powerupSelected.displayName.indexOf('Spray') > -1 && blockedNumbers.includes(numberTouched)) {
+    if (!props.opponent && props.powerupSelected && props.powerupSelected.category.indexOf('Bee') > -1 && blockedNumbers.includes(numberTouched)) {
       let newBlocked = [...blockedNumbers];
       let newMadeFree = [...madeFree];
       newBlocked.splice(newBlocked.indexOf(numberTouched), 1);
       newMadeFree.splice(newMadeFree.indexOf(numberTouched), 1);
       setBlockedNumbers(newBlocked);
-      setMadeFree(newMadeFree);
+      // setMadeFree(newMadeFree);
       props.onKillBee(props.index, numberTouched);
+    } else if (!props.opponent && props.powerupSelected && props.powerupSelected.category.indexOf('Free') > -1
+      && !markedNumbers.includes(numberTouched)
+      && !madeFree.includes(numberTouched)
+      && !blockedNumbers.includes(numberTouched)) {
+      console.big('making free!~')
+      // setMadeFree(madeFree => [...madeFree, numberTouched]);
+      if (props.autoFreeSpace) {
+        setMarked(markedNumbers => [...markedNumbers, numberTouched]);
+      }
+      props.onSetFree(props.index, numberTouched);
     } else if (!markedNumbers.includes(numberTouched)) {
       if (props.calledBalls.includes(numberTouched) || madeFree.includes(numberTouched) || (event && props.gameStarted && event.target.innerText === 'FREE')) {
-        setMarked([...markedNumbers, numberTouched]);
+        setMarked(markedNumbers => [...markedNumbers, numberTouched]);
         if (!props.opponent) {
           props.onDaubSquare(props.calledBalls[props.calledBalls.length - 1] === numberTouched && numberTouched !== 99);
         }
@@ -372,14 +434,29 @@ function Card(props) {
 
   const simulateGame = () => {
     let markedEachBall = [1];
-    let markedThisBall = 1;
+    let patternMarkedEachBall = [0];
+    let markedThisBall = 1; // starts with center free space
+    let patternMarkedThisBall = 0;
+    let dangerEachBall = [0];
+    let allCardNumbers = allNumbers();
+    let allPatternBalls = [...props.gameMode.winPattern.pattern[0], ...props.gameMode.winPattern.pattern[1], ...props.gameMode.winPattern.pattern[2], ...props.gameMode.winPattern.pattern[3], ...props.gameMode.winPattern.pattern[4]];
+
     props.fullBallSequence.map((calledBall) => {
-      if (allNumbers().includes(calledBall)) {
+      if (allCardNumbers.includes(calledBall)) {
         markedThisBall++
+        props.gameMode.winPattern.pattern.map((row, r) => {
+          row.map((ind, n) => {
+            let num = numbers[n][r];
+            if (calledBall === num) {
+              patternMarkedThisBall++;
+            }
+          });
+        });
       }
+      dangerEachBall.push(parseFloat((patternMarkedThisBall / allPatternBalls.length).toPrecision(2)));
       markedEachBall.push(markedThisBall);
     })
-    props.reportFullGame(props.index, markedEachBall)
+    props.reportFullGame(props.index, markedEachBall, dangerEachBall);
   }
 
   let cardClass = 'card';
@@ -402,6 +479,7 @@ function Card(props) {
   let isOpponent = props.opponent;
   return (
     <div className={cardClass}>
+      <BingoIndicator showing={won} bingoCount={bingoCount} />
       <div className='letter-row'>
         <div className='card-head-letter b' />
         <div className='card-head-letter i' />
@@ -413,18 +491,17 @@ function Card(props) {
         // let free = madeFree.includes(num) || props.freeSpaces.filter(space => space.cardIndex === props.type === 'FREE' && props.index && space.num === num).length > 0;
         let free = madeFree.includes(num) || props.freeSpaces.filter(space => space.cardIndex === props.index && space.num === num).length > 0;
         let marked = markedNumbers.includes(num);
-        let canBeMarked = (props.calledBalls.includes(num) || free || num === 99);
+        let canBeMarked = ((props.calledBalls.includes(num)) || free || num === 99);
         let blocked = false;
         let endangered = false;
         let highlighted = false;
         let tinted = false;
         if (!props.opponent) {
           blocked = blockedNumbers.includes(num) || props.freeSpaces.filter(space => space.type === 'BEE' && space.cardIndex === props.index && space.num === num).length > 0;
-          endangered = (blocked && props.powerupSelected && props.powerupSelected.displayName.indexOf('Bee Spray') !== -1);
+          endangered = (blocked && props.powerupSelected && props.powerupSelected.category.indexOf('Bee') !== -1);
           highlighted = highlightedNumbers.includes(num);
           if (props.gameInProgress) {
             tinted = tintedNumbers.includes(num);
-
           }
         }
         return (isOpponent ?
@@ -445,6 +522,7 @@ function Card(props) {
             canBeMarked={canBeMarked}
             marked={marked}
             madeFree={free}
+            powerupId={props.powerupSelected ? props.powerupSelected.id : undefined}
             blocked={blocked}
             tinted={tinted}
             highlighted={highlighted}
@@ -469,6 +547,7 @@ function areEqual(prevProps, nextProps) {
     prevProps.ready === nextProps.ready &&
     prevProps.calledBalls.length === nextProps.calledBalls.length &&
     prevProps.gameMode === nextProps.gameMode &&
+    prevProps.patternName === nextProps.patternName &&
     prevProps.gameStarted === nextProps.gameStarted &&
     prevProps.gameInProgress === nextProps.gameInProgress &&
     prevProps.powerupSelected === nextProps.powerupSelected &&

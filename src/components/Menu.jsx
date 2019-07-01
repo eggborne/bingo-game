@@ -73,7 +73,8 @@ function Menu(props) {
               <div><small>{props.soundOn ? 'ON' : 'OFF'}</small></div>
               <img alt='' onPointerDown={() => props.onClickMenuArrow('toggleSound')} src={require('../assets/rightarrow.png')} />
             </div>
-          </div>
+        </div>
+        <button id='reload-button' onClick={() => window.location.reload(true)}>LOAD NEWEST VERSION</button>
         </>
       }
       {props.menuMode === 'caller' &&

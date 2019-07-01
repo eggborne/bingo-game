@@ -1,6 +1,6 @@
 .click-bonus-indicator {
   position: fixed;
-  background: rgba(153, 205, 50, 0.5);
+  /* background: rgba(153, 205, 50, 0.5); */
   color: white;
   font-family: var(--cute-font);
   transform: translateX(-50%) translateY(-50%) scale(0.8);
@@ -12,7 +12,7 @@
   transform-origin: center;
   border-radius: calc(var(--caller-height) / 8);
   padding: 1vmin;
-  width: 45vw;
+  width: 100%;
   opacity: 0;
   z-index: 5;
   display: flex;

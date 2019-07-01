@@ -19,32 +19,16 @@ const getBingoLetter = num => {
   return 'B';
 }
 
-const bounce = (event) => {
-  if (document.querySelector('.ball:nth-last-child(2)') === event.target && event.propertyName === 'transform') {
-    let ball = event.target;
-    ball.classList.add('bouncing');
-    setTimeout(() => {
-      ball.classList.remove('bouncing');
-    }, 250);
-  }
-}
-
 const CallerArea = React.forwardRef((props, ref) => {
   console.count('CallerArea');
   const callerRef = ref;
-  const [eggsWide, setEggsWide] = useState(0);
-  useEffect(() => {
-    if (!eggsWide && props.calledBalls.length) {
-      setEggsWide(Math.floor(document.querySelector('#caller-area').offsetWidth / document.querySelectorAll('.ball')[0].offsetWidth) - 1);
-    }
-  }, [props.calledBalls])
-  useEffect(() => {
-    if (!callerRef.current.onTransitionEnd) {
-      callerRef.current.addEventListener('transitionend', (event) => {
-        bounce(event);
-      });
-    }
-  }, []);
+  // const [eggsWide, setEggsWide] = useState(Math.floor(document.querySelector('#caller-area').offsetWidth / document.querySelectorAll('.ball')[0].offsetWidth) - 1);
+  // useEffect(() => {
+  //   if (!eggsWide && props.calledBalls.length) {
+  //     setEggsWide(Math.floor(document.querySelector('#caller-area').offsetWidth / document.querySelectorAll('.ball')[0].offsetWidth) - 1);
+  //   }
+  // }, [props.calledBalls])
+  let eggsWide = window.innerWidth > window.innerHeight ? 8 : 6;
   return (
     <div id='caller-area' className={!props.gameStarted ? 'game-paused' : undefined}>
       <div ref={ref} id='ball-row'>
