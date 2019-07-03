@@ -144,7 +144,9 @@ function Card(props) {
 
   useEffect(() => {
     if (props.gameInProgress && !props.opponent && markedNumbers.length > 0) {
-      checkForBingo();
+      if (props.gameMode.name === 'Bonanza') {
+        checkForBingo();
+      }
     }
   }, [markedNumbers, props.gameInProgress])
 
@@ -338,7 +340,7 @@ function Card(props) {
 
         setBingoCount(foundBingoCount);
 
-        if (instantWin || bingoCount < foundBingoCount) {
+        if (bingoCount < foundBingoCount) {
           // setBingos(foundBingos);
           console.log('bingo < found', bingoCount, '<', foundBingoCount, ' so reporting ' + (foundBingoCount - bingoCount) + ' new bingos!!');
           if (!props.opponent) {
@@ -359,7 +361,7 @@ function Card(props) {
                 setWon(false)
               }, 2000)
             }
-          } else {
+          } else if (props.opponent) {
             if (props.gameMode.name === 'Ranked') {
               props.onAchieveBingo(true, (foundBingoCount - bingoCount), foundBingoCount, props.index);
               console.error('opponent sending', (foundBingoCount - bingoCount), 'to handleAchieveBingo');
@@ -499,12 +501,15 @@ function Card(props) {
       rankBonus = (props.remainingPlayers / props.opponentCardCount) * 1000;
     }
     // console.log('bingoRankings', bingoRankings, bingoRankings[2])
-    prefix = bingoRankings[bingoRank] || `${bingoRank}th`;
+    prefix = bingoRank === 1 ? 'FIRST' : '';
+    if (bingoRank === 1) {
+      props.reportBonus('First Bingo', props.index);
+    }
     rankBonus = (props.opponentCardCount / bingoRank) * 15;
     if (rankBonus < 50) {
       rankBonus = 0;
     }
-    suffix = bingoRank <= 4 ? `+$${rankBonus}` : '';
+    suffix = '';
   }
   return (
     <div className={cardClass}>
@@ -583,6 +588,7 @@ function areEqual(prevProps, nextProps) {
   let equalTest =
     prevProps.chipImage === nextProps.chipImage &&
     prevProps.ready === nextProps.ready &&
+    prevProps.limitReached === nextProps.limitReached &&
     prevProps.calledBalls.length === nextProps.calledBalls.length &&
     prevProps.gameMode === nextProps.gameMode &&
     prevProps.patternName === nextProps.patternName &&

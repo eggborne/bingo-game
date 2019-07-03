@@ -1,6 +1,6 @@
 {
-  "name": "Chicken Bingo",
-  "short_name": "Chicken Bingo",
+  "name": "chicken.bingo",
+  "short_name": "chicken.bingo",
   "icons": [
     {
       "src": "android-chrome-192x192.png",

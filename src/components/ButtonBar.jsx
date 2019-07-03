@@ -109,7 +109,7 @@ function ButtonBar(props) {
                 </div>
               );
             } else {
-              if (i < emptyItemSlots) {
+              if (slot.item) {
                 return (
                   <div key={i} id={`empty-slot-${i + 1}`} className={'item-slot empty'}>
                     <div className="label">EMPTY</div>
@@ -152,25 +152,32 @@ function ButtonBar(props) {
       </div>
       <div id='chickens-area' onPointerDown={!props.gameInProgress ? props.onClickAviaryButton : undefined} className={props.gameStarted ? 'powerup-area' : 'powerup-area game-paused'}>
         <div id='chicken-slots' className='slot-area'>
-          <div className='item-slot-label'>CHICKENS</div>
-          {props.chickenSlots.map((slot, i) => {
-            if (slot.chickenId !== -1) {
-              let chickenData = props.chickens[slot.chickenId];
-              return (
-                <div key={i} className='item-slot'>
-                  <div className='meter'></div>
-                  <img src={blueChickenPng} />
-                  <div className='chicken-label'>{chickenData.name.toUpperCase()}</div>
-                </div>
-              );
-            } else {
-              return (
-                <div key={i} className='item-slot empty'>
-                  <img src={chickenPng} />
-                  <div className='chicken-label'>EMPTY</div>
-                </div>
-              );
-            }
+            <div className='item-slot-label'>CHICKENS</div>
+            {props.chickenSlots.map((slot, i) => {
+              if (slot.chickenId !== -1) {
+                let chickenData = props.chickens[slot.chickenId];
+                let chickenClass = 'item-slot';
+                if (chickenData.ready) {
+                  chickenClass += ' ready';
+                }
+                if (chickenData.activated) {
+                  chickenClass += ' activated';
+                }
+                return (
+                  <div onPointerDown={chickenData.ready ? () => props.onActivateChicken(chickenData.chickenId) : undefined} key={i} className={chickenClass} >
+                    <div style={{transform: `scaleY(${chickenData.meter / chickenData.rechargeTime || 0})`}} className='meter'></div>
+                    <img src={blueChickenPng} />
+                    <div className='chicken-label'>{chickenData.name.toUpperCase()}</div>
+                  </div>
+                );
+              } else {
+                return (
+                  <div key={i} className='item-slot empty'>
+                    <img src={chickenPng} />
+                    <div className='chicken-label'>EMPTY</div>
+                  </div>
+                );
+              }
           })}
           {/* {props.chickens.map((chickenData, i) => {
             console.info('chickenData', i, chickenData);
@@ -204,12 +211,14 @@ function areEqual(prevProps, nextProps) {
     prevProps.gameInProgress === nextProps.gameInProgress &&
     prevProps.gameEnded === nextProps.gameEnded &&
     prevProps.storeOpen === nextProps.storeOpen &&
+    prevProps.cardOptionsOn === nextProps.cardOptionsOn &&
     prevProps.aviaryOn === nextProps.aviaryOn &&
     prevProps.showOpponentCards === nextProps.showOpponentCards &&
     prevProps.powerupSelected === nextProps.powerupSelected &&
     prevProps.mapOn === nextProps.mapOn &&
     prevProps.itemSlots === nextProps.itemSlots &&
     prevProps.itemQuantities === nextProps.itemQuantities &&
+    prevProps.activatedChickens === nextProps.activatedChickens &&
     prevProps.chickenSlots === nextProps.chickenSlots &&
     prevProps.chickensEquippedCount === nextProps.chickensEquippedCount &&
     prevProps.chickenSlotIndexes === nextProps.chickenSlotIndexes &&

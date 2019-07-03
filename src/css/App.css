@@ -40,8 +40,11 @@
 
   --balls-per-width: calc(100vw / var(--ball-width));
 
-  --money-green: rgb(58, 185, 58);
+  --money-green: rgb(58, 204, 58);
+
+  --draw-speed: 2000ms;
 }
+
 * {
   box-sizing: border-box;
   user-select: none;
@@ -164,8 +167,11 @@ input[type='checkbox'] {
   background-size: cover;
   background-position: top center;
   transform: none;
-  transition: transform 1600ms ease-out;
+  transition: transform 1600ms ease-out, opacity 420ms ease;
   pointer-events: none;
+}
+#app-background.card-options-on {
+  opacity: 0.25;
 }
 #app.zoomed > #app-background {
   transform: scale(1.3);
@@ -690,10 +696,13 @@ button #account-button {
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
-  transition: transform 1000ms ease, opacity 1000ms ease;
+  transform-origin: top center;
+  transition: transform 420ms ease, opacity 1000ms ease;
 }
 .card-area.card-options-on {
   padding-bottom: var(--header-height);
+  transform: scale(0.9);
+
 }
 .card-area.dimmed {
   pointer-events: none;
@@ -725,7 +734,7 @@ button #account-button {
   justify-content: center;
   align-items: stretch;
   width: calc((100vw / var(--user-cards-wide)) - (var(--board-padding)));
-  /* height: calc((100vw / var(--user-cards-wide) - (var(--board-padding))) * 1.05); */
+  height: calc((100vw / var(--user-cards-wide) - (var(--board-padding))) * 1.05);
   overflow: hidden;
 }
 .card-space > .card {
@@ -745,7 +754,7 @@ button #account-button {
   justify-content: space-between;
   padding: var(--card-padding);
   font-family: var(--cute-font);
-  font-size: calc(var(--font-size) / 1.25);
+  font-size: 2vmax;
 
   color: white;
   text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
@@ -783,6 +792,30 @@ button #account-button {
 }
 .danger-zones {
   background-color: #500e0e;
+}
+
+@keyframes glow {
+  0% {
+    background-color: var(--danger-color);
+    border-color: rgb(0, 102, 128);
+    transform: scale(1.1) rotate(0deg);
+  }
+  25% {
+    transform: scale(1) rotate(-5deg);
+  }
+  50% {
+    background-color: white;
+    border-color: rgb(0, 31, 172);
+    transform: scale(1.1) rotate(0deg);
+  }
+  75% {
+    transform: scale(1) rotate(5deg);
+  }
+  100% {
+    background-color: var(--danger-color);
+    border-color: rgb(0, 102, 128);
+    transform: scale(1.1) rotate(0deg);
+  }
 }
 
 /* LANDSCAPE  */

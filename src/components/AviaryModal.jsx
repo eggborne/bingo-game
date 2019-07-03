@@ -54,7 +54,7 @@ function AviaryModal(props) {
                 );
               } else {
                 return (
-                  <div key={i} id={`empty-slot-${i + 1}`} onPointerDown={() => selectSlot(i)} className={i !== slotSelected ?  'item-slot empty' : 'item-slot empty  selected'}>
+                  <div key={i+100} id={`empty-slot-${i + 1}`} onPointerDown={() => selectSlot(i)} className={i !== slotSelected ?  'item-slot empty' : 'item-slot empty  selected'}>
                     <div className="label">EMPTY</div>
                   </div>
                 );

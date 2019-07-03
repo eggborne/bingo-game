@@ -1,9 +1,7 @@
 import React, { forwardRef} from 'react';
 import '../css/CornerChicken.css';
 
-let chickenPng = require('../assets/eye.png');
-let giftboxPng = require('../assets/giftbox.png');
-let beePng = require('../assets/shadowbee.png');
+let horusPng = require('../assets/eye.png');
 
 const CornerChicken = React.forwardRef((props, ref) => {
   const cornerChickenRef = ref;
@@ -16,28 +14,19 @@ const CornerChicken = React.forwardRef((props, ref) => {
       ringClass += ' special';
     }
   }
-  let spotClass = props.showing ?
-    (props.showingGift ? 'showing-giftbox' : '')
-    : 'hidden';
-  // let imageSource = props.showingGift ? giftboxPng : chickenPng;
-  // let imageSource = chickenPng;
+  let spotClass = '';
+  if (props.showing) {
+    if (props.showingGift) {
+      spotClass += props.bonusLuckActivated ? ' showing-giftbox showing-free-space' : ' showing-giftbox'
+    }
+  } else {
+    spotClass = 'hidden';
+  }
   if (props.openingBonus) {
     if (props.openingBonus.type === 'BEE') {
       spotClass = 'bee';
     }
   }
-
-  // if (props.currentBeeChance > 8) {
-  //   spotClass += ' danger-3'
-  // } else if (props.currentBeeChance > 6) {
-  //   spotClass += ' danger-2'
-  // } else if (props.currentBeeChance > 3) {
-  //   spotClass += ' danger-1'
-  // } else {
-  //   spotClass += ' danger-0'
-  // }
-
-  if (!props.showingGiftbox) {}
   let clickEffect = props.showingGift ? props.onClickGift : () => null;
   let meterHeight = props.bonusMeter / 1000;
   if (meterHeight > 1) {
@@ -48,9 +37,8 @@ const CornerChicken = React.forwardRef((props, ref) => {
       <div id='bonus-spot' onPointerDown={props.onClickCorner} className={spotClass}>
       <div className={ringClass} style={{opacity: (meterHeight)}} id='meter-ring'></div>
         <div className={ringClass} style={{ transform: `scaleY(${meterHeight})` }} id='meter'></div>
-        <img ref={cornerChickenRef} onPointerDown={clickEffect} alt='' id='bonus-chicken' src={chickenPng}/>
+        <img ref={cornerChickenRef} onPointerDown={clickEffect} alt='' id='bonus-chicken' src={horusPng}/>
         {/* <div id='corner-chicken-overlay'>{props.bonusMeter/1000}</div> */}
-        {props.showingGiftbox && <div id='corner-chicken-overlay'>{100 - (props.currentBeeChance * 10)}</div>}
       </div>
     </>
   );
@@ -62,6 +50,7 @@ function areEqual(prevProps, nextProps) {
     prevProps.showingGiftbox === nextProps.showingGiftbox &&
     prevProps.bonusMeter === nextProps.bonusMeter &&
     prevProps.showingBonusText === nextProps.showingBonusText &&
+    prevProps.bonusLuckActivated === nextProps.bonusLuckActivated &&
     prevProps.openingBonus === nextProps.openingBonus
   );
 }

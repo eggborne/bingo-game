@@ -22,7 +22,6 @@ function BingoIndicator(props) {
   console.pink('BingoIndicator ------------------');
   console.log(props)
   let bingoDisplay = bingoMessages[props.bingoCount];
-  bingoDisplay = 'BINGO!'
   let prefix = props.prefix;
   let suffix = props.suffix;
   // let bingoRank = (props.opponentCardCount - props.remainingPlayers + 5);

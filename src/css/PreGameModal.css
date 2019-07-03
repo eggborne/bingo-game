@@ -232,8 +232,9 @@
   }
   #pre-game-modal #begin-button.modal-button {
     font-size: calc(var(--header-height) / 2.5);
+    font-size: 4.5vw;
   }
   #pre-game-modal #cancel-button.modal-button {
-    font-size: calc(var(--header-height) / 5);
+    font-size: 2.5vw;
   }
 }

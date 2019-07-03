@@ -14,7 +14,7 @@
   justify-content: center;
   z-index: 1;
   transition: opacity 320ms ease;
-  will-change: opacity, transform, background-color;
+  will-change: opacity;
   z-index: 3;
 }
 #bonus-spot > #meter {
@@ -107,7 +107,6 @@
   pointer-events: none;
 }
 #bonus-spot.bee > #bonus-chicken {
-  animation: none;
   content: url('../assets/shadowbee.png');
 }
 #bonus-spot.bust {
@@ -121,7 +120,7 @@
   /* background-color: #3cff00; */
   border: 1.25vmin solid rgb(35, 83, 3);
   animation: glow;
-  animation-duration: 500ms;
+  animation-duration: 1000ms;
   animation-iteration-count: infinite;
   animation-play-state: running;
 }
@@ -140,6 +139,9 @@
 }
 #bonus-spot.showing-giftbox > #bonus-chicken {
   content: url('../assets/giftbox.png');
+}
+#bonus-spot.showing-free-space > #bonus-chicken {
+  content: url('../assets/freespace.png');
 }
 #bonus-spot.hidden > #bonus-chicken {
   animation-play-state: paused;
@@ -184,29 +186,6 @@
     border-color: green;
     opacity: 1;
 
-  }
-}
-@keyframes glow {
-  0% {
-    background-color: var(--danger-color);
-    border-color: rgb(0, 102, 128);
-    transform: scale(1.1) rotate(0deg);
-  }
-  25% {
-    transform: scale(1) rotate(-5deg);
-  }
-  50% {
-    background-color: white;
-    border-color: rgb(0, 31, 172);
-    transform: scale(1.1) rotate(0deg);
-  }
-  75% {
-    transform: scale(1) rotate(5deg);
-  }
-  100% {
-    background-color: var(--danger-color);
-    border-color: rgb(0, 102, 128);
-    transform: scale(1.1) rotate(0deg);
   }
 }
 @keyframes peck {

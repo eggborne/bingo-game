@@ -57,11 +57,13 @@ export const chipImages = {
   green: require('./assets/bingochipgreen.png'),
   orange: require('./assets/bingochiporange.png'),
   tomato: require('./assets/tomato.png'),
+  onion: require('./assets/onionchip.png'),
+  mingus: require('./assets/minguschip.png'),
   conan: require('./assets/conanchip.png'),
 };
 
 let daubSound = undefined;
-let bonusAlertSound1 = undefined;
+let cawSound = undefined;
 let bonusAlertSound2 = undefined;
 let ballSound = undefined;
 let spraySound = undefined;
@@ -103,10 +105,10 @@ const loadSounds = async () => {
       src: [mediaRoot + '/sounds/refill.ogg'],
       volume: 0.5
     });
-    // bonusAlertSound1 = new Howl({
-    //   src: [mediaRoot + '/sounds/alert1.ogg'],
-    //   volume: 0.5
-    // });
+    cawSound = new Howl({
+      src: [mediaRoot + '/sounds/alert1.ogg'],
+      volume: 0.5
+    });
     // bonusAlertSound2 = new Howl({
     //   src: [mediaRoot + '/sounds/alert2.ogg'],
     //   volume: 0.5
@@ -425,7 +427,7 @@ const gameModes = {
 export const chickenEffects = {
   'bonusLuck': [
     undefined,
-    {displayName: 'Corner bonus always gives a Free Space (no bees)'}
+    {displayName: 'Corner bonus always gives a Free Space (no bees!)'}
   ]
 }
 
@@ -434,6 +436,7 @@ export const experienceLevels = [
 ]
 
 const applyOptionsCSS = (newOptions) => {
+  document.documentElement.style.setProperty('--draw-speed', newOptions.drawSpeed + 'ms');
   document.documentElement.style.setProperty('--opponent-cards', newOptions.opponentCards.length);
   document.documentElement.style.setProperty('--card-size-landscape', `${1 - newOptions.cardMarginLandscape}`);
   document.documentElement.style.setProperty('--card-size', `${1 - newOptions.cardMargin}`);
@@ -477,7 +480,7 @@ function App() {
   const [winnerLimit, setWinnerLimit] = useState(4);
   const [ballLimit, setBallLimit] = useState(35);
   const [timeLimit, setTimeLimit] = useState(30);
-  const [winPattern, setWinPattern] = useState('Line / 4 Corners');
+  // const [winPattern, setWinPattern] = useState('Line / 4 Corners');
   const [offeringBonus, setOfferingBonus] = useState(undefined);
   const [openingBonus, setOpeningBonus] = useState(undefined);
   const [preGameOn, setPreGameOn] = useState(false);
@@ -490,24 +493,25 @@ function App() {
   const [currentBeeChance, setCurrentBeeChance] = useState(5);
   const [bonusMeter, setBonusMeter] = useState(0);
   const [bonusRechargeRate, setBonusRechargeRate] = useState(100);
-  const [currentSpeedBonus, setCurrentSpeedBonus] = useState(0);
-  const [pausedWithMenu, setPausedWithMenu] = useState(false);
+  // const [currentSpeedBonus, setCurrentSpeedBonus] = useState(0);
+  // const [pausedWithMenu, setPausedWithMenu] = useState(false);
   const [powerupSelected, setPowerupSelected] = useState(undefined);
   const [showingBonusText, setShowingBonusText] = useState(false);
   const [temporaryBonuses, setTemporaryBonuses] = useState({
-    freeSpaces: []
+    freeSpaces: [],
+    chickenEffects: []
   });
   const [gameMode, setGameMode] = useState(gameModes['Ranked']);
   const [recordsBroken, setRecordsBroken] = useState(undefined);
-  const [speedBonus, setSpeedBonus] = useState(0);
+  // const [speedBonus, setSpeedBonus] = useState(0);
   const ref = useRef();
   const chickenRef = useRef();
-  const meterRef = useRef();
   const [opponentCardProgress, setOpponentCardProgress] = useState([...defaultOptions.opponentCards]);
   const [roundResults, setRoundResults] = useState({
     averageDaubSpeed: 3000,
     speedBonus: 0,
     totalPrize: 0,
+    chickenExperiencePrizes: {},
     cards: []
   })
 
@@ -570,7 +574,7 @@ function App() {
         currentPrize: 0
       }
     });
-    console.error('set newRuondResults.cards to', newRoundResults.cards)
+    console.error('set newRoundResults.cards to', newRoundResults.cards)
     setRoundResults(newRoundResults);
   }, [user.cardSlots.length])
   useInterval(() => {
@@ -583,14 +587,31 @@ function App() {
           playSound(ballSound);
           drawBall();
         }, 300);
+        let newUser = { ...user };
+        let equippedChickens = newUser.chickens.filter(chicken => user.chickenSlots[0].chickenId === chicken.chickenId || user.chickenSlots[1].chickenId === chicken.chickenId);
+        equippedChickens.map(chicken => {
+          if (!chicken.activated) {
+            if (!chicken.ready) {
+              if (chicken.meter === chicken.rechargeTime) {
+                playSound(cawSound);
+                chicken.ready = true;
+                chicken.meter = 0;
+              } else {
+                chicken.meter++;
+              }
+              setUser(newUser);
+            }
+          } else {
+            // console.warn(chicken.name, '>>> activated')
+            if (calledBalls.length - chicken.ballsAtActivation === chicken.effectDuration) {
+              chicken.activated = false;
+              console.big('<<<<<< CHICKEN ' + chicken.name + ' DEACTIVATED');
+              setUser(newUser);
+            }
+          }
+        });
       }
       if (!gameEnded && !offeringBonus) {
-        // if (currentSpeedBonus) {
-        //   setBonusMeter((bonusMeter) => bonusMeter += currentSpeedBonus);
-        //   setCurrentSpeedBonus(0);
-        // } else {
-        //   setBonusMeter((bonusMeter) => bonusMeter += bonusRechargeRate);
-        // }
         if (bonusMeter >= 1000) {
           setOfferingBonus(getRandomBonus());
           playSound(orchestraHitSound);
@@ -928,11 +949,14 @@ function App() {
   //   }
   // };
   const getRandomBonus = () => {
-    let chanceOfBee = randomInt(0, 1);
+    let bee = randomInt(0, 1);
+    if (temporaryBonuses.chickenEffects.includes('bonusLuck')) {
+      bee = false;
+    }
     // if (currentChickenEffect === '') {
 
     // }
-    return chanceOfBee ? 'FREE' : 'BEE';
+    return bee ? 'BEE' : 'FREE';
   };
   const startGame = () => {
     if (preGameOn) {
@@ -969,8 +993,27 @@ function App() {
     setModalMessage('Really quit the whole game?');
   };
   const handleClickOkayButton = event => {
+    console.log('roundResults', roundResults);
+    let newUser = { ...user };
+    newUser.stats.totalGames++;
+    newUser.stats[gameMode.name]['Games Played']++;
+    newUser.currency.cash += roundResults.totalPrize;
+    for (let chickenId in roundResults.chickenExperiencePrizes) {
+      let prize = roundResults.chickenExperiencePrizes[chickenId];
+      console.log('prize for chicken', chickenId, prize);
+      console.log('newUser.chickens', newUser.chickens);
+      console.log('newUser.chickens[chickenId]', newUser.chickens[chickenId]);
+      let targetChicken = newUser.chickens[chickenId];
+      targetChicken.experience += prize;
+      console.error('added', roundResults[chickenId], 'to', targetChicken.name)
+    }
     setGameEnded(false);
     resetGame();
+    if (user.loggedIn) {
+      updateUserData(user.username, user.token, 'stats', newUser.stats);
+      updateUserData(user.username, user.token, 'currency', newUser.currency);
+      updateUserData(user.username, user.token, 'chickens', newUser.chickens);
+    }
   };
   const handleClickAgreeButton = event => {
     synth.cancel();
@@ -1298,7 +1341,7 @@ function App() {
           if (user.loggedIn) {
             updateUserData(user.username, user.token, 'stats', newUser.stats);
           }
-          meterRef.current.classList.remove('critical');
+          // meterRef.current.classList.remove('critical');
           setGameStarted(false);
           setGameInProgress(false);
           setGameEnded(true);
@@ -1308,20 +1351,20 @@ function App() {
             opponentBingoSound.stop();
           }
           playSound(opponentBingoSound);
-          meterRef.current.classList.add('alert');
-          setTimeout(() => {
-            if (meterRef.current) {
-              meterRef.current.classList.remove('alert');
-              if (newPlayers === options.opponentCards.length - winnerLimit + 1) {
-                meterRef.current.classList.add('critical');
-              }
-              setTimeout(() => {
-                meterRef.current.style.backgroundColor = 'transparent';
-              }, 100);
-            } else {
-              // console.error('no meterRef to change back');
-            }
-          }, 800);
+          // meterRef.current.classList.add('alert');
+          // setTimeout(() => {
+          //   if (meterRef.current) {
+          //     meterRef.current.classList.remove('alert');
+          //     if (newPlayers === options.opponentCards.length - winnerLimit + 1) {
+          //       meterRef.current.classList.add('critical');
+          //     }
+          //     setTimeout(() => {
+          //       meterRef.current.style.backgroundColor = 'transparent';
+          //     }, 100);
+          //   } else {
+          //     // console.error('no meterRef to change back');
+          //   }
+          // }, 800);
         }
       } else {
         if (gameStarted) {
@@ -1331,7 +1374,7 @@ function App() {
           //
           newUser.stats.totalBingos += newBingos;
           let prizeMoney = playersLeft * prizePerCard;
-          let chickenExp = Math.round(prizeMoney / 20);
+          let chickenExp = options.opponentCards.length * 1.5;
           let rank = options.opponentCards.length - playersLeft + 1;
           newUser.stats.totalBingos += newBingos;
           let winMusic = rank === 1 ? fanfare1 : fanfare2;
@@ -1383,49 +1426,62 @@ function App() {
         }
         setRoundBingos(roundBingos => roundBingos + numberOfBingos)
       } else {
-        console.error('BINGO! --------> numberOfBingos', numberOfBingos);
+        console.error('BINGO! --------> cardId numberOfBingos', cardId, numberOfBingos);
+        if (options.soundOn) {
+          fanfare2.stop();
+        }
         playSound(fanfare2);
         let newUser = { ...user };
         newUser.stats.totalBingos++;
         setUser(newUser);
-        if (user.loggedIn) {
-          updateUserData(user.username, user.token, 'stats', newUser.stats);
-        }
         let cardResult = newRoundResults.cards[cardId];
         cardResult.bingoCount = totalCardBingos;
         cardResult.ballsAtBingo[totalCardBingos] = calledBalls.length;
         cardResult.opponentsAtBingo[totalCardBingos] = playersLeft;
-        cardResult.currentPrize = (totalCardBingos * (options.opponentCards.length * 100)) + (totalCardBingos * totalCardBingos * (options.opponentCards.length * 25));
-        console.log('cardId', cardId);
-        console.log('totalCardBingos', totalCardBingos)
-        console.log('newRoundResults', newRoundResults);
-        console.log('cardResult', cardResult);
+        cardResult.currentPrize = (totalCardBingos * (options.opponentCards.length *  95)) + (totalCardBingos * totalCardBingos * (options.opponentCards.length * 25));
         setCurrentBingos(currentBingos => currentBingos + numberOfBingos);
         setRoundBingos(roundBingos => roundBingos + numberOfBingos);
+        if (user.loggedIn) {
+          updateUserData(user.username, user.token, 'stats', newUser.stats);
+        }
       }
-      if (roundBingos + numberOfBingos >= gameMode.bingoLimit) {
+      if ((roundBingos + numberOfBingos) >= gameMode.bingoLimit) {
+        console.big('START')
+        console.big('GAME OVER DECLARED BY CARD ' + opponent ? ' OPPONENT ' : ' PLAYER ' + cardId)
+        console.big('END')
         playSound(roundOverSound);
-        let newUser = { ...user };
-        newUser.stats.totalGames++;
-        newUser.stats[gameMode.name]['Games Played']++;
-        let speedBonus = (3000 - newRoundResults.averageDaubSpeed) * 7;
+        // let newUser = { ...user };
+        // newUser.stats.totalGames++;
+        // newUser.stats[gameMode.name]['Games Played']++;
+        let speedBonus = (3000 - newRoundResults.averageDaubSpeed) * 6;
         newRoundResults.speedBonus = speedBonus;
         let totalMoney = 0;
         newRoundResults.cards.map(card => {
           totalMoney += card.currentPrize;
         });
         totalMoney += speedBonus;
-        newUser.currency.cash += totalMoney;
-        if (user.loggedIn) {
-          updateUserData(user.username, user.token, 'stats', newUser.stats);
-          updateUserData(user.username, user.token, 'currency', newUser.currency);
-        }
-        meterRef.current.classList.remove('critical');
+
+        let chickenExperiencePrizes = {};
+        user.chickenSlots.map(slot => {
+          let chicken = user.chickens[slot.chickenId];
+          let chickenExp = (options.opponentCards.length * 1.5) + (currentBingos * 10);
+          if (chicken) {
+            console.error('-------------- assigning id#', chicken.chickenId, chicken.name, chickenExp, 'exp!')
+            chickenExperiencePrizes[slot.chickenId] = chickenExp;
+          }
+        });
+
+        newRoundResults.totalPrize = totalMoney;
+        newRoundResults.chickenExperiencePrizes = chickenExperiencePrizes;
+        newRoundResults.speedBonus = speedBonus;
         setRoundResults(newRoundResults);
         setGameStarted(false);
         setGameInProgress(false);
         setGameEnded(true);
-      } else {
+        // if (user.loggedIn) {
+        //   updateUserData(user.username, user.token, 'stats', newUser.stats);
+        // }
+      } else if (!gameEnded) {
         setRoundResults(newRoundResults);
       }
     }
@@ -1847,25 +1903,24 @@ function App() {
     // if (powerupSelected) {
     //   setPowerupSelected(undefined);
     // }
-    if (offeringBonus === 'FREE' || offeringBonus === 'BEE') {
-      playSound(offeringBonus === 'FREE' ? getFreeSpaceSound : bonusAlertSound3);
-      let newBonuses = { ...temporaryBonuses };
-      let playerCardSlots = [...user.cardSlots].filter(slot => slot.cardId !== -1);
-      let cardIndex = randomInt(0, playerCardSlots.length - 1);
-      let randomCard = user.cards[cardIndex];
-      let flat = [...randomCard.numbers[0], ...randomCard.numbers[1], ...randomCard.numbers[2], ...randomCard.numbers[3], ...randomCard.numbers[4]];
-      // let unfilteredNumbers = flat.filter(num => !calledBalls.includes(num) && num !== 99);
-      let uncalledNumbers = flat.filter(num => !calledBalls.includes(num) && !isFreeSpace(cardIndex, num) && num !== 99);
-      // let unfilteredNumbers = randomCard.numbers.flat(2).filter(num => !calledBalls.includes(num) && num !== 99);
-      // let uncalledNumbers = randomCard.numbers.flat(2).filter(num => !calledBalls.includes(num) && !isFreeSpace(cardIndex, num) && num !== 99);
-      let randomNumber = uncalledNumbers[randomInt(0, uncalledNumbers.length - 1)];
-      console.error('sending', offeringBonus, 'to card', cardIndex, 'num', randomNumber)
-      newBonuses.freeSpaces.push({ type: offeringBonus, cardIndex: cardIndex, num: randomNumber });
-      setTemporaryBonuses(newBonuses);
-      setOpeningBonus({ type: offeringBonus, value: randomNumber, cardIndex: cardIndex });
-      if (offeringBonus === 'BEE') {
-        setBonusMeter(0);
-      }
+    let pendingBonus = offeringBonus;
+    if (temporaryBonuses.chickenEffects.includes('bonusLuck')) {
+      pendingBonus = 'FREE';
+    }
+    playSound(pendingBonus === 'FREE' ? getFreeSpaceSound : bonusAlertSound3);
+    let newBonuses = { ...temporaryBonuses };
+    let playerCardSlots = [...user.cardSlots].filter(slot => slot.cardId !== -1);
+    let cardIndex = randomInt(0, playerCardSlots.length - 1);
+    let randomCard = user.cards[cardIndex];
+    let flat = [...randomCard.numbers[0], ...randomCard.numbers[1], ...randomCard.numbers[2], ...randomCard.numbers[3], ...randomCard.numbers[4]];
+    let uncalledNumbers = flat.filter(num => !calledBalls.includes(num) && !isFreeSpace(cardIndex, num) && num !== 99);
+    let randomNumber = uncalledNumbers[randomInt(0, uncalledNumbers.length - 1)];
+    console.error('sending', pendingBonus, 'to card', cardIndex, 'num', randomNumber)
+    newBonuses.freeSpaces.push({ type: pendingBonus, cardIndex: cardIndex, num: randomNumber });
+    setTemporaryBonuses(newBonuses);
+    setOpeningBonus({ type: pendingBonus, value: randomNumber, cardIndex: cardIndex });
+    if (pendingBonus === 'BEE') {
+      setBonusMeter(0);
     }
     setOfferingBonus(undefined);
     setBonusRechargeRate(100);
@@ -1878,6 +1933,7 @@ function App() {
     setModalOn(true);
     setModalMessage('Really end the current game?');
   };
+
   const handleClickMapButton = () => {
     if (storeOpen) {
       setStoreOpen(false);
@@ -1890,12 +1946,12 @@ function App() {
     }
     setMapOn(mapOn => !mapOn);
   };
+
   const integrateModeRules = (newMode, newOptions) => {
     if (newMode.ballLimit) {
       setBallLimit(newMode.ballLimit);
     }
     if (newMode.winnerLimit) {
-      console.green('HAS winnerlimit! -----------------------------------------------------')
       setWinnerLimit(newMode.winnerLimit);
     } else {
       setWinnerLimit(newOptions.opponentCards.length);
@@ -1952,7 +2008,7 @@ function App() {
     let newPattern = winPatterns[patternNamesArray[newIndex]];
     gameModes[gameMode.name].winPattern = newPattern;
     setGameMode(gameModes[gameMode.name]);
-    setWinPattern(newPattern)
+    // setWinPattern(newPattern)
     console.warn('--------------SET to', gameModes[gameMode.name])
   };
   const handleClickChangeBallLimit = direction => {
@@ -1990,8 +2046,34 @@ function App() {
     }
     setGameStarted(false);
     setGameInProgress(false);
+    let newRoundResults = {...roundResults};
+    newRoundResults.cards = new Array([...user.cardSlots].filter(slot => slot.cardId !== -1).length).fill({});
+    newRoundResults.cards.map((card, i, arr) => {
+      console.log('card?', card)
+      arr[i] = {
+        cardIndex: i,
+        bingoCount: 0,
+        ballsAtBingo: new Array(75),
+        opponentsAtBingo: new Array(options.opponentCards.length),
+        bonuses: [],
+        currentPrize: 0
+      }
+    });
+    newRoundResults.totalPrize = 0;
+    newRoundResults.speedBonus = 0;
+    newRoundResults.averageDaubSpeed = 3000;
+    console.error('resetGame() setting newRoundResults to', newRoundResults)
+    setRoundResults(newRoundResults);
+    // setRoundResults({
+    //   totalPrize: 0,
+    //   averageDaubSpeed: 3000,
+    //   speedBonus: 0,
+    //   chickenExperiencePrizes: 0,
+    //   cards:[]
+    // });
     setTemporaryBonuses({
-      freeSpaces: []
+      freeSpaces: [],
+      chickenEffects: []
     });
     setPlayersLeft(options.opponentCards.length);
     setCalledBalls([]);
@@ -2011,6 +2093,17 @@ function App() {
     })
     setOpponentCardProgress(newOptions.opponentCards);
     setOptions(newOptions);
+    let newUser = { ...user };
+    newUser.chickens.map(chicken => {
+      chicken.ready = false;
+      chicken.activated = false;
+      chicken.meter = 0;
+      chicken.ballsAtActivation = 0;
+    });
+    if (user.loggedIn) {
+      updateUserData(user.username, user.token, 'chickens', newUser.chickens)
+    }
+    setUser(newUser);
   };
   const updateOpponentCardProgress = () => {
     let startTime = window.performance.now();
@@ -2041,6 +2134,13 @@ function App() {
     setOpponentCardProgress(newProgress);
     if (index === Object.values(newProgress).length - 1) {
       console.warn('simulated all games in ', window.performance.now() - simStart)
+    }
+  }
+  const recordCardBonus = (bonus, cardIndex) => {
+    console.error('GOT', bonus, 'FROM', cardIndex);
+    let newRoundResults = { ...roundResults };
+    if (!newRoundResults.cards[cardIndex].bonuses.includes(bonus)) {
+      roundResults.cards[cardIndex].bonuses.push(bonus);
     }
   }
   const handleClickPowerup = (powerup) => {
@@ -2081,12 +2181,13 @@ function App() {
     }
   }
   const handleSetFree = (cardIndex, number) => {
-    playSound(freeSpaceSound2);
+    playSound(getFreeSpaceSound);
     let newUser = { ...user };
     let invSlot = newUser.itemSlots.filter((slot) => slot.item.id === powerupSelected.id)[0];
-    invSlot.item.uses--;
+    if (!user.loggedIn || user.username !== 'Mike') {
+      invSlot.item.uses--;
+    }
     if (invSlot.item.uses === 0) {
-      // invSlot.item = false;
       invSlot.item = {id:-1};
     }
     setUser(newUser);
@@ -2109,9 +2210,8 @@ function App() {
         let card = user.cards[slot.cardId];
         console.info('CARD -----------------', card)
       }
-    })
+    });
   }
-
   const byMarked = (a, b) => a.fullGameStatus.markedEachBall ? a.fullGameStatus.markedEachBall[calledBalls.length - 1] - b.fullGameStatus.markedEachBall[calledBalls.length - 1] : 0;
   const byDanger = (a, b) => a.fullGameStatus.dangerEachBall ? a.fullGameStatus.dangerEachBall[calledBalls.length - 1] - b.fullGameStatus.dangerEachBall[calledBalls.length - 1] : 0;
 
@@ -2155,6 +2255,9 @@ function App() {
     let newUser = { ...user };
     newUser.chickenSlots[slot].chickenId = chickenId
     setUser(newUser);
+    if (user.loggedIn) {
+      updateUserData(user.username, user.token, 'chickenSlots', newUser.chickenSlots);
+    }
   }
   const handleClickUnequipChicken = (chickenId) => {
     let newUser = { ...user };
@@ -2163,6 +2266,18 @@ function App() {
         arr[i].chickenId = -1;
       }
     });
+    setUser(newUser);
+  }
+  const handleActivateChicken = (chickenId) => {
+    playSound(refillSound);
+    let newUser = { ...user };
+    let targetChicken = newUser.chickens[chickenId];
+    targetChicken.ready = false;
+    targetChicken.activated = true;
+    targetChicken.ballsAtActivation = calledBalls.length;
+    let newBonuses = { ...temporaryBonuses };
+    newBonuses.chickenEffects.push(targetChicken.durationEffect);
+    setTemporaryBonuses(newBonuses);
     setUser(newUser);
   }
 
@@ -2175,7 +2290,8 @@ function App() {
   if (!gotData) {
     playerAreaClass += ' hidden';
   } else if (cardOptionsOn) {
-    playerAreaClass += ' card-options-on'
+    playerAreaClass += ' card-options-on';
+
   }
   let opponentAreaClass = options.showOpponentCards ? 'card-area' : 'card-area hidden';
   let playerCardCount = user.cardSlots.filter(slot => slot.cardId !== -1).length;
@@ -2246,9 +2362,15 @@ function App() {
   if (cardOptionsOn) {
     playerCardList = [...user.cardSlots];
   }
+  let activatedChickens = [];
+  user.chickens.map(chicken => {
+    if (chicken.activated) {
+      activatedChickens.push(chicken.chickenId);
+    }
+  });
   return (
-    <div id="app" className={!loaded ? 'zoomed' : ''}>
-      <div id="app-background" />
+    <div id='app' className={!loaded ? 'zoomed' : ''}>
+      <div id='app-background' className={cardOptionsOn ? 'card-options-on' : ''} />
       {gotData && <div id='mode-display' className={gameStarted ? '' : 'hidden'}>
         <div>Avg. daub speed: {roundResults.averageDaubSpeed}</div>
         <div>{gameMode.name} - {patternName}</div>
@@ -2257,7 +2379,7 @@ function App() {
         {!menuOn &&
           (gameInProgress && calledBalls.length ? (
             <>
-              <div id="danger-meter" ref={meterRef} className={meterClass}>
+              <div id="danger-meter" className={meterClass}>
 
                 {/* {gameMode.name === 'Countdown' &&
                 <div id='balls-left-display'>
@@ -2265,7 +2387,7 @@ function App() {
                   <div id='balls-left-count'>{ballsRemaining}</div>
                 </div>
               } */}
-                <div id="danger-bar-list" className={barListClass}>
+                <div id='danger-bar-list' className={barListClass}>
                   {(gameMode.name === 'Ranked'  || gameMode.name === 'Bonanza' || gameMode.name === 'Classic')
                   // ? Object.values({ ...opponentCardProgress }).filter(entry => entry.active && entry.fullGameStatus).sort(gameMode.winPattern.name === 'Line / 4 Corners' ? byMarked : byDanger).map((entry, i, arr) => {
                   ? Object.values({ ...opponentCardProgress }).sort(gameMode.winPattern.name === 'Line / 4 Corners' ? byMarked : byDanger).map((entry, i, arr) => {
@@ -2417,7 +2539,6 @@ function App() {
             let cardInUse = true;
             let cardControlsClass = 'card-controls';
             if (cardOptionsOn) {
-              console.log('card is', card);
               cardInUse = [...user.cardSlots].filter(slot => slot.cardId === c).length;
               if (!cardInUse) {
                 cardControlsClass += ' not-in-use';
@@ -2434,6 +2555,7 @@ function App() {
                 remainingPlayers={playersLeft}
                 remainingWinners={winnersLeft}
                 remainingBingos={bingosLeft}
+                limitReached={!bingosLeft}
                 opponentCardCount={opponentCardCount}
                 bonusOffered={offeringBonus}
                 ballLimitReached={calledBalls.length > ballLimit}
@@ -2451,16 +2573,17 @@ function App() {
                 onKillBee={handleKillBee}
                 onSetFree={handleSetFree}
                 patternName={patternName}
-                />
-                {cardOptionsOn &&
-                  <div className={cardControlsClass}>
-                    <div className='card-control-header'>
-                      Card {c+1}
-                    </div>
-                  <div>Type: {card.type.toUpperCase()}</div>
-                    <div>{cardInUse ? 'IN USE' : 'NOT IN USE'}</div>
+                reportBonus={recordCardBonus}
+              />
+              {cardOptionsOn &&
+                <div className={cardControlsClass}>
+                  <div className='card-control-header'>
+                    Card {c+1}
                   </div>
-                }
+                <div>Type: {card.type.toUpperCase()}</div>
+                  <div>{cardInUse ? 'IN USE' : 'NOT IN USE'}</div>
+                </div>
+              }
             </div>)
           })}
         </div>
@@ -2512,6 +2635,7 @@ function App() {
             // voiceOn={options.voiceOn}
             chickenCount={user.chickens.length}
             chickens={user.chickens}
+            activatedChickens={activatedChickens}
             chickenSlots={user.chickenSlots}
             chickensEquippedCount = {user.chickenSlots.filter(slot => slot.chickenId !== -1).length}
             chickenSlotIndexes={user.chickenSlots[0].chickenId + ' ' + user.chickenSlots[1].chickenId}
@@ -2525,6 +2649,7 @@ function App() {
             onClickResetButton={handleClickCloseButton}
             onClickChickensButton={resetPage}
             onClickPowerup={handleClickPowerup}
+            onActivateChicken={handleActivateChicken}
           />
           {!user.loggedIn && <LogInScreen showing={loggingIn} loginError={loginError} onClickLogInButton={handleClickLogInButton} onClickRegisterButton={handleClickRegisterButton} onClickCancelButton={handleClickCancelButton} />}
           <ConfirmModal showing={modalOn} message={modalMessage} loggingOut={loggingOut} onClickAgreeButton={handleClickAgreeButton} onClickCancelButton={handleClickCancelButton} />
@@ -2537,7 +2662,8 @@ function App() {
             roundBingos={roundBingos}
             currentBingos={currentBingos}
             chickenExp={chickenExp}
-            chickens={user.chickens.filter(chicken => user.chickenSlots[0].chickenId === chicken.chickenId || user.chickenSlots[1].chickenId === chicken.chickenId)}
+            chickenExperiencePrizes={roundResults.chickenExperiencePrizes}
+            equippedChickens={user.chickens.filter(chicken => user.chickenSlots[0].chickenId === chicken.chickenId || user.chickenSlots[1].chickenId === chicken.chickenId)}
             winnerLimit={winnerLimit}
             ballLimit={ballLimit}
             totalOpponents={options.opponentCards.length}
@@ -2577,7 +2703,7 @@ function App() {
             onClickLogOut={handleClickLogOut}
           />
           {/* {gameStarted && */}
-          <CornerChicken ref={chickenRef} showing={gameStarted} showingBonusText={showingBonusText} onClickCorner={handleClickCorner} currentBeeChance={currentBeeChance} bonusMeter={bonusMeter} openingBonus={openingBonus} paused={!gameStarted} gameStarted={gameStarted} showingGift={offeringBonus} onClickGift={handleClickGift} />
+          <CornerChicken ref={chickenRef} showing={gameStarted} showingBonusText={showingBonusText} onClickCorner={handleClickCorner} currentBeeChance={currentBeeChance} bonusLuckActivated={temporaryBonuses.chickenEffects.includes('bonusLuck')} bonusMeter={bonusMeter} openingBonus={openingBonus} paused={!gameStarted} gameStarted={gameStarted} showingGift={offeringBonus} onClickGift={handleClickGift} />
           {/* } */}
           {gameInProgress && <BonusIndicator active={openingBonus && openingBonus.type === 'FREE'} currentBeechance={currentBeeChance} openingBonus={openingBonus} bonusDisplay={'FREE SPACE!'} gameNews={gameEnded && 'GAME OVER'} />}
           {!gameInProgress && <MapScreen showing={mapOn} userCash={user.currency.cash} chickenCount={user.chickens.length} />}

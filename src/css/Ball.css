@@ -18,17 +18,17 @@
   background-image: url('../assets/bingoball.webp');
   background-size: 100% 100%;
   background-repeat: no-repeat;
-  transition: transform 250ms ease, opacity 300ms ease;
-  will-change: transform, opacity;
+  transition: transform 300ms ease;
+  will-change: transform;
   /* z-index: 5; */
   color: white;
   animation: bounce;
   animation-iteration-count: 1;
-  animation-duration: 250ms;
+  animation-duration: 300ms;
   animation-play-state: running;
   animation-direction: normal;
   /* animation-fill-mode: forwards; */
-  animation-delay: 250ms;
+  /* animation-delay: 250ms; */
   text-shadow: -0.25vmin -0.25vmin 0 #000, 0.25vmin -0.25vmin 0 #000, -0.25vmin 0.25vmin 0 #000, 0.25vmin 0.25vmin 0 #000;
 }
 .ball > div {
@@ -92,7 +92,7 @@
   animation-duration: 250ms;
   animation-play-state: running;
 }
-@keyframes bounce {
+@keyframes bounce2 {
   0% {
     transform: scaleY(1);
   }
@@ -101,5 +101,22 @@
   }
   100% {
     transform: scaleY(1);
+  }
+}
+@keyframes bounce {
+  0% {
+    transform: translateY(calc(var(--caller-height) * -1)) scaleY(1);
+  }
+  25% {
+    transform: translateY(calc(var(--caller-height) * -0.5)) scaleY(1);
+  }
+  50% {
+    transform: translateY(0) scaleY(1);
+  }
+  75% {
+    transform: translateY(0) scaleY(0.85);
+  }
+  100% {
+    transform: translateY(0) scaleY(1);
   }
 }

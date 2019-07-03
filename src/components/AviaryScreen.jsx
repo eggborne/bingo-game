@@ -1,7 +1,9 @@
 import React, { useState, useCallback } from 'react';
-import AviaryModal from './AviaryModal';
 import '../css/AviaryScreen.css';
-import { chickenEffects } from '../App';
+import AviaryModal from './AviaryModal';
+import ExperienceBar from './ExperienceBar';
+import { chickenEffects, experienceLevels } from '../App';
+
 let chickenPng = require('../assets/chickenstand.png');
 let blueChickenPng = require('../assets/chickenstandblue.png');
 
@@ -27,6 +29,7 @@ function AviaryScreen(props) {
 
   let aviaryClass = props.showing ? 'showing' : '';
   // let cash = props.userCash;
+
   return (
     <>
       {props.showing && <AviaryModal chickenSlots={props.chickenSlots} chickens={props.chickens} selectedChicken={selectedChicken} onSelectSlot={handleSelectSlot} onClickCancelButton={handleClickCancelButton} />}
@@ -39,16 +42,23 @@ function AviaryScreen(props) {
           console.log('chicken?', chicken);
           console.log('props.chickenSlots.filter(slot => slot.chickenId === chicken.chickenId)?', props.chickenSlots.filter(slot => slot.chickenId === chicken.chickenId));
           let equipped = props.chickenSlots.filter(slot => slot.chickenId === chicken.chickenId).length;
+          let experienceBarWidth = experienceLevels[chicken.level];
+          let toNextLevel = experienceBarWidth - chicken.experience;
+          let chickenColor = 'blue';
           return (<div key={chicken.chickenId} className={equipped ? 'chicken-panel equipped' : 'chicken-panel'}>
-            <img src={blueChickenPng} />
-            <div className='chicken-name'>{chicken.name}{equipped ? <span style={{color: '#aaffaa'}}> EQUIPPED</span> : ''}</div>
-
-            <div className='chicken-level'>Level {chicken.level}</div>
-            <div className='effect-label'>Abilities:</div>
+            <img src={require(`../assets/chickenstand${chickenColor}.png`)} />
+            <div className='chicken-name'>{chicken.name}{equipped ? <span style={{color: '#aaffaa'}}> - EQUIPPED</span> : ''}</div>
+            <div className='chicken-experience'>
+              <small>Experience:</small> {chicken.experience}
+              <ExperienceBar maxLength={experienceBarWidth} currentExperience={chicken.experience} currentLevel={chicken.level} toNextLevel={toNextLevel} />
+            </div>
+            <div className='duration-label'><small>Effect Duration:</small> {chicken.effectDuration} Balls</div>
+            <div className='recharge-label'><small>Recharge Time:</small> {chicken.rechargeTime} Balls</div>
             <div className='chicken-effects'>
               <small>On Activation:</small> <div>{chicken.onActivate ? chickenEffects[chicken.onActivate][chicken.level].displayName : 'none'}</div>
               <small>While activated:</small> <div>{chicken.durationEffect ? chickenEffects[chicken.durationEffect][chicken.level].displayName : 'none'}</div>
             </div>
+            <div className='effect-label'>Abilities:</div>
             <div className='chicken-activation'>
               <button className='chicken-activation-button' onPointerDown={() => {equipped ? props.onClickUnequipChicken(chicken.chickenId) : handleClickEquip(chicken.chickenId)}}>{equipped ? 'UNEQUIP' : 'EQUIP'}</button>
             </div>

@@ -18,8 +18,9 @@ export const permanentItems = {
     { id: 0, cost: 10, category: 'Markers', displayName: 'Red Chips', description: 'Red Chips', type: 'red', imgSrc: 'bingochip.png', imgHeight: '10vmin', class: 'item-row item-selection' },
     { id: 1, cost: 25, category: 'Markers', displayName: 'Blue Chips', description: 'Blue Chips', type: 'blue', imgSrc: 'bingochipblue.png', imgHeight: '10vmin', class: 'item-row item-selection' },
     { id: 2, cost: 50, category: 'Markers', displayName: 'Green Chips', description: 'Green Chips', type: 'green', imgSrc: 'bingochipgreen.png', imgHeight: '10vmin', class: 'item-row item-selection' },
-    { id: 3, cost: 100, category: 'Markers', displayName: 'Orange Chips', description: 'Orange Chips', type: 'orange', imgSrc: 'bingochiporange.png', imgHeight: '10vmin', class: 'item-row item-selection' },
-    { id: 4, cost: 1000, category: 'Markers', displayName: 'Tomato Chips', description: 'Tomato Chips', type: 'tomato', imgSrc: 'tomato.png', imgHeight: '10vmin', class: 'item-row item-selection' },
+    { id: 3, cost: 1000, category: 'Markers', displayName: 'Tomato Chips', description: 'Tomato Chips', type: 'tomato', imgSrc: 'tomato.png', imgHeight: '10vmin', class: 'item-row item-selection' },
+    { id: 16, cost: 1250, category: 'Markers', displayName: 'Onion Chips', description: 'Onion Chips', type: 'onion', imgSrc: 'onionchip.png', imgHeight: '10vmin', class: 'item-row item-selection' },
+    { id: 4, cost: 2500, category: 'Markers', displayName: 'Mingus Chips', description: 'Mingus Chips', type: 'mingus', imgSrc: 'minguschip.png', imgHeight: '10vmin', class: 'item-row item-selection' },
     { id: 5, cost: 5000, category: 'Markers', displayName: 'Conan Chips', description: 'Conan Chips', type: 'conan', imgSrc: 'conanchip.png', imgHeight: '10vmin', class: 'item-row item-selection' },
    ],
   'Item Slots': [
@@ -152,7 +153,6 @@ function StoreScreen(props) {
               })}
             </div>
           </div>
-
           <div id='store-consumable' className='store-body'>
             <div className={`category-label`}>Bee Control</div>
             <div className={'prize-category item-grid consumable'}>

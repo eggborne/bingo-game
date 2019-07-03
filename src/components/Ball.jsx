@@ -2,15 +2,15 @@ import React, { useState, useEffect } from 'react';
 import '../css/Ball.css';
 
 function Ball(props) {
-  const [showing, changeShowing] = useState(false);
+  // const [showing, changeShowing] = useState(false);
 
-  useEffect(() => {
-    changeShowing(true);
-  }, []);
+  // useEffect(() => {
+  //   changeShowing(true);
+  // }, []);
   let ballClass = `ball ${props.letter.toLowerCase()}`;
-  if (!showing) {
-    ballClass += ' hidden'
-  }
+  // if (!showing) {
+  //   ballClass += ' hidden'
+  // }
   if (props.obscured) {
     ballClass += ' obscured';
   }

@@ -36,8 +36,8 @@ const CallerArea = React.forwardRef((props, ref) => {
         {props.calledBalls.map((ball, i, arr) => {
           let letter = getBingoLetter(ball);
           return (
-            <Ball index={i} obscured={i < props.calledBalls.length - eggsWide} calledCount={props.calledBalls.length} letter={letter} number={ball} key={letter + ball} />
-            // <Ball index={i} obscured={false} calledCount={props.calledBalls.length} letter={letter} number={ball} key={letter + ball} />
+            // <Ball index={i} obscured={i < props.calledBalls.length - eggsWide} calledCount={props.calledBalls.length} letter={letter} number={ball} key={letter + ball} />
+            <Ball index={i} obscured={false} calledCount={props.calledBalls.length} letter={letter} number={ball} key={letter + ball} />
           );
         })}
         <div id='ball-space'></div>

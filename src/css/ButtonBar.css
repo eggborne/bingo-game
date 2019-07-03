@@ -82,7 +82,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  transition: transform 210ms ease, background-color 320ms ease, opacity 320ms ease;
+  transition: transform 310ms ease, background-color 320ms ease, opacity 320ms ease;
   text-shadow: -1px -1px 0 #111, 1px -1px 0 #111, -1px 1px 0 #111, 1px 1px 0 #111;
 }
 #button-bar .status-button.hidden {
@@ -91,8 +91,8 @@
 .obscured {
   opacity: 0 !important;
   background: blue !important;
+  pointer-events: none !important;
 }
-
 #button-bar .status-button#reset-button,
 #button-bar .status-button#error-button {
   width: calc((var(--header-height)) - (var(--header-border-width) * 8));
@@ -167,6 +167,9 @@
 #aviary-button.aviary-on {
   outline: 1vmin solid rgb(116, 148, 255);
   background-color: rgb(75, 13, 11);
+}
+#card-options-button.card-options-on {
+  outline-color: red;
 }
 #map-button > img {
   width: 80%;
@@ -311,6 +314,9 @@
   font-size: calc(var(--button-bar-height) / 7) !important;
   transform: translateY(calc((var(--button-bar-height) + calc((var(--header-height)) - (var(--header-border-width)))) * -1));
 }
+#aviary-button.aviary-on {
+
+}
 #aviary-button:after {
   font-size: calc(var(--font-size) / 2);
 }
@@ -404,7 +410,34 @@
   justify-content: center;
   /* border: 0.5vmin outset gray;
   border-color: rgb(118, 147, 173) !important; */
-  transition: transform 140ms ease;
+  /* transition: transform 140ms ease; */
+}
+.item-slot.ready {
+  /* outline: 3px solid green !important; */
+  /* background-color: white !important; */
+  animation: glow;
+  animation-duration: 1000ms;
+  animation-iteration-count: infinite;
+  animation-play-state: running;
+  pointer-events: all !important;
+}
+.item-slot.activated {
+  outline: 3px solid green;
+  background-color: white;
+  animation: pulsate;
+  animation-duration: 800ms;
+  animation-iteration-count: infinite;
+  animation-play-state: running;
+}
+@keyframes pulsate {
+  0% {
+    background-color: green;
+    outline: 3px solid rgb(131, 211, 131);
+  }
+  100% {
+    background-color: rgb(131, 211, 131);
+    outline: 3px solid green;
+  }
 }
 .item-slot > .meter {
   position: absolute;
@@ -414,12 +447,15 @@
   z-index: 0;
   content: ' ';
   transform-origin: bottom;
-  transition: transform 440ms ease;
+  transition: transform 100ms linear;
   border: 1px solid black;
 }
 #chickens-area .item-slot > .meter {
   background: rgb(8, 39, 8);
-
+  transition: transform calc(var(--draw-speed) + 300ms) linear;
+}
+.item-slot.ready > .meter, .item-slot.activated > .meter {
+  display: none;
 }
 .item-slot.selected {
   background: rgb(179, 255, 0);
@@ -456,7 +492,7 @@
   /* background: rgb(128, 71, 7); */
 }
 .powerup-area#chickens-area .item-slot {
-
+  background: rgb(12, 105, 109);
   font-size: calc(var(--button-bar-border-width) * 2.5);
   border: 0;
   min-width: calc(var(--header-height) / 1.25);
@@ -468,6 +504,7 @@
   color: white;
   text-shadow: 1px 1px 1px black;
   bottom: 0;
+  margin-bottom: 5%;
 }
 .powerup-area#chickens-area .item-slot-label {
   font-size: calc(var(--button-bar-border-width) * 2.75);
@@ -603,16 +640,19 @@
     font-size: calc(var(--button-bar-height) / 7) !important;
     transform: translateX(calc((var(--button-bar-height) + calc((var(--header-height)) - (var(--header-border-width) * 2))) * -1));
   }
+  #aviary-button.aviary-on, #map-button.map-on {
+    transform: translateX(calc((var(--button-bar-height) * -1)));
+  }
   #card-options-button {
     background-color: rgb(16, 71, 107);
     font-size: calc(var(--button-bar-height) / 7) !important;
     transform: translateX(calc((var(--button-bar-height) + calc((var(--header-height)) - (var(--header-border-width) * 2))) * -1));
   }
   #map-button {
-    transform: translateX(calc((var(--button-bar-height) + calc((var(--header-height) * 3) - (var(--header-border-width) * 6))) * -1));
+    transform: translateX(calc((var(--button-bar-height) + calc((var(--header-height) * 2) - (var(--header-border-width) * 4))) * -1));
   }
   #card-options-button {
-    transform: translateX(calc((var(--button-bar-height) + calc((var(--header-height) * 2) - (var(--header-border-width) * 4))) * -1));
+    transform: translateX(calc((var(--button-bar-height) + calc((var(--header-height) * 3) - (var(--header-border-width) * 6))) * -1));
   }
   .powerup-area > .slot-area {
     width: 100%;

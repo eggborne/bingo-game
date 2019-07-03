@@ -192,7 +192,7 @@ function Menu(props) {
               <div>{props.stats.totalBingos}</div>
             </div>
             <div className='account-row'>
-              <div>Bees Killed</div>
+              <div>Bees Sprayed</div>
               <div>{props.stats.beesKilled}</div>
             </div>
             {/* <div className='account-row'>
