@@ -12,19 +12,19 @@ function StoreModal(props) {
   useEffect(() => {
     setSlotSelected(undefined);
   }, [props.selectedItem])
-  const flashSlotSelect = useCallback(() => {
-    console.log(slotRef)
-    slotRef.current.style.transform = 'scale(1.05)';
-    setTimeout(() => {
-      slotRef.current.style.transform = 'scale(1)';
-    }, 200);
-    setTimeout(() => {
-      slotRef.current.style.transform = 'scale(1.05)';
-    }, 400);
-    setTimeout(() => {
-      slotRef.current.style.transform = 'scale(1)';
-    }, 600);
-  }, [slotRef, slotSelected])
+  // const flashSlotSelect = useCallback(() => {
+  //   console.log(slotRef)
+  //   slotRef.current.style.transform = 'scale(1.05)';
+  //   setTimeout(() => {
+  //     slotRef.current.style.transform = 'scale(1)';
+  //   }, 200);
+  //   setTimeout(() => {
+  //     slotRef.current.style.transform = 'scale(1.05)';
+  //   }, 400);
+  //   setTimeout(() => {
+  //     slotRef.current.style.transform = 'scale(1)';
+  //   }, 600);
+  // }, [slotRef, slotSelected])
   const selectSlot = (newSlot) => {
     setSlotSelected(newSlot);
     props.onSelectSlot(newSlot);

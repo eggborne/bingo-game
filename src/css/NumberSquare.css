@@ -122,9 +122,6 @@
 .number-square.green > .chip {
   background-image: url('../assets/bingochipgreen.png');
 }
-.number-square.orange > .chip {
-  background-image: url('../assets/bingochiporange.png');
-}
 .number-square.mingus > .chip {
   background-image: url('../assets/minguschip.png');
 }
@@ -136,6 +133,12 @@
 }
 .number-square.onion > .chip {
   background-image: url('../assets/onionchip.png');
+}
+.number-square.orange > .chip {
+  background-image: url('../assets/orangefruitchip.png');
+}
+.number-square.eyeball > .chip {
+  background-image: url('../assets/eyeballchip.png');
 }
 .number-square.tomato.marked > .chip {
   /* transform: scaleX(1.2) scaleY(1.25); */

@@ -47,14 +47,14 @@ function AviaryModal(props) {
               if (slot.chickenId !== -1) {
                 let chicken = props.chickens.filter(chicken => slot.chickenId === chicken.chickenId)[0];
                 return (
-                  <div key={chicken.chickenId} id={`item-slot-${i + 1}`} onPointerDown={() => selectSlot(i)} className={i !== slotSelected ? 'item-slot' : 'item-slot selected'}>
+                  <div key={chicken.chickenId} id={`item-slot-${i + 1}`} onClick={() => selectSlot(i)} className={i !== slotSelected ? 'item-slot' : 'item-slot selected'}>
                     <img src={blueChickenPng} />
                     <div className='chicken-label'>{chicken.name.toUpperCase()}</div>
                   </div>
                 );
               } else {
                 return (
-                  <div key={i+100} id={`empty-slot-${i + 1}`} onPointerDown={() => selectSlot(i)} className={i !== slotSelected ?  'item-slot empty' : 'item-slot empty  selected'}>
+                  <div key={i+100} id={`empty-slot-${i + 1}`} onClick={() => selectSlot(i)} className={i !== slotSelected ?  'item-slot empty' : 'item-slot empty  selected'}>
                     <div className="label">EMPTY</div>
                   </div>
                 );

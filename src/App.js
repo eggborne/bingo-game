@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Card from './components/Card';
 import CallerArea from './components/CallerArea';
 import CornerChicken from './components/CornerChicken';
@@ -17,8 +17,7 @@ import './css/App.css';
 import './css/HintArrow.css';
 import { randomInt, isFullScreen, fullScreenCall, exitFullScreenCall, getTimeSinceFromSeconds, limits, shuffle, calls } from './scripts/util';
 import axios from 'axios';
-import { Howl, Howler } from 'howler';
-import { resolve } from 'dns';
+import { Howl } from 'howler';
 require('console-green');
 
 const lockTypes = [undefined, 'landscape', 'portrait'];
@@ -58,8 +57,10 @@ export const chipImages = {
   orange: require('./assets/bingochiporange.png'),
   tomato: require('./assets/tomato.png'),
   onion: require('./assets/onionchip.png'),
+  orange: require('./assets/orangefruitchip.png'),
   mingus: require('./assets/minguschip.png'),
   conan: require('./assets/conanchip.png'),
+  eyeball: require('./assets/eyeballchip.png'),
 };
 
 let daubSound = undefined;
@@ -235,9 +236,7 @@ export const attemptUserCreation = loginObj => {
     data: JSON.stringify(loginObj)
   });
 };
-export const updateUserData = (username, token, attribute, newValue) => {
-  console.log('>>>>>>>>>>>>>>>>>>>>>> sending string', JSON.stringify(newValue))
-
+export const updateUserData = (user, attribute, newValue) => {
   return axios({
     method: 'post',
     url: 'https://chicken.bingo/php/bingoupdateuser.php',
@@ -245,8 +244,8 @@ export const updateUserData = (username, token, attribute, newValue) => {
       'Content-type': 'application/x-www-form-urlencoded'
     },
     data: {
-      username: username,
-      token: token,
+      username: user.username,
+      token: user.token,
       attribute: attribute,
       newValue: JSON.stringify(newValue)
     }
@@ -353,7 +352,7 @@ const defaultUser = {
     }
   },
   cards: [{ id: 0, type: 'random' }, { id: 1, type: 'random' }],
-  prizes: [{ id: 0, cost: 10, category: 'Markers', displayName: 'Red Chips', description: 'Red Chips', type: 'red', imgSrc: 'bingochip.png', imgHeight: '10vmin', class: 'item-row item-selection' }],
+  prizes: [{ id: 0, cost: 10, category: 'Markers', displayName: 'Red Marker', description: 'Red Marker', type: 'red', imgSrc: 'bingochip.png', imgHeight: '10vmin', class: 'item-row item-selection' }],
   bonusChance: 50,
   cardSlots: [{cardId: 0}, {cardId: 1}],
   itemSlots: [{ item: undefined }, { item: undefined }],
@@ -364,18 +363,6 @@ const defaultUser = {
 const defaultOptions = {
   playerCards: [{ id: 0, type: 'random' }, { id: 1, type: 'random' }],
   opponentCards: [
-    { type: 'random' },
-    { type: 'random' },
-    { type: 'random' },
-    { type: 'random' },
-    { type: 'random' },
-    { type: 'random' },
-    { type: 'random' },
-    { type: 'random' },
-    { type: 'random' },
-    { type: 'random' },
-    { type: 'random' },
-    { type: 'random' },
     { type: 'random' },
     { type: 'random' },
     { type: 'random' },
@@ -401,7 +388,7 @@ const defaultOptions = {
   cardMargin: 0.03,
   cardMarginLandscape: 0.05,
   chipImage: `red`,
-  preferredGameMode: 'Ranked'
+  preferredGameMode: 'Bonanza'
 };
 
 // describes index from each row to be tinted
@@ -417,7 +404,7 @@ const bonuses = ['FREE', 'BEE'];
 const gameModes = {
   'Classic': { unlocked: true, name: 'Classic', winPattern: winPatterns['Letter X'], className: 'classic', description: {object: () => 'Score a '+gameModes['Classic'].winPattern.name+' as fast as possible', gameEnds: () => 'when one player has scored a '+gameModes['Classic'].winPattern.name} },
   'Ranked': { unlocked: true, name: 'Ranked', winnerLimit: 5, winPattern: winPatterns['Line / 4 Corners'], className: 'ranked', description: {object: () => 'Score a Bingo as fast as possible', gameEnds: () => 'when '+gameModes['Ranked'].winnerLimit+' players have scored a Bingo'} },
-  'Bonanza': { unlocked: true, name: 'Bonanza', bingoLimit: 20, winPattern: winPatterns['Line / 4 Corners'], className: 'bonanza', description: {object: () => 'Score as many Bingos as possible', gameEnds: () => 'when '+gameModes['Bonanza'].bingoLimit+' Bingos have been scored'} },
+  'Bonanza': { unlocked: true, name: 'Bonanza', bingoLimit: 12, winPattern: winPatterns['Line / 4 Corners'], className: 'bonanza', description: {object: () => 'Score as many Bingos as possible', gameEnds: () => 'when '+gameModes['Bonanza'].bingoLimit+' Bingos have been scored'} },
   'Countdown': { unlocked: true, name: 'Countdown', ballLimit: 35, winPattern: winPatterns['Line / 4 Corners'], className: 'countdown', description: {object: () => 'Score as many Bingos as possible', gameEnds: () => 'when '+gameModes['Countdown'].ballLimit+' balls have been drawn'} },
   // 'Standoff': { unlocked: false, name: 'Standoff', winnerLimit: 4, winPattern: 'Line / 4 Corners', className='' },
   // 'Danger Zones': { unlocked: false, name: 'Danger Zones', winPattern: 'Line / 4 Corners', className='' },
@@ -431,8 +418,17 @@ export const chickenEffects = {
   ]
 }
 
+export const bonusAmounts = {
+  'First Bingo': 10,
+  'Letter X': 20,
+  'No Bees': 30,
+  '2 In One Stroke': 50,
+  '3 In One Stroke': 80,
+  '4 In One Stroke': 120
+}
+
 export const experienceLevels = [
-  0, 500, 1000, 2500, 5000, 10000, 25000, 50000, 75000, 100000
+  0, 2000, 3000, 4000, 5000, 10000, 25000, 50000, 75000, 100000
 ]
 
 const applyOptionsCSS = (newOptions) => {
@@ -493,7 +489,6 @@ function App() {
   const [currentBeeChance, setCurrentBeeChance] = useState(5);
   const [bonusMeter, setBonusMeter] = useState(0);
   const [bonusRechargeRate, setBonusRechargeRate] = useState(100);
-  // const [currentSpeedBonus, setCurrentSpeedBonus] = useState(0);
   // const [pausedWithMenu, setPausedWithMenu] = useState(false);
   const [powerupSelected, setPowerupSelected] = useState(undefined);
   const [showingBonusText, setShowingBonusText] = useState(false);
@@ -503,13 +498,11 @@ function App() {
   });
   const [gameMode, setGameMode] = useState(gameModes['Ranked']);
   const [recordsBroken, setRecordsBroken] = useState(undefined);
-  // const [speedBonus, setSpeedBonus] = useState(0);
   const ref = useRef();
   const chickenRef = useRef();
   const [opponentCardProgress, setOpponentCardProgress] = useState([...defaultOptions.opponentCards]);
   const [roundResults, setRoundResults] = useState({
     averageDaubSpeed: 3000,
-    speedBonus: 0,
     totalPrize: 0,
     chickenExperiencePrizes: {},
     cards: []
@@ -559,6 +552,9 @@ function App() {
       setLocked(isFullScreen());
     });
   }, []);
+  // useEffect(() => {
+  //   gameModes['Bonanza'].bingoLimit = Math.ceil(options.opponentCards.length * 1.25);
+  // }, [options.opponentCards.length]);
   useEffect(() => {
     console.error('user.cardSlots.length changed -----------------------');
     let newRoundResults = {...roundResults};
@@ -607,6 +603,9 @@ function App() {
               chicken.activated = false;
               console.big('<<<<<< CHICKEN ' + chicken.name + ' DEACTIVATED');
               setUser(newUser);
+              let newBonuses = { ...temporaryBonuses };
+              newBonuses.chickenEffects.splice(newBonuses.chickenEffects.indexOf(chicken.durationEffect), 1);
+              setTemporaryBonuses(newBonuses);
             }
           }
         });
@@ -981,7 +980,7 @@ function App() {
     }
     setOptions(newOptions);
     if (user.loggedIn) {
-      updateUserData(user.username, user.token, 'options', newOptions).then(response => {
+      updateUserData(user, 'options', newOptions).then(response => {
         if (response.data === 'UPDATED') {
           flashSavedIcon();
         }
@@ -992,7 +991,7 @@ function App() {
     setModalOn('urgent');
     setModalMessage('Really quit the whole game?');
   };
-  const handleClickOkayButton = event => {
+  const handleClickOkayButton = async event => {
     console.log('roundResults', roundResults);
     let newUser = { ...user };
     newUser.stats.totalGames++;
@@ -1007,12 +1006,14 @@ function App() {
       targetChicken.experience += prize;
       console.error('added', roundResults[chickenId], 'to', targetChicken.name)
     }
+    newUser.stats.totalBingos += currentBingos;
+    setUser(newUser);
     setGameEnded(false);
-    resetGame();
+    await resetGame();
     if (user.loggedIn) {
-      updateUserData(user.username, user.token, 'stats', newUser.stats);
-      updateUserData(user.username, user.token, 'currency', newUser.currency);
-      updateUserData(user.username, user.token, 'chickens', newUser.chickens);
+      updateUserData(user, 'stats', newUser.stats);
+      updateUserData(user, 'currency', newUser.currency);
+      updateUserData(user, 'chickens', newUser.chickens);
     }
   };
   const handleClickAgreeButton = event => {
@@ -1082,27 +1083,27 @@ function App() {
       let userCopy = { ...user };
       if (user.loggedIn && changedUserData) {
         if (changedUserData.includes('cards')) {
-          updateUserData(user.username, user.token, 'cards', user.cards).then(response => {
+          updateUserData(user, 'cards', user.cards).then(response => {
             if (response.data === 'UPDATED') {
               flashSavedIcon();
             }
           });
         }
         if (changedUserData.includes('options')) {
-          updateUserData(user.username, user.token, 'options', optionsCopy).then(response => {
+          updateUserData(user, 'options', optionsCopy).then(response => {
             if (response.data === 'UPDATED') {
               flashSavedIcon();
             }
           });
         }
         if (changedUserData.includes('cardSlots')) {
-          updateUserData(user.username, user.token, 'cardSlots', userCopy.cardSlots).then(response => {
+          updateUserData(user, 'cardSlots', userCopy.cardSlots).then(response => {
             if (response.data === 'UPDATED') {
               flashSavedIcon();
             }
           });
         }
-        updateUserData(user.username, user.token, 'menuMode', menuMode);
+        updateUserData(user, 'menuMode', menuMode);
       }
     } else {
       setChangedUserData([]);
@@ -1339,7 +1340,7 @@ function App() {
           newUser.stats.totalGames++;
           newUser.stats[gameMode.name]['Games Played']++;
           if (user.loggedIn) {
-            updateUserData(user.username, user.token, 'stats', newUser.stats);
+            updateUserData(user, 'stats', newUser.stats);
           }
           // meterRef.current.classList.remove('critical');
           setGameStarted(false);
@@ -1403,9 +1404,9 @@ function App() {
           // newUser.stats.ballsToBingo.push(calledBalls.length);
           setUser(newUser);
           if (user.loggedIn) {
-            updateUserData(user.username, user.token, 'stats', newUser.stats);
-            updateUserData(user.username, user.token, 'currency', newUser.currency);
-            updateUserData(user.username, user.token, 'chickens', newChickens);
+            updateUserData(user, 'stats', newUser.stats);
+            updateUserData(user, 'currency', newUser.currency);
+            updateUserData(user, 'chickens', newChickens);
           }
           setGameStarted(false);
           setTimeout(() => {
@@ -1431,56 +1432,46 @@ function App() {
           fanfare2.stop();
         }
         playSound(fanfare2);
-        let newUser = { ...user };
-        newUser.stats.totalBingos++;
-        setUser(newUser);
+
         let cardResult = newRoundResults.cards[cardId];
         cardResult.bingoCount = totalCardBingos;
         cardResult.ballsAtBingo[totalCardBingos] = calledBalls.length;
         cardResult.opponentsAtBingo[totalCardBingos] = playersLeft;
-        cardResult.currentPrize = (totalCardBingos * (options.opponentCards.length *  95)) + (totalCardBingos * totalCardBingos * (options.opponentCards.length * 25));
+        cardResult.currentPrize =
+          (totalCardBingos * (options.opponentCards.length * 5)) + ((totalCardBingos * 1.5) * (totalCardBingos * 1.5) * (options.opponentCards.length));
         setCurrentBingos(currentBingos => currentBingos + numberOfBingos);
         setRoundBingos(roundBingos => roundBingos + numberOfBingos);
-        if (user.loggedIn) {
-          updateUserData(user.username, user.token, 'stats', newUser.stats);
-        }
       }
       if ((roundBingos + numberOfBingos) >= gameMode.bingoLimit) {
         console.big('START')
         console.big('GAME OVER DECLARED BY CARD ' + opponent ? ' OPPONENT ' : ' PLAYER ' + cardId)
         console.big('END')
         playSound(roundOverSound);
-        // let newUser = { ...user };
-        // newUser.stats.totalGames++;
-        // newUser.stats[gameMode.name]['Games Played']++;
-        let speedBonus = (3000 - newRoundResults.averageDaubSpeed) * 6;
-        newRoundResults.speedBonus = speedBonus;
         let totalMoney = 0;
         newRoundResults.cards.map(card => {
           totalMoney += card.currentPrize;
+          card.bonuses.map(bonus => {
+            console.warn('COCKS', bonus)
+            console.warn('ADDDING --------------', bonus.amount, 'from', card)
+            totalMoney += bonus.amount;
+          })
         });
-        totalMoney += speedBonus;
-
         let chickenExperiencePrizes = {};
         user.chickenSlots.map(slot => {
           let chicken = user.chickens[slot.chickenId];
-          let chickenExp = (options.opponentCards.length * 1.5) + (currentBingos * 10);
+          let chickenExp = Math.round(options.opponentCards.length * 1.5) + (currentBingos * 7);
           if (chicken) {
             console.error('-------------- assigning id#', chicken.chickenId, chicken.name, chickenExp, 'exp!')
             chickenExperiencePrizes[slot.chickenId] = chickenExp;
           }
         });
 
-        newRoundResults.totalPrize = totalMoney;
+        newRoundResults.totalPrize = Math.ceil(totalMoney);
         newRoundResults.chickenExperiencePrizes = chickenExperiencePrizes;
-        newRoundResults.speedBonus = speedBonus;
         setRoundResults(newRoundResults);
         setGameStarted(false);
         setGameInProgress(false);
         setGameEnded(true);
-        // if (user.loggedIn) {
-        //   updateUserData(user.username, user.token, 'stats', newUser.stats);
-        // }
       } else if (!gameEnded) {
         setRoundResults(newRoundResults);
       }
@@ -1492,7 +1483,7 @@ function App() {
         newUser.stats.totalGames++;
         newUser.stats[gameMode.name]['Games Played']++;
         if (user.loggedIn) {
-          updateUserData(user.username, user.token, 'stats', newUser.stats);
+          updateUserData(user, 'stats', newUser.stats);
         }
         setGameStarted(false);
         setGameInProgress(false);
@@ -1517,8 +1508,8 @@ function App() {
         }
         setUser(newUser);
         if (user.loggedIn) {
-          updateUserData(user.username, user.token, 'stats', newUser.stats);
-          updateUserData(user.username, user.token, 'currency', newUser.currency);
+          updateUserData(user, 'stats', newUser.stats);
+          updateUserData(user, 'currency', newUser.currency);
         }
         setGameStarted(false);
         setTimeout(() => {
@@ -1536,7 +1527,7 @@ function App() {
         newUser.stats.totalBingos++;
         setUser(newUser);
         if (user.loggedIn) {
-          updateUserData(user.username, user.token, 'stats', newUser.stats);
+          updateUserData(user, 'stats', newUser.stats);
         }
         let newBingos = [...currentBingos];
         newBingos.push({});
@@ -1680,7 +1671,7 @@ function App() {
       itemData.uses = itemData.totalUses;
       newUser.itemSlots[slot].item = itemData;
       console.log('>>>>>>>>>>>>>>>>>>>>>> sending', newUser.itemSlots)
-      updateUserData(user.username, user.token, 'itemSlots', newUser.itemSlots).then(response => {
+      updateUserData(user, 'itemSlots', newUser.itemSlots).then(response => {
         console.log('updated itemSlots?', response, newUser.itemSlots)
       });
     } else {
@@ -1693,33 +1684,33 @@ function App() {
         console.log('newUser.itemSlots[alreadyOwned]', newUser.itemSlots[alreadyOwned]);
 
         newUser.itemSlots[alreadyOwned].item = { id: -1 };
-        updateUserData(user.username, user.token, 'itemSlots', newUser.itemSlots).then(response => {
+        updateUserData(user, 'itemSlots', newUser.itemSlots).then(response => {
           console.log('updated itemSlots?', response, newUser.itemSlots)
         });
       } else if (itemData.displayName.indexOf('Card Slot') > -1) {
         newUser.cardSlots.push({ cardId: newUser.cardSlots.length });
         newUser.cards.push({ type: 'random', numbers: getRandomCardNumbers() });
-        updateUserData(user.username, user.token, 'cardSlots', newUser.cardSlots).then(response => {
+        updateUserData(user, 'cardSlots', newUser.cardSlots).then(response => {
           console.log('updated cardSlots?', response)
         });
-        updateUserData(user.username, user.token, 'cards', newUser.cards).then(response => {
+        updateUserData(user, 'cards', newUser.cards).then(response => {
           console.log('updated cards?', response)
         });
       } else if (itemData.displayName.indexOf('Bonus') > -1) {
         let extraPercent = parseInt(itemData.type);
         // console.orange('giving ' + extraPercent);
         newUser.bonusChance += extraPercent;
-        updateUserData(user.username, user.token, 'bonusChance', newUser.bonusChance).then(response => {
+        updateUserData(user, 'bonusChance', newUser.bonusChance).then(response => {
           console.log('updated bonusChance?', response)
         });
       }
-      updateUserData(user.username, user.token, 'prizes', newUser.prizes).then(response => {
+      updateUserData(user, 'prizes', newUser.prizes).then(response => {
         console.log('updated prizes?', response, [...newUser.prizes, itemData]);
       });
     }
     newUser.currency.cash -= itemData.cost;
     setUser(newUser);
-    updateUserData(user.username, user.token, 'currency', newUser.currency).then(response => {
+    updateUserData(user, 'currency', newUser.currency).then(response => {
       console.log('curr updated?', response);
     });
     // }, [user]);
@@ -1733,8 +1724,8 @@ function App() {
     newUser.currency.cash -= refillCost;
     setUser(newUser);
     if (user.loggedIn) {
-      updateUserData(user.username, user.token, 'currency', newUser.currency);
-      updateUserData(user.username, user.token, 'itemSlots', newUser.itemSlots)
+      updateUserData(user, 'currency', newUser.currency);
+      updateUserData(user, 'itemSlots', newUser.itemSlots)
     }
   }
   const handleDaubSquare = (mostRecentBall) => {
@@ -1986,7 +1977,7 @@ function App() {
     setGameMode(newMode);
     setOptions(newOptions);
     if (user.loggedIn) {
-      updateUserData(user.username, user.token, 'options', newOptions);
+      updateUserData(user, 'options', newOptions);
     }
   };
   const handleClickChangeWinPattern = direction => {
@@ -2060,14 +2051,12 @@ function App() {
       }
     });
     newRoundResults.totalPrize = 0;
-    newRoundResults.speedBonus = 0;
     newRoundResults.averageDaubSpeed = 3000;
     console.error('resetGame() setting newRoundResults to', newRoundResults)
     setRoundResults(newRoundResults);
     // setRoundResults({
     //   totalPrize: 0,
     //   averageDaubSpeed: 3000,
-    //   speedBonus: 0,
     //   chickenExperiencePrizes: 0,
     //   cards:[]
     // });
@@ -2101,7 +2090,7 @@ function App() {
       chicken.ballsAtActivation = 0;
     });
     if (user.loggedIn) {
-      updateUserData(user.username, user.token, 'chickens', newUser.chickens)
+      updateUserData(user, 'chickens', newUser.chickens)
     }
     setUser(newUser);
   };
@@ -2140,7 +2129,8 @@ function App() {
     console.error('GOT', bonus, 'FROM', cardIndex);
     let newRoundResults = { ...roundResults };
     if (!newRoundResults.cards[cardIndex].bonuses.includes(bonus)) {
-      roundResults.cards[cardIndex].bonuses.push(bonus);
+      let bonusAmount = Math.ceil(bonusAmounts[bonus] * (options.opponentCards.length / 2.5))
+      roundResults.cards[cardIndex].bonuses.push({name: bonus, amount: bonusAmount});
     }
   }
   const handleClickPowerup = (powerup) => {
@@ -2176,8 +2166,8 @@ function App() {
     setTemporaryBonuses(newTempBonuses);
     setPowerupSelected(undefined);
     if (user.loggedIn) {
-      updateUserData(user.username, user.token, 'itemSlots', newUser.itemSlots);
-      updateUserData(user.username, user.token, 'stats', newUser.stats);
+      updateUserData(user, 'itemSlots', newUser.itemSlots);
+      updateUserData(user, 'stats', newUser.stats);
     }
   }
   const handleSetFree = (cardIndex, number) => {
@@ -2196,7 +2186,7 @@ function App() {
     setTemporaryBonuses(newTempBonuses);
     setPowerupSelected(undefined);
     if (user.loggedIn) {
-      updateUserData(user.username, user.token, 'itemSlots', newUser.itemSlots);
+      updateUserData(user, 'itemSlots', newUser.itemSlots);
     }
   }
   const handleClickCorner = () => {
@@ -2256,7 +2246,7 @@ function App() {
     newUser.chickenSlots[slot].chickenId = chickenId
     setUser(newUser);
     if (user.loggedIn) {
-      updateUserData(user.username, user.token, 'chickenSlots', newUser.chickenSlots);
+      updateUserData(user, 'chickenSlots', newUser.chickenSlots);
     }
   }
   const handleClickUnequipChicken = (chickenId) => {
@@ -2279,6 +2269,32 @@ function App() {
     newBonuses.chickenEffects.push(targetChicken.durationEffect);
     setTemporaryBonuses(newBonuses);
     setUser(newUser);
+  }
+
+  const handleClickRandomize = (cardIndex) => {
+    let newUser = { ...user };
+    console.warn('received index', cardIndex);
+    console.warn('cards is', newUser.cards)
+    let newRandomNumbers = getRandomCardNumbers();
+    newUser.cards[cardIndex].numbers = newRandomNumbers;
+    setUser(newUser);
+    if (user.loggedIn) {
+      updateUserData(user, 'cards', newUser.cards);
+    }
+  }
+
+  const handleToggleRandom = (cardIndex) => {
+    let newUser = { ...user };
+    console.warn('received index', cardIndex);
+    console.warn('cards is', newUser.cards)
+    let targetCard = newUser.cards[cardIndex];
+    console.warn('target is', newUser.cards)
+    let newType = targetCard.type === 'random' ? 'custom' : 'random';
+    newUser.cards[cardIndex].type = newType;
+    setUser(newUser);
+    if (user.loggedIn) {
+      updateUserData(user, 'cards', newUser.cards);
+    }
   }
 
   // RENDER //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2329,18 +2345,13 @@ function App() {
   if (gameMode.name === 'Ranked') {
     prizeMoney = (playersLeft * prizePerCard);
   }
-  if (gameMode.name === 'Bonanza') {
-    // prizeMoney = (currentBingos * (options.opponentCards.length * 100)) + (currentBingos * currentBingos * (options.opponentCards.length * 10));
-    // let speedBonus = (3000 - roundResults.averageDaubSpeed) * 100;
-    // prizeMoney += speedBonus;
-  }
   if (gameMode.name === 'Countdown') {
     let basePrize = roundBingos * (75 - ballLimit) * 25;
     let volumeBonus = roundBingos * roundBingos * 10;
     barListClass += ' countdown';
     prizeMoney = basePrize + volumeBonus;
   }
-  let chickenExp = Math.round(prizeMoney / 20);
+  // let chickenExp = Math.round(prizeMoney / 20);
   let meterClass = gameStarted ? '' : 'blurred';
   if (gameMode.name === 'Countdown') {
     meterClass += ' ball-counter';
@@ -2532,12 +2543,18 @@ function App() {
           }
         }}
       >
-      {loaded && <CallerArea ref={ref} calledBalls={calledBalls} gameStarted={gameStarted} />}
+      {lazy1 && <CallerArea ref={ref} calledBalls={calledBalls} gameStarted={gameStarted} />}
         <div id="player-card-area" className={playerAreaClass}>
           {playerCardList.map((card, c) => {
             card = user.cards[c];
             let cardInUse = true;
             let cardControlsClass = 'card-controls';
+            let cardRandomizeClass = 'card-randomize-controls'
+            let cardUseClass = 'card-toggle-controls';
+            let toggleClass = 'toggle off';
+            if (card.type === 'random') {
+              toggleClass = 'toggle on';
+            }
             if (cardOptionsOn) {
               cardInUse = [...user.cardSlots].filter(slot => slot.cardId === c).length;
               if (!cardInUse) {
@@ -2580,8 +2597,20 @@ function App() {
                   <div className='card-control-header'>
                     Card {c+1}
                   </div>
-                <div>Type: {card.type.toUpperCase()}</div>
-                  <div>{cardInUse ? 'IN USE' : 'NOT IN USE'}</div>
+                  <div className={cardRandomizeClass}>
+                    <div>
+                      Randomize every game
+                      <div onClick={() => handleToggleRandom(c)} className={toggleClass}>
+                        <div className='toggle-knob'>{card.type === 'random' ? 'ON' : 'OFF' }</div>
+                      </div>
+                    </div>
+                    <div>
+                      <button onClick={() => handleClickRandomize(c)} className='randomize-button'>
+                        RANDOMIZE NOW
+                      </button>
+                    </div>
+                  </div>
+                  <div className={cardUseClass}>{cardInUse ? 'IN USE' : 'NOT IN USE'}</div>
                 </div>
               }
             </div>)
@@ -2661,12 +2690,12 @@ function App() {
             recordsBroken={recordsBroken}
             roundBingos={roundBingos}
             currentBingos={currentBingos}
-            chickenExp={chickenExp}
             chickenExperiencePrizes={roundResults.chickenExperiencePrizes}
             equippedChickens={user.chickens.filter(chicken => user.chickenSlots[0].chickenId === chicken.chickenId || user.chickenSlots[1].chickenId === chicken.chickenId)}
             winnerLimit={winnerLimit}
             ballLimit={ballLimit}
             totalOpponents={options.opponentCards.length}
+            userCardCount={[...user.cardSlots].filter(slot => slot.cardId !== -1).length}
             rank={options.opponentCards.length - playersLeft + 1}
             lost={gameMode.winnerLimit ? (options.opponentCards.length - playersLeft + 1 > winnerLimit) : (options.opponentCards.length !== playersLeft)}
             onClickOkayButton={handleClickOkayButton}

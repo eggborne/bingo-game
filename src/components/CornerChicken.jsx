@@ -5,8 +5,6 @@ let horusPng = require('../assets/eye.png');
 
 const CornerChicken = React.forwardRef((props, ref) => {
   const cornerChickenRef = ref;
-  // console.orange('CORNER CHICKEN');
-  // console.count();
   let ringClass = '';
   if (props.showingBonusText) {
     ringClass += ' flashing';

@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { limits, randomInt } from '../scripts/util';
+import { winPatterns } from '../App';
 import NumberSquare from './NumberSquare';
 import BingoIndicator from './BingoIndicator';
 import '../css/Card.css';
@@ -16,6 +17,9 @@ const bingoRankings = [
 ];
 
 function Card(props) {
+  if (!props.opponent) {
+    console.warn(props.cardData.type, 'card', props.index)
+  }
   const [numbers, setNumbers] = useState(undefined);
   const [blockedNumbers, setBlockedNumbers] = useState([]);
   const [markedNumbers, setMarked] = useState([]);
@@ -71,7 +75,6 @@ function Card(props) {
         if (props.cardData) {
           setNumbers(props.cardData.numbers);
           props.cardData.numbers.map((row, r) => {
-            console.log('RO!', row);
             row.map((num, c) => {
               if (props.gameMode.winPattern.pattern[r].includes(c)) {
                 console.error('pushing', num)
@@ -80,7 +83,6 @@ function Card(props) {
             })
           })
         }
-        console.log('setting newTinted', newTinted)
         setTintedNumbers(newTinted);
       }
       setBingoCount(0);
@@ -144,33 +146,35 @@ function Card(props) {
 
   useEffect(() => {
     if (props.gameInProgress && !props.opponent && markedNumbers.length > 0) {
-      if (props.gameMode.name === 'Bonanza') {
+      // if (props.gameMode.name === 'Bonanza') {
         checkForBingo();
-      }
+      // }
     }
   }, [markedNumbers, props.gameInProgress])
 
-  const checkForWinPattern = () => {
+  const checkForWinPattern = (customPattern) => {
+    if (!customPattern) {
+      customPattern = props.gameMode.winPattern.pattern;
+    }
     console.pink('----------------------------------------------------------------------------');
     console.pink((props.opponent ? 'Opponent card ' : 'Player card ') + props.index + ' being checked!')
     let numbersMarked = markedNumbers.filter(num => !blockedNumbers.includes(num));
     let indexesMarked = [[],[],[],[],[]];
     numbersMarked.map((num, n) => {
       numbers.map((row, r) => {
-        if (row.includes(num) && props.gameMode.winPattern.pattern[r].includes(row.indexOf(num)) && !indexesMarked[r].includes(row.indexOf(num))) {
+        if (row.includes(num) && customPattern[r].includes(row.indexOf(num)) && !indexesMarked[r].includes(row.indexOf(num))) {
           indexesMarked[r].push(row.indexOf(num));
           indexesMarked[r].sort();
         }
       })
     });
     let allIndex = [...indexesMarked[0], ...indexesMarked[1], ...indexesMarked[2], ...indexesMarked[3], ...indexesMarked[4]];
-    let allPatternBalls = [...props.gameMode.winPattern.pattern[0], ...props.gameMode.winPattern.pattern[1], ...props.gameMode.winPattern.pattern[2], ...props.gameMode.winPattern.pattern[3], ...props.gameMode.winPattern.pattern[4]];
+    let allPatternBalls = [...customPattern[0], ...customPattern[1], ...customPattern[2], ...customPattern[3], ...customPattern[4]];
     if (allIndex.length && allIndex.length === allPatternBalls.length) {
       console.error('OMG WINNER', props.index, 'has a', props.gameMode.name);
       return true;
     }
     return false;
-    console.pink('----------------------------------------------------------------------------');
   }
 
   const checkForBingo = () => {
@@ -194,6 +198,7 @@ function Card(props) {
       let diagonalNWSE = [];
       let diagonalSWNE = [];
       let cornerBingo = 0;
+      let letterX = 0;
       let numbersMarked = markedNumbers.filter(num => !blockedNumbers.includes(num));
       numbers.map((row, r) => {
         let markedInRow = row.filter(num => numbersMarked.includes(num)).length;
@@ -248,11 +253,15 @@ function Card(props) {
         cornerBingo = 1;
       }
 
+      letterX = checkForWinPattern(winPatterns['Letter X'].pattern) ? 1 : 0;
+
+
       let foundBingos = {
         verticalLines: verticalLines,
         horizontalLines: horizontalLines,
         diagonals: { NWSE: diagonalNWSE, SWNE: diagonalSWNE },
-        corners: cornerBingo
+        corners: cornerBingo,
+        letterX: letterX
       };
 
       let newHighlighted = [...highlightedNumbers];
@@ -345,6 +354,12 @@ function Card(props) {
           console.log('bingo < found', bingoCount, '<', foundBingoCount, ' so reporting ' + (foundBingoCount - bingoCount) + ' new bingos!!');
           if (!props.opponent) {
             setWon(true);
+            if (foundBingos.letterX) {
+              props.reportBonus('Letter X', props.index);
+            }
+            if (foundBingoCount - bingoCount > 1) {
+              props.reportBonus(`${foundBingoCount - bingoCount} In One Stroke`, props.index);
+            }
             props.onAchieveBingo(false, (foundBingoCount-bingoCount), foundBingoCount, props.index);
             if (props.gameMode.name === 'Ranked') {
               setTimeout(() => {
@@ -352,7 +367,7 @@ function Card(props) {
                 setBingos({});
                 setWon(false)
               }, 2000)
-            } else if (props.gameMode.name === 'Bonanza') {
+            } else if (props.gameMode.name === 'Bonanza' || props.gameMode.name === 'Classic') {
               setTimeout(() => {
                 setWon(false)
               }, 2000)
@@ -375,6 +390,7 @@ function Card(props) {
         }
       }
     } else {
+      console.log('----------------------------------------------- NOT LINE $ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
       let won = checkForWinPattern();
       if (won) {
         if (props.opponent) {
@@ -561,6 +577,7 @@ function Card(props) {
             key={c + '-' + n}
             isOpponent={false}
             number={num}
+            cardFirstLast={props.cardFirstLast}
             touched={touchedNumber === num}
             canBeMarked={canBeMarked}
             marked={marked}
@@ -598,7 +615,7 @@ function areEqual(prevProps, nextProps) {
     prevProps.freeSpaces.length === nextProps.freeSpaces.length &&
     prevProps.bonusOffered === nextProps.bonusOffered &&
     prevProps.fullBallSequence === nextProps.fullBallSequence &&
-    prevProps.cardData.numbers === nextProps.cardData.numbers &&
+    prevProps.type === nextProps.type &&
     prevProps.username === nextProps.username;
   ;
   return equalTest;

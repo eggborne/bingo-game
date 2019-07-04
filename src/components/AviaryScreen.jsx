@@ -4,14 +4,8 @@ import AviaryModal from './AviaryModal';
 import ExperienceBar from './ExperienceBar';
 import { chickenEffects, experienceLevels } from '../App';
 
-let chickenPng = require('../assets/chickenstand.png');
-let blueChickenPng = require('../assets/chickenstandblue.png');
-
 function AviaryScreen(props) {
-  console.pink('AviaryScreen ------------------');
-  console.info('aviary props', props)
   const [selectedChicken, setSelectedChicken] = useState(undefined);
-
   const handleSelectSlot = (slot) => {
     console.warn('selected chicken slot', slot);
     props.onClickEquipChicken(selectedChicken, slot);
@@ -26,9 +20,7 @@ function AviaryScreen(props) {
   const handleClickCancelButton = () => {
     setSelectedChicken(undefined);
   }
-
   let aviaryClass = props.showing ? 'showing' : '';
-  // let cash = props.userCash;
 
   return (
     <>
@@ -39,15 +31,15 @@ function AviaryScreen(props) {
         {props.chickens.map((chicken, i) => {
         // {props.chickenSlots.filter(slot => slot.chickenId !== -1).map((slot, i) => {
           // let chicken = props.chickens[slot.chickenId];
-          console.log('chicken?', chicken);
-          console.log('props.chickenSlots.filter(slot => slot.chickenId === chicken.chickenId)?', props.chickenSlots.filter(slot => slot.chickenId === chicken.chickenId));
           let equipped = props.chickenSlots.filter(slot => slot.chickenId === chicken.chickenId).length;
           let experienceBarWidth = experienceLevels[chicken.level];
           let toNextLevel = experienceBarWidth - chicken.experience;
           let chickenColor = 'blue';
+          let nickname = chicken.nickname ? `"${chicken.nickname}"` : '';
           return (<div key={chicken.chickenId} className={equipped ? 'chicken-panel equipped' : 'chicken-panel'}>
             <img src={require(`../assets/chickenstand${chickenColor}.png`)} />
-            <div className='chicken-name'>{chicken.name}{equipped ? <span style={{color: '#aaffaa'}}> - EQUIPPED</span> : ''}</div>
+            {/* <div className='chicken-name'><small>"{chicken.nickname}"</small>{chicken.name}{equipped ? <span style={{color: '#aaffaa'}}> - EQUIPPED</span> : ''}</div> */}
+            <div className='chicken-name'><small>{nickname}</small> {chicken.name}</div>
             <div className='chicken-experience'>
               <small>Experience:</small> {chicken.experience}
               <ExperienceBar maxLength={experienceBarWidth} currentExperience={chicken.experience} currentLevel={chicken.level} toNextLevel={toNextLevel} />
@@ -60,7 +52,7 @@ function AviaryScreen(props) {
             </div>
             <div className='effect-label'>Abilities:</div>
             <div className='chicken-activation'>
-              <button className='chicken-activation-button' onPointerDown={() => {equipped ? props.onClickUnequipChicken(chicken.chickenId) : handleClickEquip(chicken.chickenId)}}>{equipped ? 'UNEQUIP' : 'EQUIP'}</button>
+              <button className='chicken-activation-button' onClick={() => {equipped ? props.onClickUnequipChicken(chicken.chickenId) : handleClickEquip(chicken.chickenId)}}>{equipped ? 'UNEQUIP' : 'EQUIP'}</button>
             </div>
           </div>);
         })}

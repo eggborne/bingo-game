@@ -58,7 +58,8 @@
   :root {
     --header-height: 8.5vw;
     --card-grid-border-width: calc(0.6vmin / var(--user-cards-wide-landscape));
-    --card-padding: calc(6vmin / var(--user-cards-wide-landscape));
+    /* --card-padding: calc(6vmin / var(--user-cards-wide-landscape)); */
+    --card-padding: calc(3vw / var(--user-cards-wide-landscape));
     --caller-height: 18vh;
   }
 }
@@ -747,15 +748,14 @@ button #account-button {
   background: #0d770d8d;
   width: calc(100% - var(--card-padding));
   height: calc(100% - var(--card-padding));
-  border-radius: calc(2.5vw / var(--user-cards-wide));
+  /* border-radius: calc(2.5vw / var(--user-cards-wide)); */
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   justify-content: space-between;
-  padding: var(--card-padding);
+  padding: calc(var(--card-padding) * 1.5);
   font-family: var(--cute-font);
   font-size: 2vmax;
-
   color: white;
   text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
 }
@@ -764,9 +764,60 @@ button #account-button {
   color: yellow;
   font-size: var(--font-size);
 }
+.card-controls > .card-randomize-controls {
+  background: #00000033;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  flex-grow: 2;
+  padding: 2vmin;
+  font-family: 'Open Sans', sans-serif;
+}
+.card-controls > .card-randomize-controls > div {
+  display: flex;
+  height: 30%;
+  justify-content: flex-end;
+}
+.card-controls > .card-toggle-controls {
+  flex-grow: 1;
+  padding: 2vmin;
+  font-family: 'Open Sans', sans-serif;
+}
 .card-controls.not-in-use {
   background: #776c0d8d;
-
+}
+.toggle {
+  background: #111;
+  width: calc(var(--header-height) * 1.5 - (var(--card-padding) / 1.5));
+  min-width: calc(var(--header-height) * 1.5 - (var(--card-padding) / 1.5));
+  height: 100%;
+  border-radius: calc(var(--card-padding) / 3);
+  padding: calc(var(--card-padding) / 3);
+}
+.toggle .toggle-knob {
+  background: rgb(163, 113, 19);
+  border-radius: inherit;
+  height: 100%;
+  width:calc(var(--header-height) * 0.75 - calc(var(--card-padding) / 1.5));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 210ms ease;
+}
+.toggle.on .toggle-knob {
+  transform: translateX(100%);
+}
+.toggle.off .toggle-knob {
+  transform: none;
+}
+.randomize-button {
+  min-width: calc(var(--header-height) * 1.5);
+  height: 100%;
+  border-radius: 1vmin;
+  background: darkgray;
+  color: white;
+  border: 1vmin solid gray;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
 }
 #opponent-card-area > .card-space {
   --user-cards-wide: 6 !important;

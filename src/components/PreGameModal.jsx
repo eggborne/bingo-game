@@ -158,6 +158,7 @@ function areEqual(prevProps, nextProps) {
     prevProps.ballLimit === nextProps.ballLimit &&
     prevProps.showing === nextProps.showing &&
     prevProps.gameMode === nextProps.gameMode &&
+    prevProps.winPattern === nextProps.winPattern &&
     prevProps.winPattern.name === nextProps.winPattern.name &&
     prevProps.opponentCount === nextProps.opponentCount
   );

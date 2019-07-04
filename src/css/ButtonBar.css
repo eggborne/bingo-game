@@ -90,7 +90,7 @@
 }
 .obscured {
   opacity: 0 !important;
-  background: blue !important;
+  /* background: blue !important; */
   pointer-events: none !important;
 }
 #button-bar .status-button#reset-button,
@@ -431,11 +431,11 @@
 }
 @keyframes pulsate {
   0% {
-    background-color: green;
+    background-color: rgb(4, 197, 4);
     outline: 3px solid rgb(131, 211, 131);
   }
   100% {
-    background-color: rgb(131, 211, 131);
+    background-color: rgb(106, 231, 106);
     outline: 3px solid green;
   }
 }

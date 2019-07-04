@@ -3,7 +3,7 @@ import '../css/NumberSquare.css';
 
 function NumberSquare(props) {
   // if (!props.isOpponent && props.blocked) {
-  //   console.log('NumberSquare', props)
+  //   console.log('NumberSquare', props.number, 'of card', props.ownerIndex)
   // }
   const [showing, setShowing] = useState(false);
   const [flashing, setFlashing] = useState(undefined);
@@ -104,6 +104,7 @@ function areEqual(prevProps, nextProps) {
     // nextProps.marked &&
     // !(prevProps.canBeMarked && !nextProps.touched) &&
     prevProps.highlighted === nextProps.highlighted &&
+    prevProps.number === nextProps.number &&
     prevProps.powerupId === nextProps.powerupId &&
     prevProps.madeFree === nextProps.madeFree &&
     prevProps.touched === nextProps.touched &&

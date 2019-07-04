@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../css/GameEndModal.css';
-import { hotShotsVideo, experienceLevels } from '../App.js';
+import { hotShotsVideo, bonusAmounts, experienceLevels } from '../App.js';
 import ExperienceBar from './ExperienceBar';
 let blueChickenPng = require('../assets/chickenstandblue.png');
 
@@ -11,16 +11,16 @@ const getSuffix = (num) => {
   if (num >= 4) { return 'th' }
 }
 
-const bonusAmounts = {
-  'First Bingo': 250,
-  'Letter X': 500,
-  'No Bees': 300
-}
-
 function GameEndModal(props) {
   console.count('GameEndModal')
   console.info(props)
   const [playingVideo, setPlayingVideo] = useState(false);
+  const [conserveHeight, setConserveHeight] = useState(false);
+  useEffect(() => {
+    if (props.userCardCount > 2) {
+      setConserveHeight(true);
+    }
+  }, [props.userCardCount]);
   useEffect(() => {
     if (playingVideo) {
       document.getElementById('hot-shots-2').play();
@@ -34,26 +34,22 @@ function GameEndModal(props) {
 
     }
   }, [playingVideo])
-  useEffect(() => {
-    if (props.showing) {
-      setPlayingVideo(props.recordsBroken);
-    }
-  }, [props.showing]);
+  // useEffect(() => {
+  //   if (props.showing) {
+  //     setPlayingVideo(props.recordsBroken);
+  //   }
+  // }, [props.showing]);
   let lost = props.lost;
   let title = 'ROUND OVER';
   let subTitle = '';
   let prizeMessage = `Prize: $${props.prizeMoney}`;
   let agreeLabel = 'OK';
   let modalClass = '';
+  let resultsGridClass = conserveHeight ? 'conserve-height' : '';
   let videoClass = '';
   let videoMessage = '';
   let videoMessageClass = '';
-  let totalPrize = 0;
-  // props.roundResults.cards.map(card => {
-  //   totalPrize += card.currentPrize;
-  // })
-  // totalPrize += props.roundResults.speedBonus;
-  totalPrize = props.roundResults.totalPrize;
+  let totalPrize = props.roundResults.totalPrize;
   if (!props.showing) {
     modalClass += ' hidden';
   }
@@ -97,11 +93,6 @@ function GameEndModal(props) {
   if (props.gameMode.name === 'Classic') {
     modalClass += ' classic';
   }
-  let daubBonus = props.roundResults.speedBonus;
-  let daubSpeedSeconds = (props.roundResults.averageDaubSpeed / 1000).toPrecision(2);
-  if (daubSpeedSeconds.split('.')[1] === '0') {
-    daubSpeedSeconds = daubSpeedSeconds.split('.')[0];
-  }
   console.error('props.equippedChickens', props.equippedChickens)
   return (
     <div id='game-end-modal' className={modalClass}>
@@ -114,9 +105,9 @@ function GameEndModal(props) {
               {/* <div style={{ fontSize: `${props.recordsBroken ? 'var(--font-size)' : 'initial'}` }} id='game-end-rank'>{subTitle}</div> */}
 
               <div className='game-end-message'>
-                <div id='results-grid'>
+                <div id='results-grid' className={resultsGridClass}>
               {props.roundResults.cards.map((card, i) =>
-                    <>
+                    <div className='card-result-container'>
                     <div className='card-label'>CARD {i + 1}</div>
                     <div key={card.cardIndex} className='card-analysis'>
                       <div className='analysis-row card-bingos'>
@@ -124,30 +115,30 @@ function GameEndModal(props) {
                         <div><span style={{ color: 'var(--money-green', fontSize: 'calc(var(--font-size) / 1.25)' }}>${card.currentPrize}</span></div>
                       </div>
                       {card.bonuses.sort((a, b) => bonusAmounts[b] - bonusAmounts[a]).map(bonus =>
-                        <>
-                          <div className='analysis-row card-bonuses'>
-                            <div>{bonus}</div>
-                            <div><span style={{ color: 'var(--money-green', fontSize: 'calc(var(--font-size) / 1.5)' }}>${bonusAmounts[bonus] * props.totalOpponents}</span></div>
+                        // <>
+                          <div key={bonus.name} className='analysis-row card-bonuses'>
+                          <div style={{fontSize: 'calc(var(--font-size) / 2)'}}>{bonus.name}</div>
+                            <div><span style={{ color: 'var(--money-green', fontSize: 'calc(var(--font-size) / 1.5)' }}>${bonus.amount}</span></div>
                           </div>
-                        </>
+                        // </>
                       )}
                     </div>
-                    </>
+                    </div>
                   )}
                 </div>
               </div>
               <div id='bonuses' className='game-end-message'>
-                <div id='speed-results'>
+                {/* <div id='speed-results'>
                   <div><small>Average Daub Speed</small><br />{daubSpeedSeconds} seconds</div>
                   <div id='daub-bonus'>Daub Speed Bonus: <span style={{color: 'var(--money-green)'}}>${daubBonus}</span></div>
-                </div>
+                </div> */}
               {props.equippedChickens.map(chicken => {
                 let newExperience = chicken.experience + props.chickenExperiencePrizes[chicken.chickenId];
                 return (
                   <div className='chicken-exp-display' key={chicken.chickenId}>
                     <img src={blueChickenPng} />
-                    <div>{chicken.name} gained &nbsp;{props.chickenExperiencePrizes[chicken.chickenId]}&nbsp; experience!</div>
-                    <ExperienceBar maxLength={experienceLevels[chicken.level]} currentExperience={newExperience} currentLevel={chicken.level} toNextLevel={experienceLevels[chicken.level] - newExperience} />
+                    <div>"{chicken.nickname}" {chicken.name} gained {props.chickenExperiencePrizes[chicken.chickenId]} experience!</div>
+                    <ExperienceBar currentExperience={newExperience} currentLevel={chicken.level} toNextLevel={experienceLevels[chicken.level] - newExperience} />
                   </div>)
                   ;
               })}
@@ -171,6 +162,7 @@ function GameEndModal(props) {
 function areEqual(prevProps, nextProps) {
     return prevProps.showing === nextProps.showing
     && prevProps.roundResults === nextProps.roundResults
+    && prevProps.userCardCount === nextProps.userCardCount
     && prevProps.lost === nextProps.lost;
 }
 

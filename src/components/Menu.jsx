@@ -260,6 +260,7 @@ function Menu(props) {
 
 function areEqual(prevProps, nextProps) {
   return (
+    !(nextProps.showing) &&
     prevProps.showing === nextProps.showing &&
     prevProps.menuMode === nextProps.menuMode &&
     prevProps.showOpponentCards === nextProps.showOpponentCards &&

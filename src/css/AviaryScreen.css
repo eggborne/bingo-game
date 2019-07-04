@@ -117,6 +117,9 @@
   margin: 1vmin;
   font-size: var(--font-size);
 }
+#aviary-screen .chicken-name > small {
+  font-family: var(--cute-font);
+}
 .chicken-effects {
   background: #00000033;
   border: 0.25vmin solid black;
