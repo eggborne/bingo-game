@@ -1438,7 +1438,7 @@ function App() {
         cardResult.ballsAtBingo[totalCardBingos] = calledBalls.length;
         cardResult.opponentsAtBingo[totalCardBingos] = playersLeft;
         cardResult.currentPrize =
-          (totalCardBingos * (options.opponentCards.length * 5)) + ((totalCardBingos * 1.5) * (totalCardBingos * 1.5) * (options.opponentCards.length));
+          (totalCardBingos * (options.opponentCards.length * 10)) + ((totalCardBingos * 1.5) * (totalCardBingos * 1.5) * (options.opponentCards.length));
         setCurrentBingos(currentBingos => currentBingos + numberOfBingos);
         setRoundBingos(roundBingos => roundBingos + numberOfBingos);
       }
@@ -2129,7 +2129,7 @@ function App() {
     console.error('GOT', bonus, 'FROM', cardIndex);
     let newRoundResults = { ...roundResults };
     if (!newRoundResults.cards[cardIndex].bonuses.includes(bonus)) {
-      let bonusAmount = Math.ceil(bonusAmounts[bonus] * (options.opponentCards.length / 2.5))
+      let bonusAmount = Math.ceil(bonusAmounts[bonus] * (options.opponentCards.length / 1.5))
       roundResults.cards[cardIndex].bonuses.push({name: bonus, amount: bonusAmount});
     }
   }

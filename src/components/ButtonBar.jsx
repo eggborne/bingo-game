@@ -163,9 +163,14 @@ function ButtonBar(props) {
                 if (chickenData.activated) {
                   chickenClass += ' activated';
                 }
+                let meterHeight = chickenData.meter / chickenData.rechargeTime || 0;
+                if (chickenData.activated) {
+                  meterHeight = 0;
+                }
+
                 return (
                   <div onPointerDown={chickenData.ready ? () => props.onActivateChicken(chickenData.chickenId) : undefined} key={i} className={chickenClass} >
-                    <div style={{transform: `scaleY(${chickenData.meter / chickenData.rechargeTime || 0})`}} className='meter'></div>
+                    <div style={{transform: `scaleY(${meterHeight})`}} className='meter'></div>
                     <img src={blueChickenPng} />
                     <div className='chicken-label'>{chickenData.name.toUpperCase()}</div>
                   </div>
