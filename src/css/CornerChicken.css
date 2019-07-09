@@ -39,6 +39,10 @@
   transition: opacity 320ms ease;
   z-index: 4;
 }
+#bonus-spot.lucky > #meter-ring {
+  border-color: #91c9f7;
+  opacity: 1 !important;
+}
 /* #bonus-spot > #meter.flashing {
   animation: bonus-flash;
   animation-duration: 180ms;

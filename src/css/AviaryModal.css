@@ -78,7 +78,7 @@
   border-color: rgb(118, 147, 173) !important; */
   transition: transform 140ms ease;
 }
-.item-slot img {
+#aviary-modal .item-slot img {
   image-rendering: pixelated;
   width: 60%;
   transform: translateY(-15%);

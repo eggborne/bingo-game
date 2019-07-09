@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import '../css/GameEndModal.css';
 import { hotShotsVideo, bonusAmounts, experienceLevels } from '../App.js';
 import ExperienceBar from './ExperienceBar';
+import NewRecordModal from './NewRecordModal';
 let blueChickenPng = require('../assets/chickenstandblue.png');
+let orangeChickenPng = require('../assets/chickenstandorange.png')
 
 const getSuffix = (num) => {
   if (num === 1) { return 'st' }
@@ -14,31 +16,18 @@ const getSuffix = (num) => {
 function GameEndModal(props) {
   console.count('GameEndModal')
   console.info(props)
-  const [playingVideo, setPlayingVideo] = useState(false);
+  const [showingRecordsModal, setShowingRecordsModal] = useState(false);
   const [conserveHeight, setConserveHeight] = useState(false);
+  useEffect(() => {
+    if (props.recordsBroken) {
+      setShowingRecordsModal(true);
+    }
+  }, [])
   useEffect(() => {
     if (props.userCardCount > 2) {
       setConserveHeight(true);
     }
   }, [props.userCardCount]);
-  useEffect(() => {
-    if (playingVideo) {
-      document.getElementById('hot-shots-2').play();
-      document.getElementById('hot-shots-2').addEventListener('ended', onVideoEnd, false);
-      function onVideoEnd(event) {
-        console.log('VIDEO ENDED! ----------------------------------------------')
-        setPlayingVideo(false);
-        document.getElementById('video-message').classList.add('showing');
-      }
-    } else {
-
-    }
-  }, [playingVideo])
-  // useEffect(() => {
-  //   if (props.showing) {
-  //     setPlayingVideo(props.recordsBroken);
-  //   }
-  // }, [props.showing]);
   let lost = props.lost;
   let title = 'ROUND OVER';
   let subTitle = '';
@@ -47,8 +36,6 @@ function GameEndModal(props) {
   let modalClass = '';
   let resultsGridClass = conserveHeight ? 'conserve-height' : '';
   let videoClass = '';
-  let videoMessage = '';
-  let videoMessageClass = '';
   let totalPrize = props.roundResults.totalPrize;
   if (!props.showing) {
     modalClass += ' hidden';
@@ -57,7 +44,10 @@ function GameEndModal(props) {
     modalClass += ' bonanza';
     title = 'ROUND OVER';
     subTitle = `You got ${props.currentBingos} Bingos`;
-    prizeMessage = `Total Prize: $${totalPrize}`
+    prizeMessage = `Total Prize: $${totalPrize}`;
+    if (showingRecordsModal) {
+      modalClass += ' records-broken';
+    }
   }
   if (props.gameMode.name === 'Ranked') {
     modalClass += ' ranked';
@@ -69,9 +59,7 @@ function GameEndModal(props) {
       prizeMessage = `${props.winnerLimit} of ${props.totalOpponents} players got Bingos.`
     } else if (props.recordsBroken) {
       // modalClass += ' first-place';
-      modalClass += ' playing-video';
-      videoClass += ' showing';
-      videoMessage = 'NEW RECORD!';
+      modalClass += ' records-broken';
       subTitle = props.recordsBroken.type + ': ' + props.recordsBroken.value;
     } else if (props.rank === 1) {
       rankEarned += '!';
@@ -98,33 +86,47 @@ function GameEndModal(props) {
     <div id='game-end-modal' className={modalClass}>
       {props.showing &&
         <>
-          <div id='video-message' className={videoMessageClass}>{videoMessage}</div>
-          {!playingVideo &&
-            <>
-              {!props.recordsBroken && <div id='game-end-title'>{title}</div>}
+        {showingRecordsModal && <NewRecordModal
+          // showing={gameEnded}
+          recordsBroken={props.recordsBroken}
+          onClickOkayButton={() => setShowingRecordsModal(false)}
+        />}
+              {!props.recordsBroken && <div className='game-end-title'>{title}</div>}
               {/* <div style={{ fontSize: `${props.recordsBroken ? 'var(--font-size)' : 'initial'}` }} id='game-end-rank'>{subTitle}</div> */}
 
               <div className='game-end-message'>
                 <div id='results-grid' className={resultsGridClass}>
-              {props.roundResults.cards.map((card, i) =>
-                    <div className='card-result-container'>
+              {props.roundResults.cards.map((card, i) => {
+                let bonusList = card.bonuses;
+                let multiple = [];
+                bonusList.map((bonus, i, arr) => {
+                  let copies = arr.filter(b => b.name === bonus.name).length;
+                  arr[i].copies = copies;
+                  if (copies > 1 && !multiple.includes(bonus.name)) {
+                    multiple.push(bonus.name)
+                  }
+                });
+                return (
+                  <div className='card-result-container'>
                     <div className='card-label'>CARD {i + 1}</div>
                     <div key={card.cardIndex} className='card-analysis'>
                       <div className='analysis-row card-bingos'>
-                        <div>Bingos: <span style={{color: 'yellow', fontSize: 'calc(var(--font-size) / 1.25)'}}>{card.bingoCount}</span></div>
+                        <div>Bingos: <span style={{ color: 'yellow', fontSize: 'calc(var(--font-size) / 1.25)' }}>{card.bingoCount}</span></div>
                         <div><span style={{ color: 'var(--money-green', fontSize: 'calc(var(--font-size) / 1.25)' }}>${card.currentPrize}</span></div>
                       </div>
-                      {card.bonuses.sort((a, b) => bonusAmounts[b] - bonusAmounts[a]).map(bonus =>
-                        // <>
+                      {bonusList.sort((a, b) => bonusAmounts[b] - bonusAmounts[a]).map(bonus => {
+                        let multipleDisplay = bonus.copies;
+                        return (
                           <div key={bonus.name} className='analysis-row card-bonuses'>
-                          <div style={{fontSize: 'calc(var(--font-size) / 2)'}}>{bonus.name}</div>
+                            <div style={{ fontSize: 'calc(var(--font-size) / 2)' }}>{bonus.name}{multiple.includes(bonus.name) && ' x' + multipleDisplay}</div>
                             <div><span style={{ color: 'var(--money-green', fontSize: 'calc(var(--font-size) / 1.5)' }}>${bonus.amount}</span></div>
                           </div>
-                        // </>
-                      )}
+                        );
+                      })}
                     </div>
-                    </div>
-                  )}
+                  </div>
+                );
+              })}
                 </div>
               </div>
               <div id='bonuses' className='game-end-message'>
@@ -136,25 +138,19 @@ function GameEndModal(props) {
                 let newExperience = chicken.experience + props.chickenExperiencePrizes[chicken.chickenId];
                 return (
                   <div className='chicken-exp-display' key={chicken.chickenId}>
-                    <img src={blueChickenPng} />
+                    <img src={chicken.color === 'blue' ? blueChickenPng : orangeChickenPng} />
                     <div>"{chicken.nickname}" {chicken.name} gained {props.chickenExperiencePrizes[chicken.chickenId]} experience!</div>
                     <ExperienceBar currentExperience={newExperience} currentLevel={chicken.level} toNextLevel={experienceLevels[chicken.level] - newExperience} />
                   </div>)
                   ;
               })}
               </div>
-              <div id='button-area'>
+              <div className='button-area'>
                 <div id='prize-display' className='game-end-message'>{prizeMessage}</div>
                 <button id='agree-button' onPointerDown={props.onClickOkayButton} className='modal-button'>{agreeLabel}</button>
                 {/* <button id='visit-store-button' onPointerDown={props.onClickVisitStoreButton} className='modal-button'>VISIT STORE</button> */}
               </div>
             </>
-          }
-          <video id='hot-shots-2' className={videoClass}>
-            <source src={hotShotsVideo} type='video/webm' />
-            <div></div>
-          </video>
-        </>
       }
     </div>
   );

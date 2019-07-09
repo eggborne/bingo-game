@@ -109,6 +109,9 @@
     transform: rotate(4deg)
   }
 }
+.number-square.markable.highlight-markable {
+  background-color: red;
+}
 .number-square > .chip.markable {
   display: block;
 }

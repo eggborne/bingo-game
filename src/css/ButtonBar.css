@@ -425,7 +425,7 @@
   outline: 3px solid green;
   background-color: white;
   animation: pulsate;
-  animation-duration: 800ms;
+  animation-duration: 1200ms;
   animation-iteration-count: infinite;
   animation-play-state: running;
 }
@@ -456,6 +456,9 @@
 }
 .item-slot.ready > .meter {
   display: none;
+}
+.item-slot.activated > .meter {
+  background-color: #ffffff99 !important;
 }
 .item-slot.selected {
   background: rgb(179, 255, 0);
@@ -502,6 +505,26 @@
   min-width: calc(var(--header-height) / 1.25);
   height:  calc(var(--header-height) / 1.25);
   /* border: 1px solid black; */
+}
+.powerup-area#chickens-area .item-slot.selectable {
+  animation: select-flash;
+  animation-duration: 500ms;
+  animation-iteration-count: infinite;
+  animation-play-state: running;
+  pointer-events: all;
+}
+.powerup-area#chickens-area .item-slot.selectable:last-of-type {
+  animation-delay: 250ms;
+}
+@keyframes select-flash {
+  0% {
+    border-color: white;
+    border-width: 2px;
+  }
+  100% {
+    border-color: purple;
+    border-width: 4px;
+  }
 }
 .powerup-area#chickens-area .chicken-label {
   position: absolute;

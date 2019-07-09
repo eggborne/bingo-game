@@ -19,7 +19,7 @@ const bingoMessages = [
 ];
 
 function BingoIndicator(props) {
-  console.pink('BingoIndicator ------------------');
+  console.info('cockm BingoIndicator ------------------', props.suffix);
   console.log(props)
   let bingoDisplay = bingoMessages[props.bingoCount];
   let prefix = props.prefix;
@@ -54,7 +54,6 @@ function BingoIndicator(props) {
 function areEqual(prevProps, nextProps) {
   return (
     prevProps.showing === nextProps.showing
-
   );
 }
 

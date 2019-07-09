@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import '../css/AviaryModal.css';
 
 let blueChickenPng = require('../assets/chickenstandblue.png');
+let orangeChickenPng = require('../assets/chickenstandorange.png')
 
 function AviaryModal(props) {
   console.info('storemodal props', props);
@@ -48,7 +49,7 @@ function AviaryModal(props) {
                 let chicken = props.chickens.filter(chicken => slot.chickenId === chicken.chickenId)[0];
                 return (
                   <div key={chicken.chickenId} id={`item-slot-${i + 1}`} onClick={() => selectSlot(i)} className={i !== slotSelected ? 'item-slot' : 'item-slot selected'}>
-                    <img src={blueChickenPng} />
+                    <img src={chicken.color === 'blue' ? blueChickenPng : orangeChickenPng} />
                     <div className='chicken-label'>{chicken.name.toUpperCase()}</div>
                   </div>
                 );

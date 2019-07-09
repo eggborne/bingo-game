@@ -25,6 +25,9 @@ const CornerChicken = React.forwardRef((props, ref) => {
       spotClass = 'bee';
     }
   }
+  if (props.bonusLuckActivated) {
+    spotClass += ' lucky';
+  }
   let clickEffect = props.showingGift ? props.onClickGift : () => null;
   let meterHeight = props.bonusMeter / 1000;
   if (meterHeight > 1) {

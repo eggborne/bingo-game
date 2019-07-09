@@ -5,16 +5,7 @@ import NumberSquare from './NumberSquare';
 import BingoIndicator from './BingoIndicator';
 import '../css/Card.css';
 
-let bounceTimeout = undefined;
-
 const instantWin = false;
-
-const bingoRankings = [
-  undefined,
-  'FIRST',
-  'SECOND',
-  'THIRD'
-];
 
 function Card(props) {
   if (!props.opponent) {
@@ -31,6 +22,7 @@ function Card(props) {
   const [bingoCount, setBingoCount] = useState([]);
   const [won, setWon] = useState(false);
   const [touchedNumber, setTouchedNumber] = useState(false);
+  const [suffixDisplay, setSuffixDisplay] = useState('');
 
   const allNumbers = useCallback(() => {
     if (numbers) {
@@ -42,7 +34,7 @@ function Card(props) {
   const autoDaub = (num) => {
     // let allNumbers = [numbers].flat(2);
     if (num === 99 || allNumbers().includes(num)) {
-      setMarked([...markedNumbers, num]);
+      setMarked(markedNumbers => [...markedNumbers, num]);
       return true;
     }
     return false;
@@ -113,6 +105,16 @@ function Card(props) {
   }, [numbers, props.calledBalls, props.opponent, props.gameInProgress, props.gameStarted]);
 
   useEffect(() => {
+    if (props.highlightMarkable) {
+      props.calledBalls.map(ball => {
+        if (allNumbers().includes(ball) && !markedNumbers.includes(ball) && !madeFree.includes(ball)) {
+          autoDaub(ball)
+        }
+      });
+    }
+  }, [props.highlightMarkable] )
+
+  useEffect(() => {
     if (props.opponent && active && props.calledBalls.length > 3) {
       checkForBingo();
     }
@@ -147,10 +149,10 @@ function Card(props) {
   useEffect(() => {
     if (props.gameInProgress && !props.opponent && markedNumbers.length > 0) {
       // if (props.gameMode.name === 'Bonanza') {
-        checkForBingo();
+      checkForBingo();
       // }
     }
-  }, [markedNumbers, props.gameInProgress])
+  }, [markedNumbers, props.gameInProgress]);
 
   const checkForWinPattern = (customPattern) => {
     if (!customPattern) {
@@ -354,12 +356,16 @@ function Card(props) {
           console.log('bingo < found', bingoCount, '<', foundBingoCount, ' so reporting ' + (foundBingoCount - bingoCount) + ' new bingos!!');
           if (!props.opponent) {
             setWon(true);
-            if (foundBingos.letterX) {
+            let newSuffix = '';
+            if (foundBingos.letterX && !bingos.letterX) {
               props.reportBonus('Letter X', props.index);
+              newSuffix = 'Letter X!';
             }
             if (foundBingoCount - bingoCount > 1) {
-              props.reportBonus(`${foundBingoCount - bingoCount} In One Stroke`, props.index);
+              props.reportBonus(`${foundBingoCount - bingoCount} In One`, props.index);
+              newSuffix += ` ${foundBingoCount - bingoCount} In One!`;
             }
+            setSuffixDisplay(newSuffix);
             props.onAchieveBingo(false, (foundBingoCount-bingoCount), foundBingoCount, props.index);
             if (props.gameMode.name === 'Ranked') {
               setTimeout(() => {
@@ -500,32 +506,27 @@ function Card(props) {
   if (won) {
     cardClass += ' won';
   }
+  if (props.highlightMarkable) {
+    cardClass += ' highlight-markable';
+  }
   let gridClass = `number-grid ${props.gameMode.className}`
   let isOpponent = props.opponent;
   let bingoRank = undefined;
-  let rankBonus = undefined;
   let prefix = undefined;
-  let suffix = undefined;
   let indicatorShowing = won;
-  // indicatorShowing = true;
   if (indicatorShowing) {
     if (props.gameMode.name === 'Bonanza') {
-      bingoRank = (props.gameMode.bingoLimit - props.remainingBingos + 1);
-      rankBonus = (props.remainingBingos / props.gameMode.bingoLimit) * 1000;
+      bingoRank = (props.gameMode.bingoLimit - props.remainingBingos);
+      console.error('cockm rank is', bingoRank)
     } else if (props.gameMode.name === 'Ranked') {
-      bingoRank = (props.opponentCardCount - props.remainingPlayers + 1);
-      rankBonus = (props.remainingPlayers / props.opponentCardCount) * 1000;
+      bingoRank = (props.opponentCardCount - props.remainingPlayers);
     }
-    // console.log('bingoRankings', bingoRankings, bingoRankings[2])
     prefix = bingoRank === 1 ? 'FIRST' : '';
     if (bingoRank === 1) {
+      console.error('cockm reporting first bingo!!')
       props.reportBonus('First Bingo', props.index);
     }
-    rankBonus = (props.opponentCardCount / bingoRank) * 15;
-    if (rankBonus < 50) {
-      rankBonus = 0;
-    }
-    suffix = '';
+
   }
   return (
     <div className={cardClass}>
@@ -537,7 +538,7 @@ function Card(props) {
         opponentCardCount={props.opponentCardCount}
         bingoCount={bingoCount}
         prefix={prefix}
-        suffix={suffix}
+        suffix={suffixDisplay}
       />
       <div className='letter-row'>
         <div className='card-head-letter b' />
@@ -554,11 +555,13 @@ function Card(props) {
         let blocked = false;
         let endangered = false;
         let highlighted = false;
+        let highlightMarkable = false;
         let tinted = false;
         if (!props.opponent) {
           blocked = blockedNumbers.includes(num) || props.freeSpaces.filter(space => space.type === 'BEE' && space.cardIndex === props.index && space.num === num).length > 0;
           endangered = (blocked && props.powerupSelected && props.powerupSelected.category.indexOf('Bee') !== -1);
           highlighted = highlightedNumbers.includes(num);
+          highlightMarkable = !marked && !blocked && canBeMarked && props.highlightMarkable;
           if (props.gameInProgress) {
             tinted = tintedNumbers.includes(num);
           }
@@ -586,6 +589,7 @@ function Card(props) {
             blocked={blocked}
             tinted={tinted}
             highlighted={highlighted}
+            highlightMarkable={highlightMarkable}
             endangered={endangered}
             chipImage={!blocked && props.chipImage}
             queueLength={props.calledBalls.length}
@@ -616,6 +620,8 @@ function areEqual(prevProps, nextProps) {
     prevProps.bonusOffered === nextProps.bonusOffered &&
     prevProps.fullBallSequence === nextProps.fullBallSequence &&
     prevProps.type === nextProps.type &&
+    prevProps.bonusNames === nextProps.bonusNames &&
+    prevProps.highlightMarkable === nextProps.highlightMarkable &&
     prevProps.username === nextProps.username;
   ;
   return equalTest;

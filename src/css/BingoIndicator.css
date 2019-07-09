@@ -8,20 +8,17 @@
   text-shadow: -0.25vmin -0.25vmin 0 #000, 0.25vmin -0.25vmin 0 #000, -0.25vmin 0.25vmin 0 #000, 0.25vmin 0.25vmin 0 #000;
   pointer-events: none;
   opacity: 0;
-  transform: translateX(-50%) translateY(-50%) scale(0.8);
-  /* transition: transform 210ms ease, opacity 210ms ease; */
+  transform: translateX(-50%) translateY(-50%);
   z-index: 5;
   text-align: center;
 }
 .bingo-indicator.showing {
   opacity: 1;
-  transform: translateX(-50%) translateY(-50%) scale(1);
 }
 .bingo-indicator > .prefix, .bingo-indicator > .suffix {
   font-size: var(--font-size);
 }
 .bingo-indicator > .suffix {
-  font-size: calc(var(--font-size) / 1.5);
+  font-size: calc(var(--font-size) / 1.25);
   text-shadow: -0.15vmin -0.15vmin 0 #000, 0.15vmin -0.15vmin 0 #000, -0.15vmin 0.15vmin 0 #000, 0.15vmin 0.15vmin 0 #000;
-  color: var(--money-green);
 }

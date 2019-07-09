@@ -80,6 +80,9 @@ function NumberSquare(props) {
   if (props.madeFree || props.blocked) {
     squareClass += ' made-free';
   }
+  if (props.highlightMarkable) {
+    squareClass += ' highlight-markable';
+  }
 
   return (
     !props.isOpponent ?
@@ -110,6 +113,7 @@ function areEqual(prevProps, nextProps) {
     prevProps.touched === nextProps.touched &&
     prevProps.blocked === nextProps.blocked &&
     prevProps.canBeMarked === nextProps.canBeMarked &&
+    prevProps.highlightMarkable === nextProps.highlightMarkable &&
     prevProps.marked === nextProps.marked &&
     prevProps.chipImage === nextProps.chipImage &&
     prevProps.number === nextProps.number &&

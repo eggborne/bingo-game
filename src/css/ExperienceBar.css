@@ -19,7 +19,7 @@
   left: 0;
   padding-right: 1%;
   text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
-  z-index: 40 !important;
+  z-index: 1;
 }
 .meter-green {
   /* position: absolute; */

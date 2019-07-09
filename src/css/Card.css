@@ -4,13 +4,13 @@
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: 0.05fr 1fr;
-  /* border: 2px solid rgba(0, 0, 0, 0.315); */
+  border: 2px solid #00000099;
   border-radius: calc(2.5vw / var(--user-cards-wide));
   transform: scale(var(--card-size));
   padding: var(--card-padding);
 }
 .card:not(.opponent) {
-  transition: transform 100ms ease;
+  transition: transform 100ms ease, background-color 320ms ease;
   will-change: transform;
 }
 .card:not(.opponent) > div > .number-square {
@@ -23,6 +23,9 @@
 .card.hidden {
   opacity: 0;
   /* pointer-events: none; */
+}
+.card.highlight-markable {
+  background-color: #d6b99c;
 }
 .letter-row {
   display: grid;

@@ -1,0 +1,19 @@
+#new-record-modal > .game-end-title {
+  /* z-index: 5; */
+  animation: throb;
+  animation-play-state: running;
+  animation-duration: 1000ms;
+  animation-iteration-count: infinite;
+  color: yellow;
+}
+#new-record-modal > .game-end-title {
+  /* z-index: 5; */
+}
+@keyframes throb {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+}

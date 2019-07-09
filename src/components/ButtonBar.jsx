@@ -5,6 +5,7 @@ let chickenPng = require('../assets/chickenstand.png');
 let chickenIconPng = require('../assets/aviaryicon.png');
 let cardOptionsIconPng = require('../assets/cardsicon.png');
 let blueChickenPng = require('../assets/chickenstandblue.png');
+let orangeChickenPng = require('../assets/chickenstandorange.png')
 let globeIconPng = require('../assets/globeicon.png');
 
 function ButtonBar(props) {
@@ -163,15 +164,24 @@ function ButtonBar(props) {
                 if (chickenData.activated) {
                   chickenClass += ' activated';
                 }
+                let clickable = chickenData.ready
                 let meterHeight = chickenData.meter / chickenData.rechargeTime || 0;
                 if (chickenData.activated) {
-                  meterHeight = 0;
+                  meterHeight = 1 - ((chickenData.effectDuration - chickenData.meter) / chickenData.effectDuration);
+                } else {
+                  if (props.powerupSelected && props.powerupSelected.displayName === 'Energy Drink') {
+                    chickenClass += ' selectable';
+                    clickable = true;
+                  }
                 }
-
+                let clickEffect = () => null;
+                if (clickable) {
+                  clickEffect = chickenData.ready ? () => props.onActivateChicken(chickenData.chickenId) : () => props.onFillChicken(chickenData.chickenId);
+                }
                 return (
-                  <div onPointerDown={chickenData.ready ? () => props.onActivateChicken(chickenData.chickenId) : undefined} key={i} className={chickenClass} >
+                  <div onPointerDown={clickable ? clickEffect : undefined} key={i} className={chickenClass} >
                     <div style={{transform: `scaleY(${meterHeight})`}} className='meter'></div>
-                    <img src={blueChickenPng} />
+                    <img src={chickenData.color === 'blue' ? blueChickenPng : orangeChickenPng} />
                     <div className='chicken-label'>{chickenData.name.toUpperCase()}</div>
                   </div>
                 );

@@ -374,6 +374,14 @@ const defaultOptions = {
     { type: 'random' },
     { type: 'random' },
     { type: 'random' },
+    { type: 'random' },
+    { type: 'random' },
+    { type: 'random' },
+    { type: 'random' },
+    { type: 'random' },
+    { type: 'random' },
+    { type: 'random' },
+    { type: 'random' },
     { type: 'random' }
   ],
   drawSpeed: 4500,
@@ -414,17 +422,26 @@ const gameModes = {
 export const chickenEffects = {
   'bonusLuck': [
     undefined,
-    {displayName: 'Corner bonus always gives a Free Space (no bees!)'}
+    { displayName: 'Corner bonus always gives a Free Space (no bees)' }
+  ],
+  'highlightMarkable': [
+    undefined,
+    { displayName: 'Highlights markable numbers' },
+    { displayName: 'Automatically marks your cards' }
+  ],
+  'markMissed': [
+    undefined,
+    { displayName: 'Marks any numbers you missed' }
   ]
 }
 
 export const bonusAmounts = {
-  'First Bingo': 10,
+  'First Bingo': 15,
   'Letter X': 20,
   'No Bees': 30,
-  '2 In One Stroke': 50,
-  '3 In One Stroke': 80,
-  '4 In One Stroke': 120
+  '2 In One': 50,
+  '3 In One': 80,
+  '4 In One': 120
 }
 
 export const experienceLevels = [
@@ -591,7 +608,7 @@ function App() {
               if (chicken.meter === chicken.rechargeTime) {
                 playSound(cawSound);
                 chicken.ready = true;
-                chicken.meter = 0;
+                chicken.meter = chicken.effectDuration;
               } else {
                 chicken.meter++;
               }
@@ -602,11 +619,13 @@ function App() {
             if (calledBalls.length - chicken.ballsAtActivation === chicken.effectDuration) {
               chicken.activated = false;
               console.big('<<<<<< CHICKEN ' + chicken.name + ' DEACTIVATED');
-              setUser(newUser);
               let newBonuses = { ...temporaryBonuses };
               newBonuses.chickenEffects.splice(newBonuses.chickenEffects.indexOf(chicken.durationEffect), 1);
               setTemporaryBonuses(newBonuses);
+            } else {
+              chicken.meter = chicken.effectDuration - (calledBalls.length - chicken.ballsAtActivation) - 1;
             }
+            setUser(newUser);
           }
         });
       }
@@ -1395,13 +1414,15 @@ function App() {
           if (user.loggedIn && calledBalls.length < newUser.stats[gameMode.name]['Quickest Bingo']) {
             // if (user.loggedIn && calledBalls.length < newUser.stats[gameMode.name]['Quickest Bingo']) {
             console.big('NEW QUICKEST BINGO RECORD');
+            let oldRecord = newUser.stats[gameMode.name]['Quickest Bingo'];
             newUser.stats[gameMode.name]['Quickest Bingo'] = calledBalls.length;
-            setRecordsBroken({ type: 'Quickest Bingo', value: calledBalls.length + ' balls' });
+            setRecordsBroken({
+              type: 'Quickest Bingo',
+              unit: 'balls',
+              value: calledBalls.length,
+              oldRecord: oldRecord
+            });
           }
-          // if (rank) {
-          // newUser.stats.rankHistory.push(rank);
-          // }
-          // newUser.stats.ballsToBingo.push(calledBalls.length);
           setUser(newUser);
           if (user.loggedIn) {
             updateUserData(user, 'stats', newUser.stats);
@@ -1438,7 +1459,7 @@ function App() {
         cardResult.ballsAtBingo[totalCardBingos] = calledBalls.length;
         cardResult.opponentsAtBingo[totalCardBingos] = playersLeft;
         cardResult.currentPrize =
-          (totalCardBingos * (options.opponentCards.length * 10)) + ((totalCardBingos * 1.5) * (totalCardBingos * 1.5) * (options.opponentCards.length));
+          (totalCardBingos * (options.opponentCards.length * 5)) + ((totalCardBingos * 3) * (totalCardBingos * 3) * (options.opponentCards.length));
         setCurrentBingos(currentBingos => currentBingos + numberOfBingos);
         setRoundBingos(roundBingos => roundBingos + numberOfBingos);
       }
@@ -1501,10 +1522,16 @@ function App() {
         newUser.stats[gameMode.name]['Games Played']++;
         newUser.stats[gameMode.name]['Games Won']++;
         if (user.loggedIn && calledBalls.length < newUser.stats[gameMode.name]['Quickest Bingo']) {
+          let oldRecord = newUser.stats[gameMode.name]['Quickest Bingo'];
           // if (user.loggedIn && calledBalls.length < newUser.stats[gameMode.name]['Quickest Bingo']) {
           console.big('NEW QUICKEST BINGO RECORD');
           newUser.stats[gameMode.name]['Quickest Bingo'] = calledBalls.length;
-          setRecordsBroken({ type: 'Quickest Bingo', value: calledBalls.length + ' balls' });
+          setRecordsBroken({
+            type: 'Quickest Bingo',
+            unit: 'balls',
+            value: calledBalls.length,
+            oldRecord: oldRecord
+          });
         }
         setUser(newUser);
         if (user.loggedIn) {
@@ -1828,36 +1855,12 @@ function App() {
 
         if (!preGameShowing) {
           if (gameEnded) {
-            console.error('clicked play when endedQ!!')
-            console.error('clicked play when endedQ!!')
-            console.error('clicked play when endedQ!!')
-            console.error('clicked play when endedQ!!')
-            console.error('clicked play when endedQ!!')
-            console.error('clicked play when endedQ!!')
-            console.error('clicked play when endedQ!!')
-            console.error('clicked play when endedQ!!')
-            console.error('clicked play when endedQ!!')
-            console.error('clicked play when endedQ!!')
-            console.error('clicked play when endedQ!!')
-            console.error('clicked play when endedQ!!')
-            console.error('clicked play when endedQ!!')
-            console.error('clicked play when endedQ!!')
-            console.error('clicked play when endedQ!!')
-            console.error('clicked play when endedQ!!')
-            console.error('clicked play when endedQ!!')
-            console.error('clicked play when endedQ!!')
-            console.error('clicked play when endedQ!!')
-            console.error('clicked play when endedQ!!')
-            console.error('clicked play when endedQ!!')
-            console.error('clicked play when endedQ!!')
-            console.error('clicked play when endedQ!!')
             handleClickAgreeButton();
           }
           setPreGameOn(true);
           if (options.soundOn && !soundsLoaded) {
             loadSounds().then(() => {
               console.pink('handleClickStartButton loaded sounds in ' + Math.round(window.performance.now() - loadStartTime));
-              // playSound(bonusAlertSound2)
               setSoundsLoaded(true);
             });
           }
@@ -1865,12 +1868,9 @@ function App() {
 
           let newUser = { ...user };
           newUser.cards.map((card, c) => {
-            console.log('getrad card', card, 'slots', newUser.cardSlots)
             if (newUser.cardSlots[c].cardId !== -1 && card.type === 'random') {
               let newRandomNumbers = getRandomCardNumbers();
               card.numbers = newRandomNumbers;
-            } else {
-              console.log('getrad c', c, 'not slotted, or custom')
             }
           });
           setUser(newUser);
@@ -1891,9 +1891,6 @@ function App() {
   };
 
   const handleClickGift = () => {
-    // if (powerupSelected) {
-    //   setPowerupSelected(undefined);
-    // }
     let pendingBonus = offeringBonus;
     if (temporaryBonuses.chickenEffects.includes('bonusLuck')) {
       pendingBonus = 'FREE';
@@ -2023,12 +2020,6 @@ function App() {
   };
 
   const resetGame = () => {
-    console.green('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-    console.green('RESET GAME !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-    console.green('RESET GAME !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-    console.green('RESET GAME !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-    console.green('RESET GAME !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-    console.green('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
     if (options.voiceOn) {
       synth.cancel();
     }
@@ -2128,9 +2119,13 @@ function App() {
   const recordCardBonus = (bonus, cardIndex) => {
     console.error('GOT', bonus, 'FROM', cardIndex);
     let newRoundResults = { ...roundResults };
-    if (!newRoundResults.cards[cardIndex].bonuses.includes(bonus)) {
-      let bonusAmount = Math.ceil(bonusAmounts[bonus] * (options.opponentCards.length / 1.5))
-      roundResults.cards[cardIndex].bonuses.push({name: bonus, amount: bonusAmount});
+    let includesX = bonus.name === "Letter X" && newRoundResults.cards[cardIndex].bonuses.filter(card => card.name === "Letter X").length;
+    let includesFirst = bonus.name === "First Bingo" && newRoundResults.cards[cardIndex].bonuses.filter(card => card.name === "First Bingo").length;
+    if (!includesX && !includesFirst) {
+      let bonusAmount = Math.ceil(bonusAmounts[bonus] * (options.opponentCards.length * 5))
+      newRoundResults.cards[cardIndex].bonuses.push({name: bonus, amount: bonusAmount});
+    } else {
+      console.warn('cockm NOT recirding bonus due to duplicate X or First!!')
     }
   }
   const handleClickPowerup = (powerup) => {
@@ -2270,7 +2265,25 @@ function App() {
     setTemporaryBonuses(newBonuses);
     setUser(newUser);
   }
-
+  const handleFillChicken = (chickenId) => {
+    let newUser = { ...user };
+    let invSlot = newUser.itemSlots.filter((slot) => slot.item.id === powerupSelected.id)[0];
+    if (!user.loggedIn || user.username !== 'Mike45') {
+      invSlot.item.uses--;
+    }
+    if (invSlot.item.uses === 0) {
+      invSlot.item = {id:-1};
+    }
+    if (user.loggedIn) {
+      updateUserData('itemSlots', newUser.itemSlots);
+    }
+    let targetChicken = newUser.chickens[chickenId];
+    targetChicken.ready = true;
+    targetChicken.meter = targetChicken.effectDuration;
+    setUser(newUser);
+    setPowerupSelected(undefined);
+    // handleActivateChicken(chickenId);
+  }
   const handleClickRandomize = (cardIndex) => {
     let newUser = { ...user };
     console.warn('received index', cardIndex);
@@ -2282,7 +2295,6 @@ function App() {
       updateUserData(user, 'cards', newUser.cards);
     }
   }
-
   const handleToggleRandom = (cardIndex) => {
     let newUser = { ...user };
     console.warn('received index', cardIndex);
@@ -2561,6 +2573,12 @@ function App() {
                 cardControlsClass += ' not-in-use';
               }
             }
+            let bonusNames = [];
+            if (roundResults.cards && roundResults.cards[c]) {
+              roundResults.cards[c].bonuses.map(bonus => {
+                bonusNames.push(bonus.name);
+              });
+            }
             return (
             <div key={c} className="card-space">
               <Card
@@ -2586,10 +2604,12 @@ function App() {
                 onDaubSquare={handleDaubSquare}
                 onAchieveBingo={handleAchieveBingo}
                 gameMode={gameMode}
+                bonusNames={bonusNames}
                 powerupSelected={powerupSelected}
                 onKillBee={handleKillBee}
                 onSetFree={handleSetFree}
                 patternName={patternName}
+                highlightMarkable={temporaryBonuses.chickenEffects.includes('highlightMarkable')}
                 reportBonus={recordCardBonus}
               />
               {cardOptionsOn &&
@@ -2679,6 +2699,7 @@ function App() {
             onClickChickensButton={resetPage}
             onClickPowerup={handleClickPowerup}
             onActivateChicken={handleActivateChicken}
+            onFillChicken={handleFillChicken}
           />
           {!user.loggedIn && <LogInScreen showing={loggingIn} loginError={loginError} onClickLogInButton={handleClickLogInButton} onClickRegisterButton={handleClickRegisterButton} onClickCancelButton={handleClickCancelButton} />}
           <ConfirmModal showing={modalOn} message={modalMessage} loggingOut={loggingOut} onClickAgreeButton={handleClickAgreeButton} onClickCancelButton={handleClickCancelButton} />

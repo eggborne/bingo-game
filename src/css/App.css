@@ -88,31 +88,6 @@ body {
 #mode-display.hidden {
   opacity: 0;
 }
-#hot-shots-2 {
-  position: absolute;
-  /* width: 100vmin; */
-  /* transform: translateY(-50%) translateX(-50%); */
-  /* height: 80vmin; */
-  /* width: 100%; */
-  height: 75vmin;
-  border-radius: 3vmin;
-  /* left: 50vw; */
-  /* top: 50%;
-  left: 50vw; */
-  /* top: 50vh; */
-  /* margin-left: calc((100vw - 90vmin) / 2); */
-  /* margin-top: calc((100vh - 110vmin) / 2); */
-  opacity: 0;
-  /* transform: scaleY(0.9); */
-  pointer-events: none;
-  transition: opacity 210ms ease, transform 210ms ease;
-  z-index: 0;
-  border: 1vmin solid #333;
-}
-#hot-shots-2.showing {
-  opacity: 1;
-  /* transform: none; */
-}
 #video-message {
   position: absolute;
   color: rgb(243, 255, 82);

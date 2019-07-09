@@ -17,7 +17,7 @@ export const permanentItems = {
   'Item Slots': [
     { id: 6, cost: 500, category: 'Item Slots', displayName: 'First Item Slot', description: 'First Item Slot', type: 'first', class: 'item-row' },
     { id: 7, cost: 2500, category: 'Item Slots', displayName: 'Second Item Slot', description: 'Second Item Slot', type: 'second', class: 'item-row' },
-    // { id: 6, cost: 7500, category: 'Item Slots', displayName: 'Third Item Slot', description: 'Third Item Slot', type: 'third', class: 'item-row' },
+    { id: 888, cost: 7500, category: 'Item Slots', displayName: 'Third Item Slot', description: 'Third Item Slot', type: 'third', class: 'item-row' },
   ],
   'Card Slots': [
     { id: 8, cost: 1000, category: 'Card Slots', displayName: 'Third Card Slot', description: '+1 Card Slot 1', type: '1', class: 'item-row' },
@@ -29,11 +29,14 @@ export const permanentItems = {
 const consumables = {
   'Bee Control': [
     { id: 12, cost: 100, category: 'Bee Spray', consumable: true, displayName: 'Small Bee Spray', description: 'Holds 1 spray', type: 'small', uses: 1, totalUses: 1, imgSrc: 'beespray.png', imgHeight: '20vmin', class: 'item-row item-selection' },
-    { id: 13, cost: 2000, category: 'Bee Spray', consumable: true, displayName: 'Medium Bee Spray', description: 'Holds 3 sprays', type: 'medium', uses: 3, totalUses: 3, imgSrc: 'beespray2.png', imgHeight: '20vmin', class: 'item-row item-selection' },
+    { id: 13, cost: 1000, category: 'Bee Spray', consumable: true, displayName: 'Medium Bee Spray', description: 'Holds 3 sprays', type: 'medium', uses: 3, totalUses: 3, imgSrc: 'beespray2.png', imgHeight: '20vmin', class: 'item-row item-selection' },
   ],
   'Free Spaces': [
-    { id: 14, cost: 250, category: 'Free Spaces', consumable: true, displayName: 'One Free Space', description: 'Use on any square', type: 'one', uses: 1, totalUses: 1, imgSrc: 'freespace.png', imgHeight: '20vmin', class: 'item-row item-selection' },
-    { id: 15, cost: 2500, category: 'Free Spaces', consumable: true, displayName: 'Two Free Spaces', description: 'Use on any square', type: 'two', uses: 2, totalUses: 2, imgSrc: 'freespace.png', imgHeight: '20vmin', class: 'item-row item-selection' },
+    { id: 14, cost: 200, category: 'Free Spaces', consumable: true, displayName: 'One Free Space', description: 'Use on any square', type: 'one', uses: 1, totalUses: 1, imgSrc: 'freespace.png', imgHeight: '20vmin', class: 'item-row item-selection' },
+    { id: 15, cost: 2000, category: 'Free Spaces', consumable: true, displayName: 'Two Free Spaces', description: 'Use on any square', type: 'two', uses: 2, totalUses: 2, imgSrc: 'freespace.png', imgHeight: '20vmin', class: 'item-row item-selection' },
+  ],
+  'Chicken Supplies': [
+    { id: 900, cost: 2000, category: 'Chicken Supplies', consumable: true, displayName: 'Energy Drink', description: 'Fully charges one of your chickens', type: 'normal', uses: 1, totalUses: 1, imgSrc:'energydrink.png', imgHeight: '20vmin', class: 'item-row item-selection' }
   ]
 }
 
@@ -179,6 +182,27 @@ function StoreScreen(props) {
                   );
                 })}
               </div>
+              <div className={'category-label'}>Chicken Supplies</div>
+              <div className={'prize-category item-grid consumable'}>
+                {consumables['Chicken Supplies'].map((item, i) => {
+                  let owned = props.itemSlots.filter(slot => slot.item && slot.item.id === item.id).length;
+                  let buttonLabel = 'BUY';
+                  return (
+                    <div key={item.id} className={`${item.class}${owned ? ' owned full' : ' full'}`}>
+                      <div className={'consumable-title'}>{item.displayName}</div>
+                      <div className={'item-description'}>{item.description}</div>
+                      <img style={{ width: item.imgHeight, height: item.imgHeight, transform: 'scale(0.8)' }} src={require(`../assets/${item.imgSrc}`)} />
+                      <div className={cash < item.cost ? 'item-cost unavailable' : 'item-cost'}>${item.cost}</div>
+                      <button onClick={() => !owned ? selectItem(item) : null } className={(cash < item.cost || owned) ? ' unavailable' : ''}>{buttonLabel}</button>
+                    </div>
+
+
+                  );
+
+                })}
+
+              </div>
+
               </div>
           </div>
           :

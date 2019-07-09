@@ -34,7 +34,7 @@ function AviaryScreen(props) {
           let equipped = props.chickenSlots.filter(slot => slot.chickenId === chicken.chickenId).length;
           let experienceBarWidth = experienceLevels[chicken.level];
           let toNextLevel = experienceBarWidth - chicken.experience;
-          let chickenColor = 'blue';
+          let chickenColor = chicken.color;
           let nickname = chicken.nickname ? `"${chicken.nickname}"` : '';
           return (<div key={chicken.chickenId} className={equipped ? 'chicken-panel equipped' : 'chicken-panel'}>
             <img src={require(`../assets/chickenstand${chickenColor}.png`)} />
