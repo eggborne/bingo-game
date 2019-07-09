@@ -97,7 +97,7 @@
 }
 .record-value:last-child:last-of-type {
   color: yellow;
-  font-size: calc(var(--font-size)  1.5);
+  font-size: calc(var(--font-size) * 1.5);
 
 }
 #game-end-modal > #exp-display, #game-end-modal #results-grid, #game-end-modal #speed-results {

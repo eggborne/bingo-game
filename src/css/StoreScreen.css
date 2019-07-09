@@ -124,7 +124,7 @@
   border-radius: 1vmin;
   font-size: var(--font-size) !important;
   padding: calc(var(--font-size) / 2);
-  margin-left: calc(var(--font-size));
+  margin-left: var(--font-size);
 }
 .prize-category:not(.item-grid) button {
   grid-row-start: 1;

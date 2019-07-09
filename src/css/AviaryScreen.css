@@ -154,7 +154,7 @@
   border-radius: 1vmin;
   font-size: var(--font-size) !important;
   padding: calc(var(--font-size) / 2);
-  margin-left: calc(var(--font-size));
+  margin-left: var(--font-size);
 }
 .chicken-panel.equipped > .chicken-activation > button {
   background: rgb(109, 109, 11);

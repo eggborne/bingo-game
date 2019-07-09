@@ -20,7 +20,7 @@ function GameEndModal(props) {
   const [conserveHeight, setConserveHeight] = useState(false);
   useEffect(() => {
     if (props.recordsBroken) {
-      setShowingRecordsModal(true);
+     setShowingRecordsModal(true);
     }
   }, [])
   useEffect(() => {
@@ -46,7 +46,7 @@ function GameEndModal(props) {
     subTitle = `You got ${props.currentBingos} Bingos`;
     prizeMessage = `Total Prize: $${totalPrize}`;
     if (showingRecordsModal) {
-      modalClass += ' records-broken';
+     modalClass += ' records-broken';
     }
   }
   if (props.gameMode.name === 'Ranked') {
