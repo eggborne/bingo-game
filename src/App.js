@@ -355,7 +355,7 @@ const defaultUser = {
   prizes: [{ id: 0, cost: 10, category: 'Markers', displayName: 'Red Marker', description: 'Red Marker', type: 'red', imgSrc: 'bingochip.png', imgHeight: '10vmin', class: 'item-row item-selection' }],
   bonusChance: 50,
   cardSlots: [{cardId: 0}, {cardId: 1}],
-  itemSlots: [{ item: undefined }, { item: undefined }],
+  itemSlots: [{ item: undefined }, { item: undefined }, { item: undefined }],
   chickenSlots: [{chickenId: -1}, {chickenId: -1}],
   id: undefined,
   token: undefined
@@ -528,8 +528,8 @@ function App() {
   // EFFECTS //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   useEffect(() => {
-    let cookie = getCookie('eggborne-bingo');
     setLoaded(true);
+    let cookie = getCookie('eggborne-bingo');
     if (cookie) {
       logUserIn(cookie.username, null, cookie.token).then(response => {
         if (response.data === 'badUsername') {
@@ -2391,6 +2391,9 @@ function App() {
       activatedChickens.push(chicken.chickenId);
     }
   });
+  console.big('INITIAL USER');
+  console.info(user.itemSlots)
+  console.big('INITIAL USER');
   return (
     <div id='app' className={!loaded ? 'zoomed' : ''}>
       <div id='app-background' className={cardOptionsOn ? 'card-options-on' : ''} />

@@ -8,9 +8,11 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding-right: calc(var(--button-bar-border-width) * 2);
   /* border: var(--button-bar-border-width) outset #00000044; */
   background: var(--header-footer-color);
   z-index: 3;
+  width: 100vw;
 }
 #button-bar:before {
   position: absolute;
@@ -380,7 +382,7 @@
   background-image: url('../assets/voiceofficon.png');
 }
 #button-bar > .powerup-area {
-  background: rgba(16, 89, 185, 0.315);
+  /* background: rgba(16, 89, 185, 0.315); */
   padding: 1vmin;
   /* background: transparent; */
 }
@@ -389,32 +391,26 @@
   pointer-events: none;
 }
 .slot-area {
-  /* background: rgb(24, 61, 97); */
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
-  display: grid;
-  grid-template-rows: 1fr;
-  grid-template-columns: min-content min-content min-content;
+  display: flex;
   justify-items: center;
   grid-column-gap: calc(var(--button-bar-height) / 10);
 }
 .item-slot {
   position: relative;
   background: rgb(100, 169, 235);
+  flex-grow: 1;
   width: calc(var(--header-height) / 1.25);
   height: calc(var(--header-height) / 1.25);
   display: flex;
   align-items: center;
   justify-content: center;
-  /* border: 0.5vmin outset gray;
-  border-color: rgb(118, 147, 173) !important; */
-  /* transition: transform 140ms ease; */
+  border: 0.5vmin outset gray;
 }
 .item-slot.ready {
-  /* outline: 3px solid green !important; */
-  /* background-color: white !important; */
   animation: glow;
   animation-duration: 1000ms;
   animation-iteration-count: infinite;
@@ -471,7 +467,7 @@
   border-style: inset;
 }
 .powerup-area#chickens-area {
-  background: rgba(121, 40, 3, 0.356);
+  /* background: rgba(121, 40, 3, 0.356); */
 }
 .powerup-area .slot-area img {
   z-index: 0;
@@ -609,9 +605,10 @@
 
 @media screen and (orientation: landscape) {
   #button-bar {
+    width: 100%;
     max-height: 100%;
     flex-direction: column;
-    /* justify-content: flex-start; */
+    padding-right: 0;
   }
   #button-bar:before {
     position: absolute;
@@ -648,7 +645,7 @@
     /* height: 100%; */
     width: 100%;
     /* margin-top: 5vh; */
-    flex-direction: column  !important;
+    flex-direction: column !important;
     justify-content: space-between;
     align-items: center;
   }
@@ -681,13 +678,18 @@
   #card-options-button {
     transform: translateX(calc((var(--button-bar-height) + calc((var(--header-height) * 3) - (var(--header-border-width) * 6))) * -1));
   }
+  #items-area {
+    flex-grow: 1;
+  }
+  #item-slots {
+    justify-content: flex-start;
+  }
   .powerup-area > .slot-area {
     width: 100%;
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: min-content min-content min-content;
+    display: flex;
+    flex-direction: column;
     justify-items: center;
-    grid-row-gap: calc(var(--button-bar-height) / 10);
+    height: 100%;
   }
   .item-slot-label {
     writing-mode: horizontal-tb;
@@ -696,17 +698,18 @@
   .item-slot {
     background: rgb(100, 169, 235);
     width: calc(var(--header-height) / 1.15);
-    min-height: calc(var(--header-height) / 1.15);
     max-height: calc(var(--header-height) / 1.15);
     /* flex-grow: 1; */
-    flex-basis: auto;
+    flex-basis: minmax(min-content, calc(var(--header-height) / 1.15));
     /* min-height: calc(var(--header-height) - (var(--header-border-width) * 2.5));
     max-height: calc(var(--header-height) - (var(--header-border-width) * 2.5)); */
-    display: flex;
-    border: 0.5vmin outset gray;
+    display: flex;    
     transition: transform 140ms ease;
   }
   .item-slot-label {
     margin: 0;
+  }
+  #button-bar i {
+    padding: 2vh 0;
   }
 }
