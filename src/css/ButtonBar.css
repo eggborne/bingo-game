@@ -590,7 +590,7 @@
     transform: translateX(calc((var(--button-bar-height) * -1)));
   }
   #card-options-button {
-    transform: translateX(calc((var(--button-bar-height) + calc((var(--header-height) * 3) - (var(--header-border-width) * 6))) * -1));
+    transform: translateX(calc((var(--button-bar-height) + calc((var(--header-height) * 3) - (var(--header-border-width) * 6))) * -1)) !important;
   }
   #map-button {
     transform: translateX(calc((var(--button-bar-height) + calc((var(--header-height) * 2) - (var(--header-border-width) * 4))) * -1));
