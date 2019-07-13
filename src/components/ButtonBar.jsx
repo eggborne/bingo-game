@@ -131,24 +131,6 @@ function ButtonBar(props) {
               }
             }
           })}
-        {/* {Array(unavailableItemSlots).fill().map((item, i, arr) => {
-            let slotClass = 'item-slot';
-            let slotText = '';
-            if (i > emptyItemSlots) {
-              slotClass += ' empty';
-              slotText = 'EMPTY';
-            } else {
-              console.log('slots', permanentItems['Item Slots'])
-              slotClass += ' unavailable';
-              slotText = permanentItems['Item Slots'][i].cost;
-            }
-            return (
-              <div key={i} id={`${slotClass}-slot-${i+1}`} className={slotClass}>
-                <i className="material-icons">lock</i>
-                <div className="label">{slotText}</div>
-              </div>
-            );
-          })} */}
         </div>
       </div>
       <div id='chickens-area' onPointerDown={!props.gameInProgress ? props.onClickAviaryButton : undefined} className={props.gameStarted ? 'powerup-area' : 'powerup-area game-paused'}>
@@ -194,15 +176,6 @@ function ButtonBar(props) {
                 );
               }
           })}
-          {/* {props.chickens.map((chickenData, i) => {
-            console.info('chickenData', i, chickenData);
-            return (
-              <div key={i}className='item-slot'>
-                <img src={blueChickenPng} />
-                <div className='chicken-label'>{chickenData.name.toUpperCase()}</div>
-              </div>
-            );
-          })} */}
         </div>
       </div>
     </div>
@@ -212,7 +185,9 @@ function ButtonBar(props) {
       :
       <>
         <div id='store-button' onPointerDown={props.onClickStoreButton} className={storeClass}><i className='material-icons'>attach_money</i></div>
-        <div id='aviary-button' onPointerDown={props.onClickAviaryButton} className={aviaryClass}><img id='aviary-icon' src={chickenIconPng} /></div>
+        <div id='aviary-button' onPointerDown={props.onClickAviaryButton} className={aviaryClass}><img id='aviary-icon' src={chickenIconPng} />
+          <div id='chickens-count'>{props.chickenCount}</div>
+        </div>
         <div id='card-options-button' onPointerDown={props.onClickCardOptionsButton} className={cardOptionsClass}><img id='card-options-icon' src={cardOptionsIconPng} /></div>
         <div id='map-button' onPointerDown={props.onClickMapButton} className={mapClass}><img alt='' src={globeIconPng} /></div>
       </>
