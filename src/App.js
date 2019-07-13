@@ -33,23 +33,6 @@ let simStart = 0;
 
 document.documentElement.style.setProperty('--view-height', window.innerHeight + 'px');
 
-const id = (expression) => {
-  console.log(expression.toString(), '--->', expression)
-}
-
-// export const saveUser = (username, options) => {
-//   return axios({
-//     method: 'post',
-//     url: 'https://www.eggborne.com/scripts/savenewpazaakuser.php',
-//     headers: {
-//       'Content-type': 'application/x-www-form-urlencoded'
-//     },
-//     params: {
-//       username: username,
-//       options: options
-//     }
-//   });
-// };
 export const chipImages = {
   red: require('./assets/bingochip.png'),
   blue: require('./assets/bingochipblue.png'),
@@ -533,9 +516,9 @@ function App() {
     if (cookie) {
       logUserIn(cookie.username, null, cookie.token).then(response => {
         if (response.data === 'badUsername') {
-          // console.error('bad username.');
+          console.error('bad username.');
         } else if (response.data === 'badPassword') {
-          // console.error('bad password.');
+          console.error('bad password.');
         } else {
           let data = { ...response.data };
           if (!response.data) {
@@ -573,11 +556,9 @@ function App() {
   //   gameModes['Bonanza'].bingoLimit = Math.ceil(options.opponentCards.length * 1.25);
   // }, [options.opponentCards.length]);
   useEffect(() => {
-    console.error('user.cardSlots.length changed -----------------------');
     let newRoundResults = {...roundResults};
     newRoundResults.cards = new Array([...user.cardSlots].filter(slot => slot.cardId !== -1).length).fill({});
     newRoundResults.cards.map((card, i, arr) => {
-      console.log('card?', card)
       arr[i] = {
         cardIndex: i,
         bingoCount: 0,
@@ -587,7 +568,6 @@ function App() {
         currentPrize: 0
       }
     });
-    console.error('set newRoundResults.cards to', newRoundResults.cards)
     setRoundResults(newRoundResults);
   }, [user.cardSlots.length])
   useInterval(() => {
@@ -615,10 +595,8 @@ function App() {
               setUser(newUser);
             }
           } else {
-            // console.warn(chicken.name, '>>> activated')
             if (calledBalls.length - chicken.ballsAtActivation === chicken.effectDuration) {
               chicken.activated = false;
-              console.big('<<<<<< CHICKEN ' + chicken.name + ' DEACTIVATED');
               let newBonuses = { ...temporaryBonuses };
               newBonuses.chickenEffects.splice(newBonuses.chickenEffects.indexOf(chicken.durationEffect), 1);
               setTemporaryBonuses(newBonuses);
@@ -718,7 +696,6 @@ function App() {
     }
   }
   function integrateLoggedInUser(data, remember) {
-    console.warn('raw db', data)
     for (let row in data) {
       if (typeof parseInt(data[row]) === 'number' && !isNaN(parseInt(data[row]))) {
         data[row] = parseInt(data[row]);
@@ -1011,19 +988,14 @@ function App() {
     setModalMessage('Really quit the whole game?');
   };
   const handleClickOkayButton = async event => {
-    console.log('roundResults', roundResults);
     let newUser = { ...user };
     newUser.stats.totalGames++;
     newUser.stats[gameMode.name]['Games Played']++;
     newUser.currency.cash += roundResults.totalPrize;
     for (let chickenId in roundResults.chickenExperiencePrizes) {
       let prize = roundResults.chickenExperiencePrizes[chickenId];
-      console.log('prize for chicken', chickenId, prize);
-      console.log('newUser.chickens', newUser.chickens);
-      console.log('newUser.chickens[chickenId]', newUser.chickens[chickenId]);
       let targetChicken = newUser.chickens[chickenId];
       targetChicken.experience += prize;
-      console.error('added', roundResults[chickenId], 'to', targetChicken.name)
     }
     newUser.stats.totalBingos += currentBingos;
     setUser(newUser);
@@ -1043,10 +1015,6 @@ function App() {
       setModalOn(false);
     } else if (gameStarted || calledBalls.length) {
       setModalOn(false);
-      // if (document.getElementById('hot-shots-2')) {
-      //   document.getElementById('hot-shots-2').style.display = 'none';
-      //   document.getElementById('hot-shots-2').stop();
-      // }
       setTimeout(() => {
         resetGame();
       }, 20);
@@ -1127,15 +1095,6 @@ function App() {
     } else {
       setChangedUserData([]);
     }
-    // if (gameStarted) {
-    //   setPausedWithMenu(true);
-    //   setGameStarted(false);
-    // } else {
-    //   if (pausedWithMenu) {
-    //     setPausedWithMenu(false);
-    //     setGameStarted(true);
-    //   }
-    // }
     setMenuOn(!menuOn);
   };
 
@@ -1147,7 +1106,6 @@ function App() {
     switch (type) {
       case 'player-cards-minus':
         filledSlots = [...newUser.cardSlots].filter(slot => slot.cardId !== -1);
-        console.log('pressed minus with filledSlots', filledSlots)
         if (filledSlots.length > 1) {
           newUser.cardSlots[filledSlots.length - 1].cardId = -1;;
           setUser(newUser);
@@ -1158,7 +1116,6 @@ function App() {
         break;
       case 'player-cards-plus':
         filledSlots = [...newUser.cardSlots].filter(slot => slot.cardId !== -1);
-        console.log('pressed plus with filledSlots', filledSlots)
         if (filledSlots.length < user.cardSlots.length) {
           newUser.cardSlots[filledSlots.length].cardId = filledSlots.length;
           setUser(newUser);
@@ -1253,16 +1210,10 @@ function App() {
         }
         break;
       case 'toggleSound':
-        if (options.soundOn) {
-          // Howler.muted(true);
-        } else {
-          // Howler.muted(false);
-          if (!soundsLoaded) {
-            loadSounds().then((response) => {
-              console.pink('toggle loaded sounds in ' + (window.performance.now() - loadStartTime));
-              setSoundsLoaded(true);
-            });
-          }
+        if (!options.soundOn && !soundsLoaded) {
+          loadSounds().then((response) => {
+            setSoundsLoaded(true);
+          });
         }
         newOptions.soundOn = !newOptions.soundOn;
         setOptions(newOptions);
@@ -1290,7 +1241,6 @@ function App() {
     let wideOption = window.innerWidth > window.innerHeight ? 'fitWideLandscape' : 'fitWide';
     let cssVar = window.innerWidth > window.innerHeight ? '--user-cards-wide-landscape' : '--user-cards-wide';
     let allColors = Object.keys(chipImages);
-    console.warn('allcolors', allColors)
     let chipColors = [];
     [...user.prizes]
       .filter(prize => allColors.includes(prize.type))
@@ -1299,7 +1249,6 @@ function App() {
           chipColors.push(prize.type);
         }
       });
-    console.warn('user chipcolors', chipColors)
     if (type === 'fit-plus') {
       if (newOptions[wideOption] < 24) {
         newOptions[wideOption]++;
@@ -1329,15 +1278,10 @@ function App() {
         setChangedUserData([...changedUserData, 'options']);
       }
     } else if (type === 'marker-minus') {
-      console.log('image is', newOptions.chipImage)
-      console.log('index', chipColors.indexOf(newOptions.chipImage))
       let newIndex = chipColors.indexOf(newOptions.chipImage) - 1;
-      console.log('newIndex is', newIndex)
-
       if (newIndex < 0) {
         newIndex = chipColors.length - 1;
       }
-      console.log('changed to', newIndex)
       newOptions.chipImage = chipColors[newIndex];
       setOptions(newOptions);
       if (!changedUserData.includes('options')) {
@@ -1349,10 +1293,8 @@ function App() {
   const handleAchieveBingo = (opponent, numberOfBingos, totalCardBingos, cardId) => {
     if (gameMode.name === 'Ranked') {
       if (opponent) {
-        console.log('remove a player from playersLeft!')
         let newPlayers = playersLeft - 1;
         setPlayersLeft((oldPlayers) => oldPlayers - 1);
-        // setRoundBingos((oldBingos) => oldBingos + 1)
         if (newPlayers - (options.opponentCards.length - winnerLimit) <= 0) {
           playSound(roundLoseSound);
           let newUser = { ...user };
@@ -1361,49 +1303,28 @@ function App() {
           if (user.loggedIn) {
             updateUserData(user, 'stats', newUser.stats);
           }
-          // meterRef.current.classList.remove('critical');
           setGameStarted(false);
           setGameInProgress(false);
           setGameEnded(true);
         } else if (newPlayers > options.opponentCards.length - winnerLimit + 3) {
-        // } else if (newPlayers < 3) {
           if (options.soundOn) {
             opponentBingoSound.stop();
           }
           playSound(opponentBingoSound);
-          // meterRef.current.classList.add('alert');
-          // setTimeout(() => {
-          //   if (meterRef.current) {
-          //     meterRef.current.classList.remove('alert');
-          //     if (newPlayers === options.opponentCards.length - winnerLimit + 1) {
-          //       meterRef.current.classList.add('critical');
-          //     }
-          //     setTimeout(() => {
-          //       meterRef.current.style.backgroundColor = 'transparent';
-          //     }, 100);
-          //   } else {
-          //     // console.error('no meterRef to change back');
-          //   }
-          // }, 800);
         }
       } else {
         if (gameStarted) {
           let newUser = { ...user };
-          // need to determine new bingos?
-          let newBingos = 1;
-          //
-          newUser.stats.totalBingos += newBingos;
+          newUser.stats.totalBingos += numberOfBingos;
           let prizeMoney = playersLeft * prizePerCard;
           let chickenExp = options.opponentCards.length * 1.5;
           let rank = options.opponentCards.length - playersLeft + 1;
-          newUser.stats.totalBingos += newBingos;
           let winMusic = rank === 1 ? fanfare1 : fanfare2;
           playSound(winMusic);
           let newChickens = newUser.chickens;
           newUser.chickenSlots.map(slot => {
             let chicken = newUser.chickens[slot.chickenId]
             if (chicken) {
-              console.log('-------------- giving', chicken.name, chickenExp, 'exp!')
               chicken.experience += chickenExp;
             }
           });
@@ -1412,16 +1333,16 @@ function App() {
           newUser.stats[gameMode.name]['Games Played']++;
           newUser.stats[gameMode.name]['Games Won']++;
           if (user.loggedIn && calledBalls.length < newUser.stats[gameMode.name]['Quickest Bingo']) {
-            // if (user.loggedIn && calledBalls.length < newUser.stats[gameMode.name]['Quickest Bingo']) {
-            console.big('NEW QUICKEST BINGO RECORD');
-            let oldRecord = newUser.stats[gameMode.name]['Quickest Bingo'];
-            newUser.stats[gameMode.name]['Quickest Bingo'] = calledBalls.length;
-            setRecordsBroken({
-              type: 'Quickest Bingo',
-              unit: 'balls',
-              value: calledBalls.length,
-              oldRecord: oldRecord
-            });
+            // NOT VALID
+            // console.big('NEW QUICKEST BINGO RECORD');
+            // let oldRecord = newUser.stats[gameMode.name]['Quickest Bingo'];
+            // newUser.stats[gameMode.name]['Quickest Bingo'] = calledBalls.length;
+            // setRecordsBroken({
+            //   type: 'Quickest Bingo',
+            //   unit: 'balls',
+            //   value: calledBalls.length,
+            //   oldRecord: oldRecord
+            // });
           }
           setUser(newUser);
           if (user.loggedIn) {
@@ -1448,12 +1369,10 @@ function App() {
         }
         setRoundBingos(roundBingos => roundBingos + numberOfBingos)
       } else {
-        console.error('BINGO! --------> cardId numberOfBingos', cardId, numberOfBingos);
         if (options.soundOn) {
           fanfare2.stop();
         }
         playSound(fanfare2);
-
         let cardResult = newRoundResults.cards[cardId];
         cardResult.bingoCount = totalCardBingos;
         cardResult.ballsAtBingo[totalCardBingos] = calledBalls.length;
@@ -1464,16 +1383,11 @@ function App() {
         setRoundBingos(roundBingos => roundBingos + numberOfBingos);
       }
       if ((roundBingos + numberOfBingos) >= gameMode.bingoLimit) {
-        console.big('START')
-        console.big('GAME OVER DECLARED BY CARD ' + opponent ? ' OPPONENT ' : ' PLAYER ' + cardId)
-        console.big('END')
         playSound(roundOverSound);
         let totalMoney = 0;
         newRoundResults.cards.map(card => {
           totalMoney += card.currentPrize;
           card.bonuses.map(bonus => {
-            console.warn('COCKS', bonus)
-            console.warn('ADDDING --------------', bonus.amount, 'from', card)
             totalMoney += bonus.amount;
           })
         });
@@ -1482,7 +1396,6 @@ function App() {
           let chicken = user.chickens[slot.chickenId];
           let chickenExp = Math.round(options.opponentCards.length * 1.5) + (currentBingos * 7);
           if (chicken) {
-            console.error('-------------- assigning id#', chicken.chickenId, chicken.name, chickenExp, 'exp!')
             chickenExperiencePrizes[slot.chickenId] = chickenExp;
           }
         });
@@ -1522,16 +1435,15 @@ function App() {
         newUser.stats[gameMode.name]['Games Played']++;
         newUser.stats[gameMode.name]['Games Won']++;
         if (user.loggedIn && calledBalls.length < newUser.stats[gameMode.name]['Quickest Bingo']) {
-          let oldRecord = newUser.stats[gameMode.name]['Quickest Bingo'];
-          // if (user.loggedIn && calledBalls.length < newUser.stats[gameMode.name]['Quickest Bingo']) {
-          console.big('NEW QUICKEST BINGO RECORD');
-          newUser.stats[gameMode.name]['Quickest Bingo'] = calledBalls.length;
-          setRecordsBroken({
-            type: 'Quickest Bingo',
-            unit: 'balls',
-            value: calledBalls.length,
-            oldRecord: oldRecord
-          });
+          // NOT VALID
+          // let oldRecord = newUser.stats[gameMode.name]['Quickest Bingo'];
+          // newUser.stats[gameMode.name]['Quickest Bingo'] = calledBalls.length;
+          // setRecordsBroken({
+          //   type: 'Quickest Bingo',
+          //   unit: 'balls',
+          //   value: calledBalls.length,
+          //   oldRecord: oldRecord
+          // });
         }
         setUser(newUser);
         if (user.loggedIn) {
@@ -1547,7 +1459,7 @@ function App() {
     }
     if (gameMode.name === 'Countdown') {
       if (opponent) {
-        // playSound(opponentBingoSound)
+        playSound(opponentBingoSound)
       } else {
         playSound(fanfare2);
         let newUser = { ...user };
@@ -1562,7 +1474,6 @@ function App() {
       }
     }
   };
-
   const handleClickLogIn = () => {
     setLoggingIn('logIn');
   };
@@ -1591,7 +1502,6 @@ function App() {
     });
   };
   const getRandomCardNumbers = () => {
-    console.pink('getradomCardNumbers!')
     let newNumbers = [[], [], [], [], []];
     let used = [];
     newNumbers.map((column, i) => {
@@ -1634,9 +1544,9 @@ function App() {
           }, 2000);
           logUserIn(enteredName, enteredPass).then(response => {
             if (response.data === 'NO SUCH USER.') {
-              // console.error('bad username AFTER REGISTER?.');
+              console.error('bad username AFTER REGISTER???');
             } else if (response.data === 'WRONG PASSWORD.') {
-              // console.error('bad password AFTER REGISTER?.');
+              console.error('bad password AFTER REGISTER???');
             } else {
               // create two random cards
               let randomCards = [{ type: 'random', numbers: [] }, { type: 'random', numbers: [] }];
@@ -1670,7 +1580,6 @@ function App() {
     setStoreOpen(!storeOpen);
     if (options.soundOn && !soundsLoaded) {
       loadSounds().then((response) => {
-        console.pink(response, 'STORE -------- loaded sounds in ' + Math.round(window.performance.now() - loadStartTime));
         setSoundsLoaded(true);
       });
     }
@@ -1691,25 +1600,18 @@ function App() {
     setCardOptionsOn(cardOptionsOn => !cardOptionsOn);
   };
   const handleClickBuyButton = (itemData, slot) => {
-    console.warn('buying slot itemData', slot, itemData)
     playSound(refillSound);
     let newUser = { ...user };
     if (itemData.consumable) {
       itemData.uses = itemData.totalUses;
       newUser.itemSlots[slot].item = itemData;
-      console.log('>>>>>>>>>>>>>>>>>>>>>> sending', newUser.itemSlots)
       updateUserData(user, 'itemSlots', newUser.itemSlots).then(response => {
         console.log('updated itemSlots?', response, newUser.itemSlots)
       });
     } else {
-      console.log('is permanent (prizes)');
       newUser.prizes = [...newUser.prizes, itemData];
       if (itemData.displayName.indexOf('Item Slot') > -1) {
         let alreadyOwned = newUser.itemSlots.filter(slot => slot.item).length;
-        console.warn('alrady opwned', alreadyOwned);
-        console.log('newUser.itemSlots', newUser.itemSlots);
-        console.log('newUser.itemSlots[alreadyOwned]', newUser.itemSlots[alreadyOwned]);
-
         newUser.itemSlots[alreadyOwned].item = { id: -1 };
         updateUserData(user, 'itemSlots', newUser.itemSlots).then(response => {
           console.log('updated itemSlots?', response, newUser.itemSlots)
@@ -1723,13 +1625,6 @@ function App() {
         updateUserData(user, 'cards', newUser.cards).then(response => {
           console.log('updated cards?', response)
         });
-      } else if (itemData.displayName.indexOf('Bonus') > -1) {
-        let extraPercent = parseInt(itemData.type);
-        // console.orange('giving ' + extraPercent);
-        newUser.bonusChance += extraPercent;
-        updateUserData(user, 'bonusChance', newUser.bonusChance).then(response => {
-          console.log('updated bonusChance?', response)
-        });
       }
       updateUserData(user, 'prizes', newUser.prizes).then(response => {
         console.log('updated prizes?', response, [...newUser.prizes, itemData]);
@@ -1740,9 +1635,7 @@ function App() {
     updateUserData(user, 'currency', newUser.currency).then(response => {
       console.log('curr updated?', response);
     });
-    // }, [user]);
   };
-
   const handleClickRefillItem = (itemData, refillCost) => {
     playSound(refillSound);
     let newUser = { ...user };
@@ -1762,7 +1655,6 @@ function App() {
       let lastTimer = lastDrew;
       if (lastDaubed > lastDrew) {
         lastTimer = lastDaubed;
-        console.log('chaining off last daub')
       }
       if (!offeringBonus && !openingBonus) {
         let daubSpeed = Date.now() - lastTimer;
@@ -1774,20 +1666,22 @@ function App() {
         newHistory = [...daubSpeedHistory, daubSpeed];
         setDaubSpeedHistory(newHistory);
         if (daubSpeed < 2500) {
-          let bonusAmount = Math.round((2500 - daubSpeed) / 1.5);
-          if (daubSpeed < 1850) {
+          let bonusAmount = Math.round(((2500 - daubSpeed) / 2.25));
+          if (daubSpeed < 1750) {
             playSound(freeSpaceSound2);
             bonusAmount *= 1.5;
-            console.big('super bonus ' + bonusAmount)
+            console.warn('super bonus', bonusAmount)
             setBonusRechargeRate((bonusRechargeRate) => bonusRechargeRate * 2);
             setShowingBonusText('SUPER SPEED BONUS!');
           } else {
             playSound(freeSpaceSound);
             setShowingBonusText('SPEED BONUS!');
+            if (bonusAmount < 200) {
+              bonusAmount = 200;
+            }
+            console.warn('bonus', bonusAmount)
           }
-          if (bonusAmount < 200) {
-            bonusAmount = 200;
-          }
+          
           setBonusMeter(bonusMeter => bonusMeter + bonusAmount);
           let bonusTime = bonusAmount >= 1000 ? bonusAmount : 1000;
           setTimeout(() => {
@@ -1827,16 +1721,12 @@ function App() {
   };
 
   const handleClickStartButton = () => {
-    console.log('handle calledBalls', gameStarted);
     setCardOptionsOn(false);
     if(gameEnded) {
       handleClickOkayButton();
     }
     if (!gameStarted) {
       let preGameShowing = !document.getElementById('pre-game-modal').classList.contains('hidden');
-      console.green('pregameshowing ' + preGameShowing)
-      console.green('preGameOn ' + preGameOn)
-      // console.error('game not started');
       if (!gameInProgress) {
         // start
         counter = 0;
@@ -1860,7 +1750,6 @@ function App() {
           setPreGameOn(true);
           if (options.soundOn && !soundsLoaded) {
             loadSounds().then(() => {
-              console.pink('handleClickStartButton loaded sounds in ' + Math.round(window.performance.now() - loadStartTime));
               setSoundsLoaded(true);
             });
           }
@@ -1903,7 +1792,6 @@ function App() {
     let flat = [...randomCard.numbers[0], ...randomCard.numbers[1], ...randomCard.numbers[2], ...randomCard.numbers[3], ...randomCard.numbers[4]];
     let uncalledNumbers = flat.filter(num => !calledBalls.includes(num) && !isFreeSpace(cardIndex, num) && num !== 99);
     let randomNumber = uncalledNumbers[randomInt(0, uncalledNumbers.length - 1)];
-    console.error('sending', pendingBonus, 'to card', cardIndex, 'num', randomNumber)
     newBonuses.freeSpaces.push({ type: pendingBonus, cardIndex: cardIndex, num: randomNumber });
     setTemporaryBonuses(newBonuses);
     setOpeningBonus({ type: pendingBonus, value: randomNumber, cardIndex: cardIndex });
@@ -1916,12 +1804,10 @@ function App() {
       setOpeningBonus(false);
     }, 800);
   };
-
   const handleClickStopButton = () => {
     setModalOn(true);
     setModalMessage('Really end the current game?');
   };
-
   const handleClickMapButton = () => {
     if (storeOpen) {
       setStoreOpen(false);
@@ -1934,7 +1820,6 @@ function App() {
     }
     setMapOn(mapOn => !mapOn);
   };
-
   const integrateModeRules = (newMode, newOptions) => {
     if (newMode.ballLimit) {
       setBallLimit(newMode.ballLimit);
@@ -1944,9 +1829,6 @@ function App() {
     } else {
       setWinnerLimit(newOptions.opponentCards.length);
     }
-    // if (newMode.winPattern) {
-    //   setWinPattern(newMode.winPattern);
-    // }
     if (newMode.timeLimit) {
       setTimeLimit(newMode.timeLimit);
     }
@@ -1954,7 +1836,6 @@ function App() {
   const handleClickChangeMode = direction => {
     let modesArray = Object.keys(gameModes);
     let currentIndex = modesArray.indexOf(gameMode.name);
-    // console.log('currentInd', currentIndex);
     let newIndex = undefined;
     if (direction === 'previous') {
       newIndex = currentIndex - 1;
@@ -1980,7 +1861,6 @@ function App() {
   const handleClickChangeWinPattern = direction => {
     let patternNamesArray = Object.keys(winPatterns);
     let currentIndex = patternNamesArray.indexOf(gameMode.winPattern.name);
-    console.log('currentInd', currentIndex);
     let newIndex = undefined;
     if (direction === 'previous') {
       newIndex = currentIndex - 1;
@@ -1996,8 +1876,6 @@ function App() {
     let newPattern = winPatterns[patternNamesArray[newIndex]];
     gameModes[gameMode.name].winPattern = newPattern;
     setGameMode(gameModes[gameMode.name]);
-    // setWinPattern(newPattern)
-    console.warn('--------------SET to', gameModes[gameMode.name])
   };
   const handleClickChangeBallLimit = direction => {
     let newLimit = undefined;
@@ -2031,7 +1909,6 @@ function App() {
     let newRoundResults = {...roundResults};
     newRoundResults.cards = new Array([...user.cardSlots].filter(slot => slot.cardId !== -1).length).fill({});
     newRoundResults.cards.map((card, i, arr) => {
-      console.log('card?', card)
       arr[i] = {
         cardIndex: i,
         bingoCount: 0,
@@ -2043,14 +1920,7 @@ function App() {
     });
     newRoundResults.totalPrize = 0;
     newRoundResults.averageDaubSpeed = 3000;
-    console.error('resetGame() setting newRoundResults to', newRoundResults)
     setRoundResults(newRoundResults);
-    // setRoundResults({
-    //   totalPrize: 0,
-    //   averageDaubSpeed: 3000,
-    //   chickenExperiencePrizes: 0,
-    //   cards:[]
-    // });
     setTemporaryBonuses({
       freeSpaces: [],
       chickenEffects: []
@@ -2085,26 +1955,13 @@ function App() {
     }
     setUser(newUser);
   };
-  const updateOpponentCardProgress = () => {
-    let startTime = window.performance.now();
-    let newProgress = { ...opponentCardProgress };
-    Object.values(newProgress).map((card, c, arr) => {
-      card.markedCount = card.fullGameStatus[calledBalls.length];
-    })
-    setOpponentCardProgress(newProgress);
-    console.warn('updateOpponentCardProgress took', window.performance.now() - startTime);
-  }
   const getStatusFromCard = (index, active, markedCount) => {
-    // console.warn('got card active', active, 'index', index)
     let newProgress = { ...opponentCardProgress };
-    // newProgress[index].markedCount = newProgress[index].fullGameStatus[calledBalls.length];
     newProgress[index].index = index;
     newProgress[index].active = active;
     setOpponentCardProgress(newProgress);
   }
   const reportFullGame = (index, markedEachBall, dangerEachBall) => {
-    console.warn('>>>>>>>>>>> full game report from card', index)
-    console.warn('>>>>>>>>>>> markedEachBall, dangerEachBall', markedEachBall, dangerEachBall)
     let newProgress = { ...opponentCardProgress };
     if (gameStarted && index === 0) {
       simStart = window.performance.now();
@@ -2113,19 +1970,16 @@ function App() {
     newProgress[index].fullGameStatus = {markedEachBall: markedEachBall, dangerEachBall: dangerEachBall};
     setOpponentCardProgress(newProgress);
     if (index === Object.values(newProgress).length - 1) {
-      console.warn('simulated all games in ', window.performance.now() - simStart)
+      console.warn('>>> Simulated all games in ', window.performance.now() - simStart)
     }
   }
   const recordCardBonus = (bonus, cardIndex) => {
-    console.error('GOT', bonus, 'FROM', cardIndex);
     let newRoundResults = { ...roundResults };
     let includesX = bonus.name === "Letter X" && newRoundResults.cards[cardIndex].bonuses.filter(card => card.name === "Letter X").length;
     let includesFirst = bonus.name === "First Bingo" && newRoundResults.cards[cardIndex].bonuses.filter(card => card.name === "First Bingo").length;
     if (!includesX && !includesFirst) {
       let bonusAmount = Math.ceil(bonusAmounts[bonus] * (options.opponentCards.length * 5))
       newRoundResults.cards[cardIndex].bonuses.push({name: bonus, amount: bonusAmount});
-    } else {
-      console.warn('cockm NOT recirding bonus due to duplicate X or First!!')
     }
   }
   const handleClickPowerup = (powerup) => {
@@ -2150,14 +2004,10 @@ function App() {
     let doomedIndex = -1;
     newTempBonuses.freeSpaces.map((space, i) => {
       if (space.cardIndex === cardIndex && space.num === number) {
-        console.error('DOOMING newTempBonuses.freeSpaces[i]', i, space)
         doomedIndex = i;
       }
     });
-    console.log('killing newTempBonuses.freeSpaces[doomedIndex]', newTempBonuses.freeSpaces[doomedIndex]);
-    console.log('bonuses was', newTempBonuses)
     newTempBonuses.freeSpaces.splice(doomedIndex, 1)
-    // console.log('bonuses is', newTempBonuses)
     setTemporaryBonuses(newTempBonuses);
     setPowerupSelected(undefined);
     if (user.loggedIn) {
@@ -2183,11 +2033,6 @@ function App() {
     if (user.loggedIn) {
       updateUserData(user, 'itemSlots', newUser.itemSlots);
     }
-  }
-  const handleClickCorner = () => {
-    // let daubSpeed = Date.now() - options.drawSpeed - lastDrew;
-    // allCalledNumbersDaubed();
-    // console.error('SPEED? ----------------', daubSpeed);
   }
   const allCalledNumbersDaubed = () => {
     user.cardSlots.map(slot => {
@@ -2286,8 +2131,6 @@ function App() {
   }
   const handleClickRandomize = (cardIndex) => {
     let newUser = { ...user };
-    console.warn('received index', cardIndex);
-    console.warn('cards is', newUser.cards)
     let newRandomNumbers = getRandomCardNumbers();
     newUser.cards[cardIndex].numbers = newRandomNumbers;
     setUser(newUser);
@@ -2297,16 +2140,18 @@ function App() {
   }
   const handleToggleRandom = (cardIndex) => {
     let newUser = { ...user };
-    console.warn('received index', cardIndex);
-    console.warn('cards is', newUser.cards)
     let targetCard = newUser.cards[cardIndex];
-    console.warn('target is', newUser.cards)
     let newType = targetCard.type === 'random' ? 'custom' : 'random';
     newUser.cards[cardIndex].type = newType;
     setUser(newUser);
     if (user.loggedIn) {
       updateUserData(user, 'cards', newUser.cards);
     }
+  }
+  const handleClickCorner = () => {
+    // let daubSpeed = Date.now() - options.drawSpeed - lastDrew;
+    // allCalledNumbersDaubed();
+    // console.error('SPEED? ----------------', daubSpeed);
   }
 
   // RENDER //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2369,9 +2214,6 @@ function App() {
     meterClass += ' ball-counter';
   }
   let patternName = gameMode.winPattern.name;
-  // console.log('------------- App says winPatterns', winPatterns)
-  // console.log('------------- App says gameMode', gameMode)
-  // console.log('------------- App says patternName', patternName)
   let dangerClass = 'danger-bar';
   let itemQuantities = '';
 
@@ -2391,9 +2233,6 @@ function App() {
       activatedChickens.push(chicken.chickenId);
     }
   });
-  console.big('INITIAL USER');
-  console.info(user.itemSlots)
-  console.big('INITIAL USER');
   return (
     <div id='app' className={!loaded ? 'zoomed' : ''}>
       <div id='app-background' className={cardOptionsOn ? 'card-options-on' : ''} />
@@ -2406,7 +2245,6 @@ function App() {
           (gameInProgress && calledBalls.length ? (
             <>
               <div id="danger-meter" className={meterClass}>
-
                 {/* {gameMode.name === 'Countdown' &&
                 <div id='balls-left-display'>
                   <div><small>Balls left:</small></div>
@@ -2507,7 +2345,6 @@ function App() {
         ) : (
           ''
           )}
-        {/* <div><div id='map-button' onPointerDown={handleClickMapButton} className={mapOn ? 'status-button map-on' : 'status-button'}><img alt='' src={globeIconPng} /></div></div> */}
         {(!gameInProgress || menuOn) && <div
           onPointerDown={() => {
             if (menuOn) {
@@ -2620,13 +2457,13 @@ function App() {
                   <div className='card-control-header'>
                     Card {c+1}
                   </div>
-                  <div className={cardRandomizeClass}>
-                    <div>
-                      Randomize every game
-                      <div onClick={() => handleToggleRandom(c)} className={toggleClass}>
-                        <div className='toggle-knob'>{card.type === 'random' ? 'ON' : 'OFF' }</div>
-                      </div>
+                  <div className='card-random-toggle-row'>
+                    <div>Randomize every game</div>
+                    <div onClick={() => handleToggleRandom(c)} className={toggleClass}>
+                      <div className='toggle-knob'>{card.type === 'random' ? 'ON' : 'OFF' }</div>
                     </div>
+                  </div>
+                  <div className={cardRandomizeClass}>                    
                     <div>
                       <button onClick={() => handleClickRandomize(c)} className='randomize-button'>
                         RANDOMIZE NOW
@@ -2684,7 +2521,6 @@ function App() {
             mapOn={mapOn}
             itemsEquippedCount={user.itemSlots.filter(slot => slot.item).length}
             itemsFullCount={itemsFullCount}
-            // voiceOn={options.voiceOn}
             chickenCount={user.chickens.length}
             chickens={user.chickens}
             activatedChickens={activatedChickens}
@@ -2755,9 +2591,7 @@ function App() {
             onClickLogIn={handleClickLogIn}
             onClickLogOut={handleClickLogOut}
           />
-          {/* {gameStarted && */}
           <CornerChicken ref={chickenRef} showing={gameStarted} showingBonusText={showingBonusText} onClickCorner={handleClickCorner} currentBeeChance={currentBeeChance} bonusLuckActivated={temporaryBonuses.chickenEffects.includes('bonusLuck')} bonusMeter={bonusMeter} openingBonus={openingBonus} paused={!gameStarted} gameStarted={gameStarted} showingGift={offeringBonus} onClickGift={handleClickGift} />
-          {/* } */}
           {gameInProgress && <BonusIndicator active={openingBonus && openingBonus.type === 'FREE'} currentBeechance={currentBeeChance} openingBonus={openingBonus} bonusDisplay={'FREE SPACE!'} gameNews={gameEnded && 'GAME OVER'} />}
           {!gameInProgress && <MapScreen showing={mapOn} userCash={user.currency.cash} chickenCount={user.chickens.length} />}
           {!gameInProgress && <StoreScreen

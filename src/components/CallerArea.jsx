@@ -20,7 +20,6 @@ const getBingoLetter = num => {
 }
 
 const CallerArea = React.forwardRef((props, ref) => {
-  console.count('CallerArea');
   const callerRef = ref;
   // const [eggsWide, setEggsWide] = useState(Math.floor(document.querySelector('#caller-area').offsetWidth / document.querySelectorAll('.ball')[0].offsetWidth) - 1);
   // useEffect(() => {

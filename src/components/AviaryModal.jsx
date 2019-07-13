@@ -5,7 +5,6 @@ let blueChickenPng = require('../assets/chickenstandblue.png');
 let orangeChickenPng = require('../assets/chickenstandorange.png')
 
 function AviaryModal(props) {
-  console.info('storemodal props', props);
   const slotRef = useRef();
   const [slotSelected, setSlotSelected] = useState(undefined);
   let agreeLabel = 'BUY';
@@ -14,19 +13,6 @@ function AviaryModal(props) {
   useEffect(() => {
     setSlotSelected(undefined);
   }, [props.selectedChicken])
-  const flashSlotSelect = useCallback(() => {
-    console.log(slotRef)
-    slotRef.current.style.transform = 'scale(1.05)';
-    setTimeout(() => {
-      slotRef.current.style.transform = 'scale(1)';
-    }, 200);
-    setTimeout(() => {
-      slotRef.current.style.transform = 'scale(1.05)';
-    }, 400);
-    setTimeout(() => {
-      slotRef.current.style.transform = 'scale(1)';
-    }, 600);
-  }, [slotRef, slotSelected])
   const selectSlot = (newSlot) => {
     setSlotSelected(newSlot);
     props.onSelectSlot(newSlot);
@@ -44,7 +30,6 @@ function AviaryModal(props) {
             Choose slot:
             <div>
             {props.chickenSlots.map((slot, i) => {
-              console.info(slot, i, 'slot');
               if (slot.chickenId !== -1) {
                 let chicken = props.chickens.filter(chicken => slot.chickenId === chicken.chickenId)[0];
                 return (
@@ -71,9 +56,4 @@ function AviaryModal(props) {
     </div>
   );
 }
-function areEqual(prevProps, nextProps) {
-  // return prevProps.selectedChicken === nextProps.selectedChicken && prevProps.showing === nextProps.showing && prevProps.chickenSlots === nextProps.chickenSlots;
-}
-
-// export default React.memo(AviaryModal, areEqual);
 export default AviaryModal;

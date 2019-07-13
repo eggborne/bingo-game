@@ -3,7 +3,6 @@ import '../css/StoreScreen.css';
 import '../css/StoreModal.css';
 
 function StoreModal(props) {
-  console.info('storemodal props', props);
   const slotRef = useRef();
   const [slotSelected, setSlotSelected] = useState(undefined);
   let agreeLabel = 'BUY';
@@ -12,25 +11,11 @@ function StoreModal(props) {
   useEffect(() => {
     setSlotSelected(undefined);
   }, [props.selectedItem])
-  // const flashSlotSelect = useCallback(() => {
-  //   console.log(slotRef)
-  //   slotRef.current.style.transform = 'scale(1.05)';
-  //   setTimeout(() => {
-  //     slotRef.current.style.transform = 'scale(1)';
-  //   }, 200);
-  //   setTimeout(() => {
-  //     slotRef.current.style.transform = 'scale(1.05)';
-  //   }, 400);
-  //   setTimeout(() => {
-  //     slotRef.current.style.transform = 'scale(1)';
-  //   }, 600);
-  // }, [slotRef, slotSelected])
   const selectSlot = (newSlot) => {
     setSlotSelected(newSlot);
     props.onSelectSlot(newSlot);
 
   }
-  console.info('storemodal slotSelected', slotSelected)
   return (
     <div id='store-modal' className={props.selectedItem && 'showing'}>
       {props.selectedItem &&
@@ -45,7 +30,6 @@ function StoreModal(props) {
               Choose slot:
               <div>
               {props.itemSlots.map((slot, i) => {
-                console.info(slot, i, 'slot');
                 if (slot.item && slot.item.hasOwnProperty('id') && slot.item.id > -1) {
                   return (
                     <div key={slot.item.description} id={`item-slot-${i + 1}`} onPointerDown={() => selectSlot(i)} className={i !== slotSelected ? 'item-slot' : 'item-slot selected'}>
@@ -81,7 +65,7 @@ function StoreModal(props) {
   );
 }
 function areEqual(prevProps, nextProps) {
-  // return prevProps.selectedItem === nextProps.selectedItem && prevProps.showing === nextProps.showing && prevProps.itemSlots === nextProps.itemSlots;
+  return prevProps.selectedItem === nextProps.selectedItem && prevProps.showing === nextProps.showing && prevProps.itemSlots === nextProps.itemSlots;
 }
 
 // export default React.memo(StoreModal, areEqual);

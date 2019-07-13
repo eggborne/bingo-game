@@ -13,11 +13,8 @@ function ClickBonusIndicator(props) {
     }
   }, [props.message])
   let bonusClass = props.showing ? 'click-bonus-indicator showing' : 'click-bonus-indicator'
-  if (message === 'SPEED BONUS!') {
-    bonusClass += ' flashing';
-  }
   if (message === 'SUPER SPEED BONUS!') {
-    bonusClass += ' special';
+    bonusClass += ' super';
   }
   return (
     <div className={bonusClass}>

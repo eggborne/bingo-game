@@ -14,8 +14,6 @@ const getSuffix = (num) => {
 }
 
 function GameEndModal(props) {
-  console.count('GameEndModal')
-  console.info(props)
   const [showingRecordsModal, setShowingRecordsModal] = useState(false);
   const [conserveHeight, setConserveHeight] = useState(false);
   useEffect(() => {
@@ -81,7 +79,6 @@ function GameEndModal(props) {
   if (props.gameMode.name === 'Classic') {
     modalClass += ' classic';
   }
-  console.error('props.equippedChickens', props.equippedChickens)
   return (
     <div id='game-end-modal' className={modalClass}>
       {props.showing &&
@@ -130,10 +127,10 @@ function GameEndModal(props) {
                 </div>
               </div>
               <div id='bonuses' className='game-end-message'>
-                {/* <div id='speed-results'>
-                  <div><small>Average Daub Speed</small><br />{daubSpeedSeconds} seconds</div>
-                  <div id='daub-bonus'>Daub Speed Bonus: <span style={{color: 'var(--money-green)'}}>${daubBonus}</span></div>
-                </div> */}
+              {/* <div id='speed-results'>
+                <div><small>Average Daub Speed</small><br />{daubSpeedSeconds} seconds</div>
+                <div id='daub-bonus'>Daub Speed Bonus: <span style={{color: 'var(--money-green)'}}>${daubBonus}</span></div>
+              </div> */}
               {props.equippedChickens.map(chicken => {
                 let newExperience = chicken.experience + props.chickenExperiencePrizes[chicken.chickenId];
                 return (

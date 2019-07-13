@@ -28,8 +28,6 @@ function NewRecordModal(props) {
   useLayoutEffect(() => {
     document.getElementById('hot-shots-2').play();
   }, [])
-  console.count('NewRecordModal')
-  console.info(props)
   let plural = records.length > 1 ? 'S' : '';
   return (
     <div id='new-record-modal'>

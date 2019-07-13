@@ -41,8 +41,6 @@ const consumables = {
 }
 
 function StoreScreen(props) {
-  console.pink('StoreScreen ------------------');
-  console.info('store props', props)
   const [selectedCategory, setSelectedCategory] = useState('consumable');
   const [selectedItem, setSelectedItem] = useState(undefined);
   const [selectedSlot, setSelectedSlot] = useState(undefined);
@@ -70,9 +68,7 @@ function StoreScreen(props) {
     }
   };
   const handleClickBuyButton = (newSlot) => {
-    console.log('selectedItem is', selectedItem)
     let targetSlot = selectedSlot || newSlot
-    console.log('targetSlot is', targetSlot)
     if (targetSlot < props.itemSlots.length || !selectedItem.consumable) {
       props.onClickBuyButton({...selectedItem}, targetSlot);
       setSelectedItem(undefined);
@@ -81,8 +77,6 @@ function StoreScreen(props) {
   const handleClickCancelButton = () => {
     setSelectedItem(undefined);
   };
-  console.log('priz', props.userPrizes)
-  console.log('itemSlots', props.itemSlots)
   let userPrizes = [...props.userPrizes, ...props.itemSlots];
   let storeClass = props.showing ? 'showing' : '';
   let cash = props.userCash;
@@ -103,8 +97,6 @@ function StoreScreen(props) {
             <div className={'prize-category item-grid'}>
                 {permanentItems['Markers'].map((item, i) => {
                   let owned = [...props.userPrizes].filter(prize => item.id === prize.id).length;
-                  console.log('[...props.userPrizes]', [...props.userPrizes]);
-                  console.log(item.displayName, 'owned?', owned)
                 return (<div key={item.id} className={`${item.class}${owned ? ' owned' : ''}`} >
                   <img style={{ width: item.imgHeight, height: item.imgHeight }} src={require(`../assets/${item.imgSrc}`)}/>
                   <div className={cash < item.cost ? 'item-cost unavailable' : 'item-cost'}>${item.cost}</div>
@@ -116,8 +108,6 @@ function StoreScreen(props) {
             <div className={'prize-category'}>
               {permanentItems['Item Slots'].map((item, i) => {
                 let owned = [...props.userPrizes].filter(prize => item.id === prize.id).length;
-                console.log('[...props.userPrizes]', [...props.userPrizes]);
-                console.log(item.displayName, 'owned?', owned)
                 return (<div key={item.id} className={`${item.class}${owned ? ' owned' : ''}`} >
                   <div className='permanent-title'>{item.displayName}</div>
                   <div className={cash < item.cost ? 'item-cost unavailable' : 'item-cost'}>${item.cost}</div>
@@ -129,8 +119,6 @@ function StoreScreen(props) {
             <div className={'prize-category'}>
               {permanentItems['Card Slots'].map((item, i) => {
                 let owned = [...props.userPrizes].filter(prize => item.id === prize.id).length;
-                  console.log('[...props.userPrizes]', [...props.userPrizes]);
-                  console.log(item.displayName, 'owned?', owned)
                 return (<div key={item.id} className={`${item.class}${owned ? ' owned' : ''}`} >
                   <div className='permanent-title'>{item.displayName}</div>
                   <div className={cash < item.cost ? 'item-cost unavailable' : 'item-cost'}>${item.cost}</div>
@@ -210,7 +198,6 @@ function StoreScreen(props) {
         }
         <div id='info-footer'>
           <div>Money: <span>${cash}</span></div>
-          {/* <div>Item Slots: {props.itemSlots.length}</div> */}
         </div>
       </div>
     </>
@@ -219,7 +206,6 @@ function StoreScreen(props) {
 
 const isEqual = (prevProps, nextProps) => {
   return (prevProps.showing === nextProps.showing
-    // && prevProps.userPrizes.length === nextProps.userPrizes.length
     && prevProps.itemSlots === nextProps.itemSlots
     && prevProps.userCash === nextProps.userCash
   );

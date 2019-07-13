@@ -19,8 +19,6 @@ const bingoMessages = [
 ];
 
 function BingoIndicator(props) {
-  console.info('cockm BingoIndicator ------------------', props.suffix);
-  console.log(props)
   let bingoDisplay = bingoMessages[props.bingoCount];
   let prefix = props.prefix;
   let suffix = props.suffix;

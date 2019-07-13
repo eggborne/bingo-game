@@ -3,8 +3,6 @@ import '../css/Menu.css';
 import { chipImages } from '../App.js';
 
 function Menu(props) {
-  console.orange('Menu ------------------');
-  console.info(props);
   const [touchingSlider, setTouchedSlider] = useState(undefined);
 
   // let menuClass = ' hidden';

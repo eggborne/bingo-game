@@ -8,9 +8,6 @@ import '../css/Card.css';
 const instantWin = false;
 
 function Card(props) {
-  if (!props.opponent) {
-    console.warn(props.cardData.type, 'card', props.index)
-  }
   const [numbers, setNumbers] = useState(undefined);
   const [blockedNumbers, setBlockedNumbers] = useState([]);
   const [markedNumbers, setMarked] = useState([]);
@@ -69,7 +66,6 @@ function Card(props) {
           props.cardData.numbers.map((row, r) => {
             row.map((num, c) => {
               if (props.gameMode.winPattern.pattern[r].includes(c)) {
-                console.error('pushing', num)
                 newTinted.push(num);
               }
             })
@@ -90,7 +86,6 @@ function Card(props) {
       if (active) {
         // setActive(true);
         if (props.opponent) {
-          console.error('SIMULATING GAME!', props.index)
           simulateGame();
         }
       }
@@ -148,9 +143,7 @@ function Card(props) {
 
   useEffect(() => {
     if (props.gameInProgress && !props.opponent && markedNumbers.length > 0) {
-      // if (props.gameMode.name === 'Bonanza') {
       checkForBingo();
-      // }
     }
   }, [markedNumbers, props.gameInProgress]);
 
@@ -158,8 +151,6 @@ function Card(props) {
     if (!customPattern) {
       customPattern = props.gameMode.winPattern.pattern;
     }
-    console.pink('----------------------------------------------------------------------------');
-    console.pink((props.opponent ? 'Opponent card ' : 'Player card ') + props.index + ' being checked!')
     let numbersMarked = markedNumbers.filter(num => !blockedNumbers.includes(num));
     let indexesMarked = [[],[],[],[],[]];
     numbersMarked.map((num, n) => {
@@ -173,7 +164,6 @@ function Card(props) {
     let allIndex = [...indexesMarked[0], ...indexesMarked[1], ...indexesMarked[2], ...indexesMarked[3], ...indexesMarked[4]];
     let allPatternBalls = [...customPattern[0], ...customPattern[1], ...customPattern[2], ...customPattern[3], ...customPattern[4]];
     if (allIndex.length && allIndex.length === allPatternBalls.length) {
-      console.error('OMG WINNER', props.index, 'has a', props.gameMode.name);
       return true;
     }
     return false;
@@ -183,11 +173,7 @@ function Card(props) {
     let checkStart = window.performance.now();
     let hasBingo = false;
     let dangerRating = 0;
-    // console.log('patternName?', props.opponent, props.patternName)
     if (props.patternName === 'Line / 4 Corners') {
-      // if (allNumbers(tintedNumbers).length === 0) {
-      //   console.log('no tinted numbers!')
-      // }
       let fourCorners = [
         numbers[0][0],
         numbers[0][numbers.length - 1],
@@ -257,7 +243,6 @@ function Card(props) {
 
       letterX = checkForWinPattern(winPatterns['Letter X'].pattern) ? 1 : 0;
 
-
       let foundBingos = {
         verticalLines: verticalLines,
         horizontalLines: horizontalLines,
@@ -303,7 +288,6 @@ function Card(props) {
       setBingos(foundBingos);
 
       if (instantWin || hasBingo) {
-        console.info('BINGOS! CARD', props.index, foundBingos);
         setHighlighted(newHighlighted);
 
         // count the bingos in state...
@@ -344,8 +328,6 @@ function Card(props) {
         if (cornerBingo) {
           foundBingoCount++;
         }
-        console.info('BINGOS! bingos, foundBingos', bingos, foundBingos);
-        console.info('BINGOCOUNTS! bingoCount, foundBingoCount', bingoCount, foundBingoCount);
 
         // ...compare old to new
 
@@ -353,7 +335,6 @@ function Card(props) {
 
         if (bingoCount < foundBingoCount) {
           // setBingos(foundBingos);
-          console.log('bingo < found', bingoCount, '<', foundBingoCount, ' so reporting ' + (foundBingoCount - bingoCount) + ' new bingos!!');
           if (!props.opponent) {
             setWon(true);
             let newSuffix = '';
@@ -385,18 +366,15 @@ function Card(props) {
           } else if (props.opponent) {
             if (props.gameMode.name === 'Ranked') {
               props.onAchieveBingo(true, (foundBingoCount - bingoCount), foundBingoCount, props.index);
-              console.error('opponent sending', (foundBingoCount - bingoCount), 'to handleAchieveBingo');
               setActive(false);
               props.reportActive(props.index, false);
             } else if (props.gameMode.name === 'Bonanza') {
               props.onAchieveBingo(true, (foundBingoCount-bingoCount), foundBingoCount, props.index);
-              console.error('opponent sending', (foundBingoCount-bingoCount), 'to handleAchieveBingo')
             }
           }
         }
       }
     } else {
-      console.log('----------------------------------------------- NOT LINE $ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
       let won = checkForWinPattern();
       if (won) {
         if (props.opponent) {
@@ -406,12 +384,10 @@ function Card(props) {
             props.reportActive(props.index, false);
           } else if (props.gameMode.name === 'Bonanza' || props.gameMode.name === 'Countdown') {
             props.onAchieveBingo(true, 1, 1, props.index);
-            console.error('sending 1 to handleAchieveBingo')
           }
         } else {
           if (props.gameMode.name === 'Ranked' || props.gameMode.name === 'Classic') {
             props.onAchieveBingo(false, 1, 1, props.index);
-            console.error('sending 1 to handleAchieveBingo')
             setTimeout(() => {
               setActive(false);
               setBingos({});;
@@ -419,7 +395,6 @@ function Card(props) {
             }, 2000);
           } else if (props.gameMode.name === 'Bonanza' || props.gameMode.name === 'Countdown') {
             props.onAchieveBingo(false, 1, 1, props.index);
-            console.error('sending 1 to handleAchieveBingo')
             setTimeout(() => {
               setWon(false)
             }, 1200)
@@ -427,7 +402,6 @@ function Card(props) {
         }
       }
     }
-    // console.error('checked card', props.index, 'for bingo in', window.performance.now() - checkStart);
   };
   const handleTouchSquare = (event, num) => {
     let numberTouched = parseInt(event.target.id.split('-')[1]);
@@ -444,7 +418,6 @@ function Card(props) {
       && !markedNumbers.includes(numberTouched)
       && !madeFree.includes(numberTouched)
       && !blockedNumbers.includes(numberTouched)) {
-      console.big('making free!~')
       // setMadeFree(madeFree => [...madeFree, numberTouched]);
       if (props.autoFreeSpace) {
         setMarked(markedNumbers => [...markedNumbers, numberTouched]);
@@ -517,16 +490,13 @@ function Card(props) {
   if (indicatorShowing) {
     if (props.gameMode.name === 'Bonanza') {
       bingoRank = (props.gameMode.bingoLimit - props.remainingBingos);
-      console.error('cockm rank is', bingoRank)
     } else if (props.gameMode.name === 'Ranked') {
       bingoRank = (props.opponentCardCount - props.remainingPlayers);
     }
     prefix = bingoRank === 1 ? 'FIRST' : '';
     if (bingoRank === 1) {
-      console.error('cockm reporting first bingo!!')
       props.reportBonus('First Bingo', props.index);
     }
-
   }
   return (
     <div className={cardClass}>
@@ -547,9 +517,7 @@ function Card(props) {
         <div className='card-head-letter g' />
         <div className='card-head-letter o' />
       </div>
-      <div className={gridClass}>{numbers && numbers.map((column, c) => column.map((num, n) => {
-        // let free = madeFree.includes(num) || props.freeSpaces.filter(space => space.cardIndex === props.type === 'FREE' && props.index && space.num === num).length > 0;
-        let free = madeFree.includes(num) || props.freeSpaces.filter(space => space.cardIndex === props.index && space.num === num).length > 0;
+      <div className={gridClass}>{numbers && numbers.map((column, c) => column.map((num, n) => {        let free = madeFree.includes(num) || props.freeSpaces.filter(space => space.cardIndex === props.index && space.num === num).length > 0;
         let marked = markedNumbers.includes(num);
         let canBeMarked = ((props.calledBalls.includes(num)) || free || num === 99);
         let blocked = false;

@@ -45,7 +45,6 @@ const getTimeSinceFromSeconds = sessionLengthInSeconds => {
 
 function fullScreenCall() {
   let root = document.getElementById('app');
-  // console.log(root);
   return root.requestFullscreen || root.webkitRequestFullscreen || root.mozRequestFullScreen || root.msRequestFullscreen;
 }
 function exitFullScreenCall() {

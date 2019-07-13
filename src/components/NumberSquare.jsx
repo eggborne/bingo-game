@@ -2,12 +2,8 @@ import React, { useState, useEffect } from 'react';
 import '../css/NumberSquare.css';
 
 function NumberSquare(props) {
-  // if (!props.isOpponent && props.blocked) {
-  //   console.log('NumberSquare', props.number, 'of card', props.ownerIndex)
-  // }
   const [showing, setShowing] = useState(false);
   const [flashing, setFlashing] = useState(undefined);
-
   useEffect(() => {
     setShowing(true);
     if (props.madeFree) {
@@ -104,8 +100,6 @@ function NumberSquare(props) {
 
 function areEqual(prevProps, nextProps) {
   let equalTest = (
-    // nextProps.marked &&
-    // !(prevProps.canBeMarked && !nextProps.touched) &&
     prevProps.highlighted === nextProps.highlighted &&
     prevProps.number === nextProps.number &&
     prevProps.powerupId === nextProps.powerupId &&
@@ -120,17 +114,6 @@ function areEqual(prevProps, nextProps) {
     prevProps.ownerIndex === nextProps.ownerIndex &&
     prevProps.gameStarted === nextProps.gameStarted
   );
-  // if (!equalTest && !prevProps.isOpponent) {
-  //   // console.green('-------------------------------------------');
-  //   // console.log(prevProps.number);
-  //   // console.log('highlighted', prevProps.highlighted === nextProps.highlighted);
-  //   // console.log('madeFree', prevProps.madeFree === nextProps.madeFree);
-  //   // console.log('touched', prevProps.touched === nextProps.touched);
-  //   // console.log('canBeMarked', prevProps.canBeMarked === nextProps.canBeMarked);
-  //   // console.log('marked', prevProps.marked === nextProps.marked);
-  //   // console.log('nextProps.lastBall !== nextProps.number', nextProps.lastBall !== nextProps.number);
-  //   // console.green('-------------------------------------------');
-  // }
   return equalTest;
 }
 

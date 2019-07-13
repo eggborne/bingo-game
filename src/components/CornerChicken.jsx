@@ -35,10 +35,10 @@ const CornerChicken = React.forwardRef((props, ref) => {
   }
   return (
     <>
-      <div id='bonus-spot' onPointerDown={props.onClickCorner} className={spotClass}>
+      <div id='bonus-spot' onPointerDown={clickEffect} className={spotClass}>
       <div className={ringClass} style={{opacity: (meterHeight)}} id='meter-ring'></div>
         <div className={ringClass} style={{ transform: `scaleY(${meterHeight})` }} id='meter'></div>
-        <img ref={cornerChickenRef} onPointerDown={clickEffect} alt='' id='bonus-chicken' src={horusPng}/>
+        <img ref={cornerChickenRef} alt='' id='bonus-chicken' src={horusPng}/>
         {/* <div id='corner-chicken-overlay'>{props.bonusMeter/1000}</div> */}
       </div>
     </>

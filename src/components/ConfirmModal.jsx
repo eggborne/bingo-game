@@ -2,7 +2,6 @@ import React from 'react';
 import '../css/ConfirmModal.css';
 
 function ConfirmModal(props) {
-  // // console.count('ConfirmModal')
   let modalClass = '';
   let agreeLabel = 'DO IT';
   let cancelLabel = 'NEVER MIND';

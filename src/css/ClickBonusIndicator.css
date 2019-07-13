@@ -18,9 +18,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-
   flex-wrap: no-wrap;
-  text-shadow: -0.25vmin -0.35vmin 0 #333, 0.35vmin -0.35vmin 0 #333, -0.35vmin 0.35vmin 0 #333, 0.35vmin 0.35vmin 0 #333;
+  text-shadow: -0.25vmin -0.35vmin 0 #111, 0.35vmin -0.35vmin 0 #111, -0.35vmin 0.35vmin 0 #111, 0.35vmin 0.35vmin 0 #111;
   transition: transform 320ms ease, opacity 320ms ease;
 }
 .click-bonus-indicator.showing {
@@ -28,6 +27,5 @@
   transform: translateX(-50%) translateY(-50%) scale(1);
 }
 .click-bonus-indicator.super {
-  background: rgba(0, 128, 0, 0.5);
-  width: 60vw;
+  color: var(--money-green);
 }
