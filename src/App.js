@@ -2233,6 +2233,20 @@ function App() {
       activatedChickens.push(chicken.chickenId);
     }
   });
+  let cashDisplay = user.currency.cash;
+  if (cashDisplay >= 1000000) {
+    if ((cashDisplay / 100000) % 1 === 0) {
+      cashDisplay = (cashDisplay / 100000) + 'K';
+    } else {
+      cashDisplay = (cashDisplay / 100000).toPrecision(cashDisplay.toString().length - 4) + 'M';
+    }
+  } else if (cashDisplay >= 10000) {
+    if ((cashDisplay / 1000) % 1 === 0) {
+      cashDisplay = (cashDisplay / 1000) + 'K';
+    } else {
+      cashDisplay = (cashDisplay / 1000).toPrecision(cashDisplay.toString().length - 2) + 'K';
+    }
+  }
   return (
     <div id='app' className={!loaded ? 'zoomed' : ''}>
       <div id='app-background' className={cardOptionsOn ? 'card-options-on' : ''} />
@@ -2375,7 +2389,7 @@ function App() {
               <div key={n}>{name}</div>
             ))}
           </div>
-          <div>${user.currency.cash}</div>
+          <div>${cashDisplay}</div>
         </div>}
         <button onPointerDown={handleClickMenu} id="menu-button" className={menuButtonClass}>
           <div id="menu-bar-container">

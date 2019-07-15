@@ -363,22 +363,16 @@ header .status-button.on:not(#menu-button) {
   position: relative;
   background-color: black;
   width: auto;
-  /* width: calc(var(--header-height) * 2.5); */
-  /* flex-grow: 1; */
   height: calc(var(--header-height) - (var(--header-border-width) * 2) - (var(--button-bar-border-width) * 2));
   font-size: calc(var(--header-height) / 5);
-  /* padding-right: 2%; */
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: 50% 50%;
-  /* align-items: stretch; */
   align-content: center;
-  /* justify-content: space-between; */
   justify-items: center;
   text-align: center;
   border: 0.25vmin outset gray;
   border-radius: calc(var(--button-bar-border-width));
-
   transition: opacity 310ms ease, background-color 210ms ease;
 }
 button #account-button {
@@ -390,7 +384,9 @@ button #account-button {
   font-size: calc(var(--header-height) - (var(--header-border-width) * 2) - (var(--button-bar-border-width) * 2));
   color: white;
   opacity: 0.3;
-
+}
+#account-button > div:last-of-type {
+  font-size: calc(var(--header-height) / 5.5);
 }
 #account-button.hidden {
   opacity: 0;
@@ -407,9 +403,6 @@ button #account-button {
 }
 #account-button.logged-in {
   border-width: calc(var(--button-bar-border-width) / 2);
-}
-#account-button.logged-in > i {
-  /* opacity: 0.3; */
 }
 #account-button.logged-in > #header-username {
   color: rgb(129, 255, 145);
@@ -428,13 +421,6 @@ button #account-button {
 #account-button.logged-in > #header-username.smaller {
   font-size: 80%;
 }
-#account-button.truncated {
-  /* width: calc(var(--header-height) - (var(--header-border-width) * 2) - (var(--button-bar-border-width) * 1.5)); */
-}
-#account-button.truncated > div {
-  /* transform: scaleX(0);
-  display: none; */
-}
 #menu-button {
   background-color: black;
   display: flex;
@@ -451,7 +437,6 @@ button #account-button {
   flex-direction: column;
   align-items: center;
   justify-content: space-evenly;
-  /* transition: transform 440ms ease; */
 }
 #danger-meter.ball-counter:after {
   display: none;
