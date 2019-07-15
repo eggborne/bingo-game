@@ -55,9 +55,12 @@ function StoreScreen(props) {
   };
   const handleSelectSlot = (newSlot) => {
     setSelectedSlot(newSlot);
-    setTimeout(() => {
-      handleClickBuyButton(newSlot);
-    }, 120);
+    if (newSlot < props.itemSlots.length || !selectedItem.consumable) {
+      setTimeout(() => {
+        props.onClickBuyButton({...selectedItem}, newSlot);
+        setSelectedItem(undefined);
+      }, 120);
+    }
   }
   const selectItem = (item) => {
     setSelectedItem(item)
@@ -68,11 +71,7 @@ function StoreScreen(props) {
     }
   };
   const handleClickBuyButton = (newSlot) => {
-    let targetSlot = selectedSlot || newSlot
-    if (targetSlot < props.itemSlots.length || !selectedItem.consumable) {
-      props.onClickBuyButton({...selectedItem}, targetSlot);
-      setSelectedItem(undefined);
-    }
+    
   };
   const handleClickCancelButton = () => {
     setSelectedItem(undefined);

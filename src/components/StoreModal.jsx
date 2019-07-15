@@ -29,23 +29,28 @@ function StoreModal(props) {
             <div ref={slotRef} id='slot-select'>
               Choose slot:
               <div>
-              {props.itemSlots.map((slot, i) => {
-                if (slot.item && slot.item.hasOwnProperty('id') && slot.item.id > -1) {
-                  return (
-                    <div key={slot.item.description} id={`item-slot-${i + 1}`} onPointerDown={() => selectSlot(i)} className={i !== slotSelected ? 'item-slot' : 'item-slot selected'}>
-                      <img src={require(`../assets/${slot.item.imgSrc}`)} />
-                      <div className='quantity-label'>{slot.item.uses}</div>
-                    </div>
-                  );
-                } else {
-                  return (
-                    <div key={i} id={`empty-slot-${i + 1}`} onPointerDown={() => selectSlot(i)} className={i !== slotSelected ?  'item-slot empty' : 'item-slot empty  selected'}>
-                      <div className="label">EMPTY</div>
-                    </div>
-                  );
-                }
-              })}
-            </div>
+                {props.itemSlots.map((slot, i) => {
+                  console.log('slot', i, slot)
+                  if (slot.item && slot.item.hasOwnProperty('id') && slot.item.id > -1) {
+                    return (
+                      <div key={slot.item.id} id={`item-slot-${i + 1}`} onPointerDown={() => selectSlot(i)} className={i !== slotSelected ? 'item-slot' : 'item-slot selected'}>
+                        <img src={require(`../assets/${slot.item.imgSrc}`)} />
+                        <div className='quantity-label'>{slot.item.uses}</div>
+                      </div>
+                    );
+                  } else if (slot.item) {
+                    return (
+                      <div key={i} id={`empty-slot-${i + 1}`} onPointerDown={() => selectSlot(i)} className={i !== slotSelected ?  'item-slot empty' : 'item-slot empty  selected'}>
+                        <div className="label">EMPTY</div>
+                      </div>
+                    );
+                  } else if (i === 0) {
+                    return (
+                      <div>(NO ITEM SLOTS)</div>
+                    );
+                  }
+                })}
+              </div>
             </div>
           }
         {props.selectedItem.consumable ?
