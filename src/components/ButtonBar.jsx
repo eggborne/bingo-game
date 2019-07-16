@@ -1,5 +1,6 @@
 import React from 'react';
 import '../css/ButtonBar.css';
+import { chipImages } from '../App.js';
 import { permanentItems } from './StoreScreen';
 let chickenPng = require('../assets/chickenstand.png');
 let chickenIconPng = require('../assets/aviaryicon.png');
@@ -22,6 +23,7 @@ function ButtonBar(props) {
     }
   }
   let aviaryClass = 'status-button floating-button';
+  let markerClass = 'status-button floating-button';
   let cardOptionsClass = 'status-button floating-button';
   let storeClass = 'status-button floating-button';
   let mapClass = 'status-button floating-button';
@@ -32,6 +34,7 @@ function ButtonBar(props) {
     storeClass += ' obscured';
     mapClass += ' obscured';
     cardOptionsClass += ' obscured';
+    markerClass += ' obscured';
   }
   if (!props.storeOpen) {
     storeClass += ' inactive';
@@ -40,12 +43,17 @@ function ButtonBar(props) {
     mapClass += ' obscured';
     aviaryClass += ' obscured';
     cardOptionsClass += ' obscured';
+    markerClass += ' obscured';
   }
   if (props.mapOn) {
     mapClass += ' map-on';
     aviaryClass += ' obscured';
     storeClass += ' obscured';
     cardOptionsClass += ' obscured';
+    markerClass += ' obscured';
+  }
+  if (props.markerOptionsOn) {    
+    markerClass += ' marker-options-on';
   }
   let barClass = '';
   if (props.gameStarted) {
@@ -165,7 +173,12 @@ function ButtonBar(props) {
           <div id='aviary-button' onPointerDown={props.onClickAviaryButton} className={aviaryClass}><img id='aviary-icon' src={chickenIconPng} />
             <div id='chickens-count'>{props.chickenCount}</div>
           </div>
-          <div id='card-options-button' onPointerDown={props.onClickCardOptionsButton} className={cardOptionsClass}><img id='card-options-icon' src={cardOptionsIconPng} /></div>
+          <div id='marker-button' onPointerDown={props.onClickChangeMarker} className={markerClass}><img id='marker-button-image' src={chipImages[props.chipImage]} />
+            MARKER
+          </div>
+          <div id='card-options-button' onPointerDown={props.onClickCardOptionsButton} className={cardOptionsClass}><img id='card-options-icon' src={cardOptionsIconPng} />
+            CARDS
+          </div>
           <div id='map-button' onPointerDown={props.onClickMapButton} className={mapClass}><img alt='' src={globeIconPng} /></div>
         </>
       }

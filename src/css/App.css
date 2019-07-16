@@ -324,10 +324,6 @@ header .status-button.on:not(#menu-button) {
   border-color: rgb(155, 255, 112) !important;
   border-style: inset;
 }
-#cards-button {
-  background-image: url('../assets/cardsicon.png');
-  background-size: 80%;
-}
 #caller-button {
   background-image: url('../assets/voiceiconright.png');
   background-size: 80%;
@@ -700,6 +696,21 @@ button #account-button {
 }
 .card-space > .card {
   height: 100%;
+}
+#card-amount-select {
+  font-size: var(--font-size);
+  font-family: var(--cute-font);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 0;
+  transform-origin: top;
+  transition: height 210ms ease;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}
+#card-amount-select.showing {
+  height: 12vh;
 }
 .card-controls {
   --card-control-font-size: calc(((100vw / var(--user-cards-wide)) - (var(--board-padding))) / 18);

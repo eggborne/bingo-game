@@ -18,6 +18,7 @@ import './css/HintArrow.css';
 import { randomInt, isFullScreen, fullScreenCall, exitFullScreenCall, getTimeSinceFromSeconds, limits, shuffle, calls } from './scripts/util';
 import axios from 'axios';
 import { Howl } from 'howler';
+import MarkerSelectModal from './components/MarkerSelectModal';
 require('console-green');
 
 const lockTypes = [undefined, 'landscape', 'portrait'];
@@ -472,6 +473,7 @@ function App() {
   const [loginError, setLoginError] = useState('');
   const [storeOpen, setStoreOpen] = useState(false);
   const [aviaryOn, setAviaryOn] = useState(false);
+  const [markerSelectOn, setMarkerSelectOn] = useState(false);
   const [cardOptionsOn, setCardOptionsOn] = useState(false);
   const [winnerLimit, setWinnerLimit] = useState(4);
   const [ballLimit, setBallLimit] = useState(35);
@@ -1577,6 +1579,9 @@ function App() {
     if (aviaryOn) {
       setAviaryOn(false);
     }
+    if (markerSelectOn) {
+      setMarkerSelectOn(false);
+    }
     setStoreOpen(!storeOpen);
     if (options.soundOn && !soundsLoaded) {
       loadSounds().then((response) => {
@@ -1594,10 +1599,16 @@ function App() {
     if (storeOpen) {
       setStoreOpen(false);
     }
+    if (markerSelectOn) {
+      setMarkerSelectOn(false);
+    }
     setAviaryOn(aviaryOn => !aviaryOn);
   };
   const handleClickCardOptionsButton = () => {
     setCardOptionsOn(cardOptionsOn => !cardOptionsOn);
+  };
+  const handleClickChangeMarker = () => {
+    setMarkerSelectOn(markerSelectOn => !markerSelectOn);
   };
   const handleClickBuyButton = (itemData, slot) => {
     playSound(refillSound);
@@ -1742,7 +1753,9 @@ function App() {
         if (aviaryOn) {
           setAviaryOn(false);
         }
-
+        if (markerSelectOn) {
+          setMarkerSelectOn(false);
+        }
         if (!preGameShowing) {
           if (gameEnded) {
             handleClickAgreeButton();
@@ -1817,6 +1830,9 @@ function App() {
     }
     if (aviaryOn) {
       setAviaryOn(false);
+    }
+    if (markerSelectOn) {
+      setMarkerSelectOn(false);
     }
     setMapOn(mapOn => !mapOn);
   };
@@ -1974,6 +1990,7 @@ function App() {
     }
   }
   const recordCardBonus = (bonus, cardIndex) => {
+    console.log('recordCardbonus took in bonus, cardIndex', bonus, cardIndex)
     let newRoundResults = { ...roundResults };
     let includesX = bonus.name === "Letter X" && newRoundResults.cards[cardIndex].bonuses.filter(card => card.name === "Letter X").length;
     let includesFirst = bonus.name === "First Bingo" && newRoundResults.cards[cardIndex].bonuses.filter(card => card.name === "First Bingo").length;
@@ -2148,10 +2165,17 @@ function App() {
       updateUserData(user, 'cards', newUser.cards);
     }
   }
+  const handleSelectNewMarker = (newMarker) => {
+    let newOptions = {...options};
+    newOptions.chipImage = newMarker;
+    setOptions(newOptions);
+  }
+  const handleClickMarkerOkay = () => {
+    console.error('clicked ok!')
+    setMarkerSelectOn(false);
+  }
   const handleClickCorner = () => {
-    // let daubSpeed = Date.now() - options.drawSpeed - lastDrew;
-    // allCalledNumbersDaubed();
-    // console.error('SPEED? ----------------', daubSpeed);
+
   }
 
   // RENDER //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2321,7 +2345,7 @@ function App() {
               </div>
             </>
           ) : (
-            <div id="title">
+            cardOptionsOn && <div id="title">
               <div id="logo" className={loaded ? '' : 'featured'}>
                 <div>c</div>
                 <div>h</div>
@@ -2347,7 +2371,6 @@ function App() {
                 <i className="material-icons">{fsClass.includes('full') ? `fullscreen_exit` : `fullscreen`}</i>
               </button>
             </div> */}
-            <button onPointerDown={() => setMenuMode('cards')} id="cards-button" className={menuMode === 'cards' ? `status-button on` : `status-button`} />
             <button onPointerDown={() => setMenuMode('caller')} id="caller-button" className={menuMode === 'caller' ? `status-button on` : `status-button`} />
             <button onPointerDown={() => setMenuMode('display')} id="display-button" className={menuMode === 'display' ? `status-button on` : `status-button`}>
               <i className="material-icons">tv</i>
@@ -2410,6 +2433,13 @@ function App() {
         }}
       >
       {lazy1 && <CallerArea ref={ref} calledBalls={calledBalls} gameStarted={gameStarted} />}
+      <div id='card-amount-select' className={cardOptionsOn ? 'showing' : undefined}>Total cards to use:
+        <div className='number-toggle'>
+          <img alt='' onPointerDown={() => handleClickMenuArrow('player-cards-minus')} src={require('./assets/leftarrow.png')} />
+          <div style={{minWidth: '1ch'}}>{playerCardCount}</div>
+          <img alt='' onPointerDown={() => handleClickMenuArrow('player-cards-plus')} src={require('./assets/rightarrow.png')} />
+        </div>
+      </div>
         <div id="player-card-area" className={playerAreaClass}>
           {playerCardList.map((card, c) => {
             card = user.cards[c];
@@ -2532,7 +2562,9 @@ function App() {
             storeOpen={storeOpen}
             aviaryOn={aviaryOn}
             cardOptionsOn={cardOptionsOn}
+            markerOptionsOn={markerSelectOn}
             mapOn={mapOn}
+            chipImage={options.chipImage}
             itemsEquippedCount={user.itemSlots.filter(slot => slot.item).length}
             itemsFullCount={itemsFullCount}
             chickenCount={user.chickens.length}
@@ -2546,6 +2578,7 @@ function App() {
             onClickStopButton={handleClickStopButton}
             onClickStoreButton={handleClickStoreButton}
             onClickAviaryButton={handleClickAviaryButton}
+            onClickChangeMarker={handleClickChangeMarker}
             onClickCardOptionsButton={handleClickCardOptionsButton}
             onClickMapButton={handleClickMapButton}
             onClickResetButton={handleClickCloseButton}
@@ -2573,6 +2606,12 @@ function App() {
             rank={options.opponentCards.length - playersLeft + 1}
             lost={gameMode.winnerLimit ? (options.opponentCards.length - playersLeft + 1 > winnerLimit) : (options.opponentCards.length !== playersLeft)}
             onClickOkayButton={handleClickOkayButton}
+          />
+          <MarkerSelectModal 
+            showing={markerSelectOn} 
+            chipImage={options.chipImage} 
+            onSelectNewMarker={handleSelectNewMarker}
+            onClickOkayButton={handleClickMarkerOkay}
           />
           <Menu
             menuMode={menuMode}

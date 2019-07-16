@@ -72,6 +72,15 @@ function Menu(props) {
               <img alt='' onPointerDown={() => props.onClickMenuArrow('toggleSound')} src={require('../assets/rightarrow.png')} />
             </div>
         </div>
+          <div className={itemClass}>
+            <div>Opponent Cards</div>
+            <div className='item-label'></div>
+            <div className='number-toggle'>
+              <img alt='' onPointerDown={() => props.onClickMenuArrow('opponent-cards-minus')} src={require('../assets/leftarrow.png')} />
+              <div>{opponentCardCount}</div>
+              <img alt='' onPointerDown={() => props.onClickMenuArrow('opponent-cards-plus')} src={require('../assets/rightarrow.png')} />
+            </div>
+          </div>
         <button id='reload-button' onClick={() => window.location.reload(true)}>LOAD NEWEST VERSION</button>
         </>
       }
@@ -217,37 +226,6 @@ function Menu(props) {
                 :
                 <button onClick={props.onClickLogIn} className='menu-button' id='log-in-button'>Log In / Register</button>
               }
-            </div>
-          </div>
-        </>
-      }
-      {props.menuMode === 'cards' &&
-        <>
-          <div className={itemClass}>
-            <div>Player Cards</div>
-            <div className='item-label'><small>Slots:</small> {props.user.cardSlots.length}</div>
-            <div className='number-toggle'>
-              <img alt='' onPointerDown={() => props.onClickMenuArrow('player-cards-minus')} src={require('../assets/leftarrow.png')} />
-              <div>{playerCardCount}</div>
-              <img alt='' onPointerDown={() => props.onClickMenuArrow('player-cards-plus')} src={require('../assets/rightarrow.png')} />
-            </div>
-        </div>
-          <div className={itemClass}>
-            <div>Opponent Cards</div>
-            <div className='item-label'></div>
-            <div className='number-toggle'>
-              <img alt='' onPointerDown={() => props.onClickMenuArrow('opponent-cards-minus')} src={require('../assets/leftarrow.png')} />
-              <div>{opponentCardCount}</div>
-              <img alt='' onPointerDown={() => props.onClickMenuArrow('opponent-cards-plus')} src={require('../assets/rightarrow.png')} />
-            </div>
-          </div>
-          <div className={'menu-item'}>
-            <div>Marker</div>
-            <div className='item-label'></div>
-            <div className='number-toggle'>
-              <img alt='' onPointerDown={() => props.onClickMenuArrow('marker-minus')} src={require('../assets/leftarrow.png')} />
-              <img alt='' className='arrow-image' src={chipImages[props.chipImage]} />
-              <img alt='' onPointerDown={() => props.onClickMenuArrow('marker-plus')} src={require('../assets/rightarrow.png')} />
             </div>
           </div>
         </>

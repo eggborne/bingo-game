@@ -1,0 +1,66 @@
+#marker-select-modal {
+  position: absolute;
+  background: #111;
+  width: 90vmin;
+  height: 110vmin;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  font-size: calc(var(--header-height) / 2.75);
+  border: 1vmin solid #333;
+  transition: transform 310ms ease, opacity 205ms ease;
+	z-index: 12;
+	transform: translateX(-50%) translateY(-50%);
+	left: 50vw;
+	top: 50vh;
+}
+#marker-select-modal.hidden {
+	pointer-events: none;
+	opacity: 0;
+}
+#marker-select-modal > header {
+	font-family: var(--cute-font);
+	font-size: 7vmin;
+	color: white;
+	width: 100%;
+	display: flex;
+	background: blue;
+	align-items: center;
+	justify-content: center;
+}
+#marker-select-modal > #marker-selection {
+	width: 100%;
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr 1fr;
+	align-items: center;
+	justify-items: center;
+	margin: 2vmin;
+}
+#marker-selection > img {
+	width: 80%;
+	height: auto;
+	padding: 3vmin;
+}
+#marker-selection > img.current {
+	outline: 2px solid green !important;
+}
+#marker-select-modal > .modal-button {
+  font-size: calc(var(--header-height) / 3);
+  font-weight: bolder;
+	width: 40%;
+	padding: 2vmin;
+	/* margin: 2vmin; */
+	border-radius: 1vmax;
+	height: min-content;
+}
+
+@media screen and (orientation: landscape) {
+  #marker-select-modal {
+    /* width: 100vw; */
+		height: calc(var(--view-height) - var(--button-bar-height) - (var(--button-bar-border-width) * 3));
+		top: unset;
+		transform: translateX(-50%);
+    bottom: var(--button-bar-height);
+  }
+}
