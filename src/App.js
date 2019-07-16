@@ -2142,7 +2142,7 @@ function App() {
     let newUser = { ...user };
     let targetCard = newUser.cards[cardIndex];
     let newType = targetCard.type === 'random' ? 'custom' : 'random';
-    newUser.cards[cardIndex].type = newType;
+    targetCard.type = newType;
     setUser(newUser);
     if (user.loggedIn) {
       updateUserData(user, 'cards', newUser.cards);

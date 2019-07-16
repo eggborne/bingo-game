@@ -79,7 +79,7 @@ function Card(props) {
       setMadeFree([]);
       setBlockedNumbers([]);
     }
-  }, [props.gameStarted, props.patternName, props.gameMode, props.username, props.calledBalls, props.ready, props.cardData, won]);
+  }, [props.gameStarted, props.patternName, props.gameMode, props.username, props.calledBalls, props.ready, props.cardData, props.cardData.numbers, won]);
   useEffect(() => {
     if (props.gameStarted && numbers && props.calledBalls.length === 0) {
       // game just started
