@@ -2,11 +2,11 @@
   position: absolute;
   background: #111;
   width: 90vmin;
-  height: 110vmin;
+  /* height: 110vmin; */
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  justify-content: start;
   font-size: calc(var(--header-height) / 2.75);
   border: 1vmin solid #333;
   transition: transform 310ms ease, opacity 205ms ease;
@@ -21,46 +21,69 @@
 }
 #marker-select-modal > header {
 	font-family: var(--cute-font);
-	font-size: 7vmin;
+	font-size: 6vmin;
+	padding: 2vmin;
 	color: white;
 	width: 100%;
 	display: flex;
-	background: blue;
 	align-items: center;
 	justify-content: center;
 }
 #marker-select-modal > #marker-selection {
-	width: 100%;
+	/* width: 100%; */
 	display: grid;
-	grid-template-columns: 1fr 1fr 1fr 1fr;
-	align-items: center;
+	grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+	grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
+	align-items: start;
 	justify-items: center;
 	margin: 2vmin;
+	grid-row-gap: 3vmin;
 }
 #marker-selection > img {
-	width: 80%;
+	width: 70%;
 	height: auto;
-	padding: 3vmin;
+	padding: 1vmin;
+}
+#marker-selection > img.locked {
+	opacity: 0.2;
+	outline: 2px solid black;
+	padding: 2vmin;
 }
 #marker-selection > img.current {
 	outline: 2px solid green !important;
 }
-#marker-select-modal > .modal-button {
+#marker-select-modal > #button-area {
+	height: 100%;
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	padding: 2vmin;
+}
+#marker-select-modal .modal-button {
   font-size: calc(var(--header-height) / 3);
   font-weight: bolder;
-	width: 40%;
-	padding: 2vmin;
-	/* margin: 2vmin; */
+	padding: 0;
 	border-radius: 1vmax;
-	height: min-content;
+	height: calc(var(--header-height) / 1.5);
+	width: calc(var(--header-height) * 1.5);
+	align-self: flex-end;
 }
 
 @media screen and (orientation: landscape) {
   #marker-select-modal {
-    /* width: 100vw; */
+		width: 65vw;
 		height: calc(var(--view-height) - var(--button-bar-height) - (var(--button-bar-border-width) * 3));
 		top: unset;
 		transform: translateX(-50%);
     bottom: var(--button-bar-height);
-  }
+	}
+	#marker-select-modal > #marker-selection {
+		width: 100%;
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+		grid-template-rows: 1fr 1fr 1fr 1fr;
+		align-items: start;
+		justify-items: center;
+		margin: 2vmin;
+	}
 }
