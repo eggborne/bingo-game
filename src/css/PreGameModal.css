@@ -1,18 +1,11 @@
 #pre-game-modal {
   position: absolute;
   width: 100vw;
-  /* height: calc(var(--view-height) - var(--header-height) - var(--button-bar-height)); */
   margin-top: var(--header-height);
-  /* display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between; */
   display: grid;
   grid-template-columns: 1fr 40%;
   grid-template-rows: min-content 40vh 20vh;
   align-items: stretch;
-  /* padding: 2vmin; */
-  /* padding-bottom: 4vmin; */
   grid-gap: 2vmin;
   font-size: calc(var(--header-height) / 2.75);
   border: 1vmin solid #333;
@@ -44,7 +37,6 @@
   font-family: var(--cute-font);
   color: rgb(255, 255, 213);
   font-size: calc(var(--header-height) / 4);
-
 }
 #pre-game-modal.hidden {
   transform: scale(0.95);
@@ -55,10 +47,8 @@
   display: flex;
   flex-direction: column;
   justify-content: space-around;
-  /* width: 50%; */
   background: #00000066;
   border-radius: 2vmin;
-  /* margin: 2vmin; */
   padding: 3vmin;
   text-shadow: -0.15vmin -0.15vmin 0 #000, 0.15vmin -0.15vmin 0 #000, -0.15vmin 0.15vmin 0 #000, 0.15vmin 0.15vmin 0 #000;
 }
@@ -70,15 +60,10 @@
   align-items: flex-start;
   justify-content: flex-end;
   flex-grow: 1;
-  /* margin-top: 2vh; */
 }
 #pre-game-mode #mode-name {
   color: rgb(172, 255, 172);
-
-  /* background: rgba(0, 0, 0, 0.5); */
-  /* border: 1vmin solid rgba(0, 0, 0, 0.301); */
   padding: 1vh 0;
-  /* margin: 1vh 0; */
 }
 #pre-game-rules > div {
   margin: 1vmax;
@@ -124,18 +109,13 @@
   justify-content: flex-start;
 }
 #pre-game-description small {
-  /* font-family: 'Open Sans', sans-serif; */
-  /* font-weight: bolder; */
   font-size: calc(var(--font-size) / 1.35);
   color: yellow;
   line-height:  calc(var(--font-size) / 1.35);
 
 }
 #pre-game-description div {
-  /* font-family: 'Open Sans', sans-serif; */
-  /* font-weight: bolder; */
  margin-top: 1vh;
-
 }
 #pre-game-stats {
   display: grid;
@@ -156,14 +136,6 @@
   display: flex;
   justify-content: space-between;
 }
-/* #pre-game-modal > #button-area {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  width: 100%;
-  height: 100%;
-  transition: opacity 320ms ease, transform 320ms ease;
-} */
 #pre-game-buttons {
   display: flex;
   flex-direction: column;
@@ -192,15 +164,11 @@
   font-size: 7vw;
   background: rgb(43, 85, 13);
   width: 100%;
-  /* width: 40vw; */
-  /* height: 10vh; */
-  /* margin-bottom: 1vh; */
 }
 #pre-game-modal #cancel-button.modal-button {
   background: rgb(102, 104, 13);
   font-size: 3vw;
   width: 100%;
-  /* height: 6vh; */
 }
 
 @media screen and (orientation: landscape) {
@@ -219,10 +187,6 @@
     grid-row-end: 3;
     writing-mode: vertical-lr;
     transform: rotate(180deg);
-
-;  }
-  #pre-game-modal > div {
-    outline: 1px solid red;
   }
   #pre-game-modal > * {
     padding: 2vmin 5vmin;

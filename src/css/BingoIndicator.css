@@ -17,8 +17,10 @@
 }
 .bingo-indicator > .prefix, .bingo-indicator > .suffix {
   font-size: var(--font-size);
+  color: var(--money-green);
 }
 .bingo-indicator > .suffix {
   font-size: calc(var(--font-size) / 1.25);
   text-shadow: -0.15vmin -0.15vmin 0 #000, 0.15vmin -0.15vmin 0 #000, -0.15vmin 0.15vmin 0 #000, 0.15vmin 0.15vmin 0 #000;
+  
 }

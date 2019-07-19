@@ -240,7 +240,7 @@ header#main-header {
   font-size: 5.2vw;
   display: flex;
   text-shadow: -0.25vmin -0.35vmin 0 #333, 0.35vmin -0.35vmin 0 #333, -0.35vmin 0.35vmin 0 #333, 0.35vmin 0.35vmin 0 #333;
-
+  pointer-events: none;
   /* transform-origin: top right; */
 }
 #title > #logo.obscured {
@@ -296,7 +296,6 @@ header#main-header {
 #title > #logo > div:nth-child(13) {
   transition-delay: 1680ms;
 }
-
 #title > small {
   padding-top: 6.5vw;
 }
@@ -728,6 +727,7 @@ button #account-button {
   transition: opacity 210ms ease;
   text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
   z-index: 1;
+  /* pointer-events: none; */
 }
 #card-amount-select.showing {
   opacity: 1;
@@ -903,6 +903,7 @@ button #account-button {
     display: flex;
     flex-direction: row;
     align-items: center;
+    width: 100%;
   }
   #header-buttons {
     flex-direction: column;
@@ -916,6 +917,7 @@ button #account-button {
     top: calc(var(--button-bar-border-width) * -1.5)
   }
   #card-amount-select {
+    width: calc(100vw - var(--header-height) - var(--button-bar-height));
     top: calc(var(--caller-height) / 2);
     font-size: var(--font-size);
   }

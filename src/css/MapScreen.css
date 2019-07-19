@@ -13,7 +13,7 @@
   opacity: 0;
   pointer-events: none;
   transition: opacity 210ms ease;
-  z-index: 2;
+  z-index: 4;
 }
 #map-screen.showing {
   opacity: 1;
