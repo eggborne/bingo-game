@@ -82,7 +82,12 @@ function StoreScreen(props) {
   let noSpace = selectedSlot >= props.itemSlots.length;
   return (
     <>
-      {props.showing && <StoreModal itemSlots={props.itemSlots} selectedItem={selectedItem} onSelectSlot={handleSelectSlot} onClickBuyButton={handleClickBuyButton} onClickCancelButton={handleClickCancelButton} />}
+      {props.showing && 
+      <>
+        <div onPointerDown={() => setSelectedItem(undefined)} className={(selectedItem) ? 'shade showing' : 'shade'}></div>
+        <StoreModal itemSlots={props.itemSlots} selectedItem={selectedItem} onSelectSlot={handleSelectSlot} onClickBuyButton={handleClickBuyButton} onClickCancelButton={handleClickCancelButton} />
+      </>
+      }
       <div id='store-screen' className={storeClass}>
         <header><div>SHOP</div></header>
         <div id='tab-area'>
@@ -92,7 +97,7 @@ function StoreScreen(props) {
         {props.showing ?
         <div id='store-section-container' className={selectedCategory === 'consumable' ? 'shifted-left' : ''}>
           <div id='store-permanent' className='store-body'>
-            <div className={`category-label`}>Markers</div>
+            {/* <div className={`category-label`}>Markers</div>
             <div className={'prize-category item-grid'}>
                 {permanentItems['Markers'].map((item, i) => {
                   let owned = [...props.userPrizes].filter(prize => item.id === prize.id).length;
@@ -102,7 +107,7 @@ function StoreScreen(props) {
                   <button onClick={() => { selectItem(item) }} className={cash < item.cost ? 'unavailable' : ''}>BUY</button>
                 </div>)
               })}
-            </div>
+            </div> */}
             <div className={`category-label`}>Item Slots</div>
             <div className={'prize-category'}>
               {permanentItems['Item Slots'].map((item, i) => {
@@ -182,15 +187,10 @@ function StoreScreen(props) {
                       <div className={cash < item.cost ? 'item-cost unavailable' : 'item-cost'}>${item.cost}</div>
                       <button onClick={() => !owned ? selectItem(item) : null } className={(cash < item.cost || owned) ? ' unavailable' : ''}>{buttonLabel}</button>
                     </div>
-
-
                   );
-
                 })}
-
               </div>
-
-              </div>
+            </div>
           </div>
           :
           null
