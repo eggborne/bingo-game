@@ -70,6 +70,22 @@ body {
   max-width: 100vw;
   /* max-height: 100vh; */
 }
+.shade {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: var(--view-height);
+  background: #000000df;
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 210ms ease;
+}
+.shade.showing {
+  opacity: 1;
+  pointer-events: all;
+}
 #mode-display {
   position: fixed;
   bottom: var(--button-bar-height);
@@ -194,7 +210,7 @@ header#main-header {
   z-index: 1;
   padding: calc(var(--header-border-width) / 2);
   padding: calc(var(--header-border-width) * 1.5);
-  z-index: 2;
+  z-index: 4;
 }
 #main-header small {
   font-size: calc(var(--header-height) / 6);
@@ -312,7 +328,6 @@ header .status-button {
   min-height: calc(var(--header-height) - (var(--header-border-width) * 3));
   color: white;
   border: 0.25vmin outset gray !important;
-
   display: flex;
   align-items: center;
   justify-content: center;
@@ -424,7 +439,7 @@ button #account-button {
   align-items: center;
   justify-content: space-evenly;
   padding: calc(var(--header-height) / 12);
-  margin-right: calc(var(--header-height) / 12);
+  margin-right: calc(var(--header-height) / 12);  
 }
 #menu-bar-container {
   width: 100%;
@@ -645,6 +660,7 @@ button #account-button {
   padding: 0 var(--board-padding);
   margin-top: var(--caller-height);
   padding-bottom: 0;
+  height: calc(var(--view-height) - var(--header-height) - var(--caller-height) - var(--button-bar-height));
   /* transition: opacity 440ms ease; */
 }
 .card-area {
@@ -653,13 +669,12 @@ button #account-button {
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
+  flex-grow: 1;
   transform-origin: top center;
   transition: transform 420ms ease, opacity 1000ms ease;
 }
 .card-area.card-options-on {
-  padding-bottom: var(--header-height);
-  transform: scale(0.9);
-
+  transform: scale(0.95);
 }
 .card-area.dimmed {
   pointer-events: none;
@@ -698,22 +713,27 @@ button #account-button {
   height: 100%;
 }
 #card-amount-select {
-  font-size: var(--font-size);
+  position: absolute;
+  top: calc(var(--caller-height) * 1.5);
+  left: 0;
+  width: 100%;
+  transform: translateY(-50%);
+  font-size: calc(var(--font-size) / 1.5);
   font-family: var(--cute-font);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 0;
-  transform-origin: top;
-  transition: height 210ms ease;
+  opacity: 0;
+  transition: opacity 210ms ease;
   text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+  z-index: 1;
 }
 #card-amount-select.showing {
-  height: 12vh;
+  opacity: 1;
 }
 .card-controls {
-  --card-control-font-size: calc(((100vw / var(--user-cards-wide)) - (var(--board-padding))) / 18);
+  --card-control-font-size: calc(((100vw / var(--user-cards-wide)) - (var(--board-padding))) / 20);
   position: absolute;
   top: calc(var(--card-padding) / 2);
   left: calc(var(--card-padding) / 2);
@@ -734,7 +754,7 @@ button #account-button {
 .card-controls > .card-control-header {
   font-family: var(--cute-font);
   color: yellow;
-  font-size: var(--font-size);
+  font-size: calc(var(--card-control-font-size) * 1.25);
 }
 .card-controls > .card-randomize-controls {
   background: #00000033;
@@ -742,11 +762,12 @@ button #account-button {
   flex-direction: column;
   justify-content: space-evenly;
   padding: 2vmin;
-  font-family: 'Open Sans', sans-serif;
+  /* font-family: 'Open Sans', sans-serif; */
 }
 .card-controls > .card-randomize-controls > div {
   display: flex;
   justify-content: center;
+  
 }
 .card-controls > .card-toggle-controls {
   padding: 0vmin;
@@ -787,13 +808,14 @@ button #account-button {
   transform: none;
 }
 .randomize-button {
-  font-size: var(--card-control-font-size);
+  font-size: calc(var(--card-control-font-size) / 1.5);
   min-width: calc(var(--header-height) * 1.5);
   height: calc(var(--card-control-font-size) * 3);
+  width: 60%;
   border-radius: 1vmin;
-  background: darkgray;
+  background: rgb(117, 117, 117);
   color: white;
-  border: 1vmin solid gray;
+  border: 1vmin solid rgb(80, 80, 80);
   text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
 }
 #opponent-card-area > .card-space {
@@ -854,6 +876,12 @@ button #account-button {
     grid-template-columns: var(--header-height) 1fr var(--button-bar-height);
     grid-template-rows: 100%;
   }
+  #game-board {
+    height: unset;
+  }
+  .card-area.card-options-on {
+    padding-bottom: var(--header-height);
+  }
   #mode-display {
     bottom: 0;
     right: var(--button-bar-height);
@@ -886,6 +914,10 @@ button #account-button {
     position: fixed;
     left: 0;
     top: calc(var(--button-bar-border-width) * -1.5)
+  }
+  #card-amount-select {
+    top: calc(var(--caller-height) / 2);
+    font-size: var(--font-size);
   }
   #players-left-display {
     white-space: normal;
