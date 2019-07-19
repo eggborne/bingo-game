@@ -20,6 +20,7 @@ function Card(props) {
   const [won, setWon] = useState(false);
   const [touchedNumber, setTouchedNumber] = useState(false);
   const [suffixDisplay, setSuffixDisplay] = useState('');
+  const [prefixDisplay, setPrefixDisplay] = useState('');
 
   const allNumbers = useCallback(() => {
     if (numbers) {
@@ -337,7 +338,17 @@ function Card(props) {
           // setBingos(foundBingos);
           if (!props.opponent) {
             setWon(true);
+            let newPrefix = '';
             let newSuffix = '';
+            if (props.gameMode.name === 'Bonanza') {
+              bingoRank = (props.gameMode.bingoLimit - props.remainingBingos) + 1;
+            } else if (props.gameMode.name === 'Ranked') {
+              bingoRank = (props.opponentCardCount - props.remainingPlayers);
+            }
+            if (bingoRank === 1) {
+              props.reportBonus('First Bingo', props.index);
+              newPrefix = 'FIRST'
+            }
             if (foundBingos.letterX && !bingos.letterX) {
               props.reportBonus('Letter X', props.index);
               newSuffix = 'Letter X!';
@@ -346,6 +357,7 @@ function Card(props) {
               props.reportBonus(`${foundBingoCount - bingoCount} In One`, props.index);
               newSuffix += ` ${foundBingoCount - bingoCount} In One!`;
             }
+            setPrefixDisplay(newPrefix);
             setSuffixDisplay(newSuffix);
             props.onAchieveBingo(false, (foundBingoCount-bingoCount), foundBingoCount, props.index);
             if (props.gameMode.name === 'Ranked') {
@@ -487,17 +499,17 @@ function Card(props) {
   let bingoRank = undefined;
   let prefix = undefined;
   let indicatorShowing = won;
-  if (indicatorShowing) {
-    if (props.gameMode.name === 'Bonanza') {
-      bingoRank = (props.gameMode.bingoLimit - props.remainingBingos);
-    } else if (props.gameMode.name === 'Ranked') {
-      bingoRank = (props.opponentCardCount - props.remainingPlayers);
-    }
-    prefix = bingoRank === 1 ? 'FIRST' : '';
-    if (bingoRank === 1) {
-      props.reportBonus('First Bingo', props.index);
-    }
-  }
+  // if (indicatorShowing) {
+  //   if (props.gameMode.name === 'Bonanza') {
+  //     bingoRank = (props.gameMode.bingoLimit - props.remainingBingos);
+  //   } else if (props.gameMode.name === 'Ranked') {
+  //     bingoRank = (props.opponentCardCount - props.remainingPlayers);
+  //   }
+  //   prefix = bingoRank === 1 ? 'FIRST' : '';
+  //   if (bingoRank === 1) {
+  //     props.reportBonus('First Bingo', props.index);
+  //   }
+  // }
   return (
     <div className={cardClass}>
       <BingoIndicator
@@ -507,7 +519,7 @@ function Card(props) {
         remainingBingos={props.remainingBingos}
         opponentCardCount={props.opponentCardCount}
         bingoCount={bingoCount}
-        prefix={prefix}
+        prefix={prefixDisplay}
         suffix={suffixDisplay}
       />
       <div className='letter-row'>

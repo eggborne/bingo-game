@@ -396,7 +396,7 @@ const bonuses = ['FREE', 'BEE'];
 const gameModes = {
   'Classic': { unlocked: true, name: 'Classic', winPattern: winPatterns['Letter X'], className: 'classic', description: {object: () => 'Score a '+gameModes['Classic'].winPattern.name+' as fast as possible', gameEnds: () => 'when one player has scored a '+gameModes['Classic'].winPattern.name} },
   'Ranked': { unlocked: true, name: 'Ranked', winnerLimit: 5, winPattern: winPatterns['Line / 4 Corners'], className: 'ranked', description: {object: () => 'Score a Bingo as fast as possible', gameEnds: () => 'when '+gameModes['Ranked'].winnerLimit+' players have scored a Bingo'} },
-  'Bonanza': { unlocked: true, name: 'Bonanza', bingoLimit: 12, winPattern: winPatterns['Line / 4 Corners'], className: 'bonanza', description: {object: () => 'Score as many Bingos as possible', gameEnds: () => 'when '+gameModes['Bonanza'].bingoLimit+' Bingos have been scored'} },
+  'Bonanza': { unlocked: true, name: 'Bonanza', bingoLimit: 4, winPattern: winPatterns['Line / 4 Corners'], className: 'bonanza', description: {object: () => 'Score as many Bingos as possible', gameEnds: () => 'when '+gameModes['Bonanza'].bingoLimit+' Bingos have been scored'} },
   'Countdown': { unlocked: true, name: 'Countdown', ballLimit: 35, winPattern: winPatterns['Line / 4 Corners'], className: 'countdown', description: {object: () => 'Score as many Bingos as possible', gameEnds: () => 'when '+gameModes['Countdown'].ballLimit+' balls have been drawn'} },
   // 'Standoff': { unlocked: false, name: 'Standoff', winnerLimit: 4, winPattern: 'Line / 4 Corners', className='' },
   // 'Danger Zones': { unlocked: false, name: 'Danger Zones', winPattern: 'Line / 4 Corners', className='' },
@@ -1994,6 +1994,7 @@ function App() {
     let newRoundResults = { ...roundResults };
     let includesX = bonus.name === "Letter X" && newRoundResults.cards[cardIndex].bonuses.filter(card => card.name === "Letter X").length;
     let includesFirst = bonus.name === "First Bingo" && newRoundResults.cards[cardIndex].bonuses.filter(card => card.name === "First Bingo").length;
+    console.log('includesX already?', includesX, 'includesFirst already?', includesFirst);
     if (!includesX && !includesFirst) {
       let bonusAmount = Math.ceil(bonusAmounts[bonus] * (options.opponentCards.length * 5))
       newRoundResults.cards[cardIndex].bonuses.push({name: bonus, amount: bonusAmount});
