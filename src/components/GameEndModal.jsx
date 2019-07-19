@@ -95,6 +95,7 @@ function GameEndModal(props) {
                 <div id='results-grid' className={resultsGridClass}>
               {props.roundResults.cards.map((card, i) => {
                 let bonusList = card.bonuses;
+                console.warn('card', i, 'bonuses', card.bonuses)
                 let multiple = [];
                 bonusList.map((bonus, i, arr) => {
                   let copies = arr.filter(b => b.name === bonus.name).length;
@@ -104,9 +105,9 @@ function GameEndModal(props) {
                   }
                 });
                 return (
-                  <div className='card-result-container'>
+                  <div key={card.cardIndex} className='card-result-container'>
                     <div className='card-label'>CARD {i + 1}</div>
-                    <div key={card.cardIndex} className='card-analysis'>
+                    <div className='card-analysis'>
                       <div className='analysis-row card-bingos'>
                         <div>Bingos: <span style={{ color: 'yellow', fontSize: 'calc(var(--font-size) / 1.25)' }}>{card.bingoCount}</span></div>
                         <div><span style={{ color: 'var(--money-green', fontSize: 'calc(var(--font-size) / 1.25)' }}>${card.currentPrize}</span></div>
@@ -114,7 +115,7 @@ function GameEndModal(props) {
                       {bonusList.sort((a, b) => bonusAmounts[b] - bonusAmounts[a]).map(bonus => {
                         let multipleDisplay = bonus.copies;
                         return (
-                          <div key={bonus.name} className='analysis-row card-bonuses'>
+                          <div key={bonus.name + '-' + multipleDisplay} className='analysis-row card-bonuses'>
                             <div style={{ fontSize: 'calc(var(--font-size) / 2)' }}>{bonus.name}{multiple.includes(bonus.name) && ' x' + multipleDisplay}</div>
                             <div><span style={{ color: 'var(--money-green', fontSize: 'calc(var(--font-size) / 1.5)' }}>${bonus.amount}</span></div>
                           </div>
