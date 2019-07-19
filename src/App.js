@@ -2174,6 +2174,11 @@ function App() {
     console.error('clicked ok!')
     setMarkerSelectOn(false);
   }
+  const closeOpenModal = () => {
+    if (markerSelectOn) {
+      setMarkerSelectOn(false);
+    }
+  }
   const handleClickCorner = () => {
 
   }
@@ -2345,7 +2350,7 @@ function App() {
               </div>
             </>
           ) : (
-            cardOptionsOn && <div id="title">
+            !cardOptionsOn && <div id="title">
               <div id="logo" className={loaded ? '' : 'featured'}>
                 <div>c</div>
                 <div>h</div>
@@ -2432,7 +2437,7 @@ function App() {
           }
         }}
       >
-      {lazy1 && <CallerArea ref={ref} calledBalls={calledBalls} gameStarted={gameStarted} />}
+      {loaded && !cardOptionsOn && <CallerArea ref={ref} calledBalls={calledBalls} gameStarted={gameStarted} />}
       <div id='card-amount-select' className={cardOptionsOn ? 'showing' : undefined}>Total cards to use:
         <div className='number-toggle'>
           <img alt='' onPointerDown={() => handleClickMenuArrow('player-cards-minus')} src={require('./assets/leftarrow.png')} />
@@ -2671,6 +2676,7 @@ function App() {
             <i className="material-icons">save</i>
             <small>Saved</small>
           </div>
+          <div onPointerDown={closeOpenModal} className={(markerSelectOn || modalOn) ? 'shade showing' : 'shade'}></div>
         </>
       )}
       <PreGameModal
