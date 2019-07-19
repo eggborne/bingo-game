@@ -144,6 +144,7 @@
 }
 #marker-button {
   background-color: rgb(86, 87, 20);
+  transform: translateY(calc((var(--button-bar-height) + calc((var(--header-height) * 4) - (var(--header-border-width) * 7))) * -1)) !important;  
 }
 #map-button.map-on,
 #store-button.store-open,
@@ -254,13 +255,13 @@
 #button-bar > div > #start-button.game-started {
   background-color: rgb(22, 124, 22);
 }
-#map-button, #store-button, #aviary-button, #card-options-button {
+#map-button, #store-button, #aviary-button, #card-options-button, #marker-button {
   position: absolute;
   bottom: 0;
   right: 0;
   transform: translateY(calc((var(--button-bar-height) + calc((var(--header-height) * 2) - (var(--header-border-width) * 3))) * -1));
   margin: 1vmin;
-  z-index: 4;
+  z-index: 3;
   border-style: solid !important;
 }
 #store-button {
@@ -310,6 +311,9 @@
   font-size: calc(var(--button-bar-border-width) * 4);
   position: absolute;
   content: 'MAP';
+}
+#aviary-button.aviary-on, #map-button.map-on {
+  transform: translateY(calc((var(--button-bar-height) * -1)));
 }
 #map-button.map-on:after {
   content: 'EXIT';
@@ -589,7 +593,6 @@
     right: 0;
     transform: translateX(calc(var(--button-bar-height) * -1));
     margin: 1vmin;
-    z-index: 4;
     border-style: solid !important;
   }
   #aviary-button {
