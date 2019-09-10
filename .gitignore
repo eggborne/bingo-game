@@ -28,3 +28,4 @@ now.sh
 .htaccess
 
 /.vscode
+src/php/error_log
