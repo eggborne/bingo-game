@@ -499,7 +499,7 @@ function App() {
     chickenEffects: []
   });
   const [gameMode, setGameMode] = useState(gameModes['Ranked']);
-  const [recordsBroken, setRecordsBroken] = useState(undefined);
+  const [recordsBroken, setRecordsBroken] = useState([]);
   const ref = useRef();
   const chickenRef = useRef();
   const [opponentCardProgress, setOpponentCardProgress] = useState([...defaultOptions.opponentCards]);
@@ -516,18 +516,21 @@ function App() {
     setLoaded(true);
     let cookie = getCookie('eggborne-bingo');
     if (cookie) {
+      console.warn('user has cookie', cookie);
       logUserIn(cookie.username, null, cookie.token).then(response => {
+        console.log('cocksu logUserIn', response)        
         if (response.data === 'badUsername') {
           console.error('bad username.');
         } else if (response.data === 'badPassword') {
           console.error('bad password.');
         } else {
-          let data = { ...response.data };
+          
           if (!response.data) {
             console.error('BAD COOKIE!')
             setCookie('eggborne-bingo', null, 0);
             window.location.reload();
           } else {
+            let data = { ...response.data[0] };
             integrateLoggedInUser(data, true);
           }
         }
@@ -564,8 +567,8 @@ function App() {
       arr[i] = {
         cardIndex: i,
         bingoCount: 0,
-        ballsAtBingo: new Array(75),
-        opponentsAtBingo: new Array(options.opponentCards.length),
+        ballsAtBingo: [],
+        opponentsAtBingo: [],
         bonuses: [],
         currentPrize: 0
       }
@@ -698,6 +701,7 @@ function App() {
     }
   }
   function integrateLoggedInUser(data, remember) {
+    console.log('cocksu integrateLoggedInUser receieved', data)
     for (let row in data) {
       if (typeof parseInt(data[row]) === 'number' && !isNaN(parseInt(data[row]))) {
         data[row] = parseInt(data[row]);
@@ -1377,12 +1381,40 @@ function App() {
         playSound(fanfare2);
         let cardResult = newRoundResults.cards[cardId];
         cardResult.bingoCount = totalCardBingos;
-        cardResult.ballsAtBingo[totalCardBingos] = calledBalls.length;
-        cardResult.opponentsAtBingo[totalCardBingos] = playersLeft;
+        cardResult.ballsAtBingo.push(calledBalls.length);
+        cardResult.opponentsAtBingo.push(playersLeft);
         cardResult.currentPrize =
           (totalCardBingos * (options.opponentCards.length * 5)) + ((totalCardBingos * 3) * (totalCardBingos * 3) * (options.opponentCards.length));
+        let newCurrentBingos = currentBingos + numberOfBingos;
+        if (newCurrentBingos > user.stats['Bonanza']['Most Bingos']) {
+          console.error('NEW RECORD!', newCurrentBingos , 'beats', user.stats['Bonanza']['Most Bingos']);
+          let oldRecord = user.stats['Bonanza']['Most Bingos'];
+          setRecordsBroken(recordsBroken => [...recordsBroken, {
+            type: 'Most Bingos',
+            unit: '',
+            value: newCurrentBingos,
+            oldRecord: oldRecord
+          }]);
+          let newUser = {...user};
+          newUser.stats['Bonanza']['Most Bingos'] = newCurrentBingos;
+          setUser(newUser);
+        }
         setCurrentBingos(currentBingos => currentBingos + numberOfBingos);
         setRoundBingos(roundBingos => roundBingos + numberOfBingos);
+        if (calledBalls.length < user.stats['Bonanza']['Quickest Bingo']) {
+          console.error('NEW RECORD!', calledBalls.length, 'beats', user.stats['Bonanza']['Quickest Bingo']);
+          let oldRecord = user.stats['Bonanza']['Quickest Bingo']
+          setRecordsBroken(recordsBroken => [...recordsBroken, {
+            type: 'Quickest Bingo',
+            unit: 'balls',
+            value: calledBalls.length,
+            oldRecord: oldRecord
+          }]);
+          let newUser = {...user};
+          newUser.stats['Bonanza']['Quickest Bingo'] = calledBalls.length;
+          setUser(newUser);
+        }
+        
       }
       if ((roundBingos + numberOfBingos) >= gameMode.bingoLimit) {
         playSound(roundOverSound);
@@ -1487,6 +1519,7 @@ function App() {
   const handleClickLogInButton = (enteredName, enteredPass, remember) => {
     setLoginError('LOGGING IN...');
     logUserIn(enteredName, enteredPass).then(response => {
+      console.log('cocksu handleClickLogInButton logUserIn', response)
       if (typeof response.data === 'string') {
         setLoginError(response.data);
         setTimeout(() => {
@@ -1496,7 +1529,9 @@ function App() {
         setLoginError('LOGGED IN!');
         setTimeout(() => {
           setLoginError('');
-          let data = { ...response.data };
+          let newToken = response.data[1];
+
+          let data = { ...response.data[0] };
           integrateLoggedInUser(data, remember);
           setLoggingIn(false);
         }, 200);
@@ -1534,6 +1569,8 @@ function App() {
       }, 2000);
     } else {
       attemptUserCreation({ username: enteredName, pass: enteredPass, options: JSON.stringify(options), stats: JSON.stringify(user.stats), getToken: true }).then(response => {
+        console.log('cocksu create', response)            
+
         if (typeof response.data === 'string') {
           setLoginError(response.data);
           setTimeout(() => {
@@ -1545,20 +1582,24 @@ function App() {
             setLoginError('');
           }, 2000);
           logUserIn(enteredName, enteredPass).then(response => {
+            console.log('cocksu login after create', response)
+            console.log('token after create > login', response.data[1])           
             if (response.data === 'NO SUCH USER.') {
               console.error('bad username AFTER REGISTER???');
             } else if (response.data === 'WRONG PASSWORD.') {
               console.error('bad password AFTER REGISTER???');
-            } else {
+            } else {              
               // create two random cards
               let randomCards = [{ type: 'random', numbers: [] }, { type: 'random', numbers: [] }];
               for (let i = 0; i < 2; i++) {
                 let newNumbers = getRandomCardNumbers();
                 randomCards[i].numbers = newNumbers;
               }
-              let data = { ...response.data };
+              
+              let data = { ...response.data[0] };
+              console.error('')
               data.cards = randomCards;
-              updateUserData(enteredName, data.token, 'cards', data.cards).then(response => {
+              updateUserData(enteredName, 'cards', data.cards).then(response => {
                 integrateLoggedInUser(data, remember);
                 setLoggingIn(false);
               });
@@ -1918,7 +1959,7 @@ function App() {
       synth.cancel();
     }
     if (recordsBroken) {
-      setRecordsBroken(undefined);
+      setRecordsBroken([]);
     }
     setGameStarted(false);
     setGameInProgress(false);
@@ -1928,8 +1969,8 @@ function App() {
       arr[i] = {
         cardIndex: i,
         bingoCount: 0,
-        ballsAtBingo: new Array(75),
-        opponentsAtBingo: new Array(options.opponentCards.length),
+        ballsAtBingo: [],
+        opponentsAtBingo: [],
         bonuses: [],
         currentPrize: 0
       }
@@ -2274,13 +2315,17 @@ function App() {
     if ((cashDisplay / 1000) % 1 === 0) {
       cashDisplay = (cashDisplay / 1000) + 'K';
     } else {
-      cashDisplay = (cashDisplay / 1000).toPrecision(cashDisplay.toString().length - 2) + 'K';
+      let decimalFigure = (cashDisplay / 1000).toPrecision(cashDisplay.toString().length - 2);
+      if (decimalFigure.toString()[decimalFigure.length-1] === '0') {
+        decimalFigure = decimalFigure.toString().split('.')[0];
+      }
+      cashDisplay = decimalFigure + 'K';
     }
   }
   return (
     <div id='app' className={!loaded ? 'zoomed' : ''}>
       <div id='app-background' className={cardOptionsOn ? 'card-options-on' : ''} />
-      {gotData && <div id='mode-display' className={gameStarted ? '' : 'hidden'}>
+      {gotData && <div id='mode-display' className={(gameStarted || !gameInProgress) ? 'hidden' : ''}>
         <div>Avg. daub speed: {roundResults.averageDaubSpeed}</div>
         <div>{gameMode.name} - {patternName}</div>
       </div>}
@@ -2677,7 +2722,7 @@ function App() {
             <i className="material-icons">save</i>
             <small>Saved</small>
           </div>
-          <div onPointerDown={closeOpenModal} className={(markerSelectOn || modalOn) ? 'shade showing' : 'shade'}></div>
+          <div onPointerDown={closeOpenModal} className={(markerSelectOn || modalOn || gameEnded) ? 'shade showing' : 'shade'}></div>
         </>
       )}
       <PreGameModal
