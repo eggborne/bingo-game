@@ -11,20 +11,31 @@ const getSuffix = (num) => {
 }
 
 function NewRecordModal(props) {
-  let records = [
-    {
-      type: 'Quickest Bingo',
-      unit: 'balls',
-      value: 23,
-      oldRecord: 75
-    },
-    {
-      type: 'Most Bingos',
-      unit: '',
-      value: 9,
-      oldRecord: 1
+  console.log('NewRecordModal', props)
+  // let records = [
+  //   {
+  //     type: 'Quickest Bingo',
+  //     unit: 'balls',
+  //     value: 23,
+  //     oldRecord: 75
+  //   },
+  //   {
+  //     type: 'Most Bingos',
+  //     unit: '',
+  //     value: 9,
+  //     oldRecord: 1
+  //   }
+  // ]
+  let records = props.recordsBroken;
+  let mostRecord = 0;
+  records.map(record => {
+    if (record.type === 'Most Bingos') {
+      if (record.value > mostRecord) {
+        mostRecord = record.value;
+      }
     }
-  ]
+  })
+  records = records.filter(record => record.type !== 'Most Bingos' || (record.type === 'Most Bingos' && record.value === mostRecord));
   useLayoutEffect(() => {
     document.getElementById('hot-shots-2').play();
   }, [])
@@ -34,17 +45,19 @@ function NewRecordModal(props) {
       <video id='hot-shots-2' src={hotShotsVideo}></video>
       <div className='game-end-title'>NEW RECORD{plural}!</div>
       <div id='records-list'>
-      {records.map(record =>
-        <div className='record-entry'>
+      {records.map((record, i) => {
+        return (
+        <div key={i} className='record-entry'>
           <div className='record-entry-title'>
             {record.type}
           </div>
-          <div className='record-value-type'>Old:</div>
-          <div className='record-value'>{record.oldRecord} {record.unit}</div>
-          <div className='record-value-type'>New:</div>
+          {/* <div className='record-value-type'>Old:</div> */}
+          {/* <div className='record-value'>{record.oldRecord} {record.unit}</div> */}
+          {/* <div className='record-value-type'>New:</div> */}
           <div className='record-value'>{record.value} {record.unit}</div>
         </div>
-      )}
+        );
+      })}
       </div>
       <div className='button-area'>
         <button onClick={props.onClickOkayButton} className='modal-button' id='record-okay-button'>OK</button>

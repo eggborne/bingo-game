@@ -18,7 +18,7 @@
   color: rgb(146, 146, 146);
   font-family: var(--cute-font);
   font-size: calc(var(--button-bar-height) / 1.75);
-  background: rgba(0, 0, 0, 0.726);
+  background: rgba(0, 0, 0, 0.787);
   width: 100vw;
   height: var(--button-bar-height);
   pointer-events: none;
@@ -26,6 +26,7 @@
   opacity: 0;
   z-index: 1;
   transition: opacity 320ms ease;
+  text-shadow: -1px -1px 0 #111, 1px -1px 0 #111, -1px 1px 0 #111, 1px 1px 0 #111;
 }
 #button-bar.game-in-progress:before {
   display: flex;
@@ -562,22 +563,10 @@
     padding-right: 0;
   }
   #button-bar:before {
-    position: absolute;
-    top: 0;
     right: 0;
     writing-mode: vertical-rl;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    content:'PAUSED';
-    color: rgb(146, 146, 146);
-    font-family: var(--cute-font);
-    font-size: calc(var(--button-bar-height) / 1.75);
-    background: rgba(0, 0, 0, 0.596);
     width: var(--button-bar-height);
     height: 100vh;
-    pointer-events: none;
-    z-index: 1;
   }
   #stop-button {
     transform: translateX(50%) translateY(175%);
